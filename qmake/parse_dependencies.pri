@@ -1,0 +1,11 @@
+ITERATIONS = 0 1 2 3 4 5 6 7 8 9
+for(a, ITERATIONS) {
+  for(DEPENDENCY, DEPENDENCIES) {
+    DEPENDENCIES_ += $$PWD/../../$${DEPENDENCY}/dependencies.pri
+  }
+  DEPENDENCIES =
+  for(DEPENDENCY, DEPENDENCIES_) {
+    include($${DEPENDENCY})
+  }
+  DEPENDENCIES_ =
+}

@@ -1,6 +1,6 @@
 ROOT = ../
 
-include $(ROOT)tdp_build/gmake/emcc/common.pri
+include $(ROOT)tdp_build/gmake/static/common.pri
 
 # Bring in project wide config
 include $(ROOT)project.inc
@@ -13,27 +13,26 @@ include $(ROOT)tdp_build/gmake/parse_dependencies.pri
 # Bring in the source files for this module
 include vars.pri
 
+UNIQUE_INCLUDEPATHS = $(call uniq,$(INCLUDEPATHS))
 
 #Sort to remove duplicates
 BUILD_DIRS = $(sort $(addprefix $(ROOT)$(BUILD_DIR)$(TARGET)/,$(dir $(SOURCES))))
 
-CCOBJECTS = $(filter %.bc,$(SOURCES:.c=.c.bc))
-CXXOBJECTS = $(filter %.bc,$(SOURCES:.cpp=.cpp.bc))
+CCOBJECTS = $(filter %.o,$(SOURCES:.c=.c.o))
+CXXOBJECTS = $(filter %.o,$(SOURCES:.cpp=.cpp.o))
 
 DEFINES  := $(foreach DEFINE,$(DEFINES),-D$(DEFINE))
-INCLUDES += $(foreach INCLUDE,$(INCLUDEPATHS),-I../$(INCLUDE))
+INCLUDES += $(foreach INCLUDE,$(UNIQUE_INCLUDEPATHS),-I../$(INCLUDE))
 
-DEFINES += -DTDP_EMSCRIPTEN
+all: $(BUILD_DIRS) $(ROOT)$(BUILD_DIR)$(TARGET).a
 
-all: $(BUILD_DIRS) $(ROOT)$(BUILD_DIR)$(TARGET).bc
+$(ROOT)$(BUILD_DIR)$(TARGET).a: $(addprefix $(ROOT)$(BUILD_DIR)$(TARGET)/,$(CCOBJECTS)) $(addprefix $(ROOT)$(BUILD_DIR)$(TARGET)/,$(CXXOBJECTS))
+	"$(AR)" rcs $@ $^
 
-$(ROOT)$(BUILD_DIR)$(TARGET).bc: $(addprefix $(ROOT)$(BUILD_DIR)$(TARGET)/,$(CCOBJECTS)) $(addprefix $(ROOT)$(BUILD_DIR)$(TARGET)/,$(CXXOBJECTS))
-	"$(AR)" $^ -o $@
-
-$(ROOT)$(BUILD_DIR)$(TARGET)/%.c.bc: %.c
+$(ROOT)$(BUILD_DIR)$(TARGET)/%.c.o: %.c
 	"$(CC)" -c $(CFLAGS) $(CCFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
-$(ROOT)$(BUILD_DIR)$(TARGET)/%.cpp.bc: %.cpp
+$(ROOT)$(BUILD_DIR)$(TARGET)/%.cpp.o: %.cpp
 	"$(CXX)" -c $(CFLAGS) $(CXXFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
 $(BUILD_DIRS):

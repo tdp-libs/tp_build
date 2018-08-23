@@ -1,6 +1,6 @@
 ROOT = ./
 
-include $(ROOT)tdp_build/gmake/uc/common.pri
+include $(ROOT)tdp_build/gmake/static/common.pri
 
 # Bring in project wide config
 include $(ROOT)project.inc
@@ -12,27 +12,25 @@ include $(ROOT)$(PROJECT_DIR)/submodules.pri
 include $(PROJECT_DIR)/dependencies.pri
 include $(ROOT)tdp_build/gmake/parse_dependencies.pri
 
-ARCHIVES = $(addsuffix .a,$(addprefix $(ROOT)$(BUILD_DIR),$(SUBDIRS)))
-ELF = $(ROOT)$(BUILD_DIR)$(TARGET).elf
-HEX = $(ROOT)$(BUILD_DIR)$(TARGET).hex
-BIN = $(ROOT)$(BUILD_DIR)$(TARGET).bin
+UNIQUE_LIBRARIES = $(call uniq,$(LIBRARIES))
 
-all: $(BIN) $(HEX)
+SUB_AR = $(addsuffix .a,$(addprefix $(ROOT)$(BUILD_DIR),$(UNIQUE_LIBRARIES)))
+PUB_AR = $(ROOT)$(BUILD_DIR)lib$(PUB_TARGET).a
+PUB_O  = $(ROOT)$(BUILD_DIR)$(PUB_TARGET).o
 
-$(HEX): $(ELF)
-	$(OBJCOPY) -O ihex -R .eeprom $< $@
+OBJ_DIR = $(ROOT)$(BUILD_DIR)/obj/
 
-$(BIN): $(ELF)
-	$(OBJCOPY) -O binary $< $@
+all: $(PUB_AR)
 
-$(ELF): $(BUILD_DIR) $(SUBDIRS) $(ARCHIVES)
-	$(CXX) $(LDFLAGS) -Wl,--start-group $(ARCHIVES) $(LIBS) -Wl,--end-group -o $@
+$(PUB_AR): $(BUILD_DIR) $(SUBDIRS) $(SUB_AR)
+	"$(LD)" --whole-archive -r $(SUB_AR) -o $(PUB_O)
+	"$(AR)" rcs $@ $(PUB_O)
 
 $(BUILD_DIR): 
 	$(MKDIR) $(BUILD_DIR) 
 
 $(SUBDIRS): force_look
-	for d in $@ ; do (cd $$d ; make ) ; done
+	for d in $@ ; do (cd $$d ; make -j4 ) ; done
 
 install:
 	-for d in $(SUBDIRS) ; do (cd $$d; $(MAKE) install ); done

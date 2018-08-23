@@ -10,7 +10,7 @@ include $(ROOT)$(PROJECT_DIR)/submodules.pri
 
 # Bring in the dependencies tree 
 include $(PROJECT_DIR)/dependencies.pri
-include $(ROOT)tdp_build/gmake/emcc/parse_dependencies.pri
+include $(ROOT)tdp_build/gmake/parse_dependencies.pri
 
 BC = $(addsuffix .bc,$(addprefix $(ROOT)$(BUILD_DIR),$(LIBRARIES)))
 JS = $(ROOT)$(BUILD_DIR)$(TARGET).html

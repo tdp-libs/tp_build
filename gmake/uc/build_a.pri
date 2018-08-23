@@ -1,8 +1,23 @@
+ROOT = ../
 
-include ../tdp_build/uc/common.pri
+include $(ROOT)tdp_build/gmake/uc/common.pri
+
+# Bring in project wide config
+include $(ROOT)project.inc
+include $(ROOT)$(PROJECT_DIR)/project.conf
+
+# Bring in the dependencies tree 
+include dependencies.pri
+include $(ROOT)tdp_build/gmake/parse_dependencies.pri
+
+# Bring in the source files for this module
+include vars.pri
 
 #Sort to remove duplicates
 BUILD_DIRS = $(sort $(addprefix $(ROOT)$(BUILD_DIR)$(TARGET)/,$(dir $(SOURCES))))
+
+DEFINES  := $(foreach DEFINE,$(DEFINES),-D$(DEFINE))
+INCLUDES += $(foreach INCLUDE,$(INCLUDEPATHS),-I../$(INCLUDE))
 
 SOBJECTS = $(filter %.o,$(SOURCES:.S=.S.o))
 CCOBJECTS = $(filter %.o,$(SOURCES:.c=.c.o))

@@ -1,5 +1,10 @@
+
 exists(../../project.inc) {
 include(../../project.inc)
+}
+
+exists(../../$${PROJECT_DIR}/project.conf) {
+include(../../$${PROJECT_DIR}/project.conf)
 }
 
 exists(../../$${TARGET}/dependencies.pri) {
@@ -9,9 +14,15 @@ include(../../$${TARGET}/dependencies.pri)
 # Bring in the dependencies tree
 include(parse_dependencies.pri)
 
+equals(TEMPLATE, app) {
+LIBS += $${SLIBS}
+}
+
 for(INCLUDE, INCLUDEPATHS) {
   INCLUDEPATH += $$PWD/../../$${INCLUDE}
 }
+
+INCLUDEPATH = $$unique(INCLUDEPATH)
 
 LIBRARIES = $$reverse(LIBRARIES)
 for(LIB, LIBRARIES) {
@@ -23,8 +34,31 @@ for(LIB, LIBRARIES) {
 OBJECTS_DIR = ./obj/
 MOC_DIR = ./moc/
 
-CONFIG += c++17
+CONFIG += c++1z
+#QMAKE_CXXFLAGS += -std=c++17
 DEFINES += TDP_CPP_VERSION=17
+
+CONFIG(debug, debug|release) {
+  QMAKE_CXXFLAGS += -Wpedantic
+ #dnf install libasan
+ QMAKE_CXXFLAGS += -fsanitize=address
+ QMAKE_LFLAGS   += -fsanitize=address
+ #dnf install libubsan
+ QMAKE_CXXFLAGS += -fsanitize=undefined
+ QMAKE_LFLAGS   += -fsanitize=undefined
+
+ QMAKE_CXXFLAGS += -fsanitize-address-use-after-scope
+ QMAKE_LFLAGS   += -fsanitize-address-use-after-scope
+
+ QMAKE_CXXFLAGS += -fstack-protector-all
+ QMAKE_LFLAGS   += -fstack-protector-all
+ # #dnf install libtsan
+ # QMAKE_CXXFLAGS += -fsanitize=thread
+ # QMAKE_LFLAGS   += -fsanitize=thread
+ # #Generate output for prof
+ # QMAKE_CXXFLAGS += -pg
+ # QMAKE_LFLAGS   += -pg
+}
 
 QMAKE_LIBDIR += ../lib
 QMAKE_LIBDIR += ..
@@ -39,10 +73,14 @@ LIBS = $$reverse(LIBS)
 #== Special handling for Android ===================================================================
 android{
 
+DEFINES += TDP_ANDROID
+
 #If we are building the executable we will also need to list all of the libs that it depends on
 contains(TEMPLATE, app) {
+
 DESTDIR = ../bin/
 
+#PLATFORM_ABSTRACTIONS
 MESSAGE = $$replace(LIBS, "-l", "")
 for(a, MESSAGE) {
 ANDROID_EXTRA_LIBS += $${OUT_PWD}/../lib/lib$${a}.so
@@ -108,15 +146,6 @@ defineTest(tdpCopy) {
   QMAKE_EXTRA_TARGETS += first copydata
 
   export(QMAKE_EXTRA_TARGETS)
-}
-
-#== Clang UndefinedBehaviorSanitizer ===============================================================
-#CONFIG += tdp_ubsan
-tdp_ubsan{
-  message("Enabling ubsan!")
-  #dnf install libubsan
-  QMAKE_CXXFLAGS += -fno-sanitize-recover=undefined
-  QMAKE_LFLAGS += -fno-sanitize-recover=undefined
 }
 
 #== TDP_COPY =======================================================================================

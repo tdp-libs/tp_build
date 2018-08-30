@@ -34,32 +34,6 @@ for(LIB, LIBRARIES) {
 OBJECTS_DIR = ./obj/
 MOC_DIR = ./moc/
 
-CONFIG += c++1z
-#QMAKE_CXXFLAGS += -std=c++17
-DEFINES += TDP_CPP_VERSION=17
-
-CONFIG(debug, debug|release) {
-  QMAKE_CXXFLAGS += -Wpedantic
- #dnf install libasan
- QMAKE_CXXFLAGS += -fsanitize=address
- QMAKE_LFLAGS   += -fsanitize=address
- #dnf install libubsan
- QMAKE_CXXFLAGS += -fsanitize=undefined
- QMAKE_LFLAGS   += -fsanitize=undefined
-
- QMAKE_CXXFLAGS += -fsanitize-address-use-after-scope
- QMAKE_LFLAGS   += -fsanitize-address-use-after-scope
-
- QMAKE_CXXFLAGS += -fstack-protector-all
- QMAKE_LFLAGS   += -fstack-protector-all
- # #dnf install libtsan
- # QMAKE_CXXFLAGS += -fsanitize=thread
- # QMAKE_LFLAGS   += -fsanitize=thread
- # #Generate output for prof
- # QMAKE_CXXFLAGS += -pg
- # QMAKE_LFLAGS   += -pg
-}
-
 QMAKE_LIBDIR += ../lib
 QMAKE_LIBDIR += ..
 QMAKE_LIBDIR += .
@@ -90,6 +64,8 @@ ANDROID_EXTRA_LIBS += $${OUT_PWD}/../lib/lib$${a}.so
 #If we are building a lib just do the usual
 !contains(TEMPLATE, app): DESTDIR = ../lib/
 
+CONFIG += c++14
+DEFINES += TDP_CPP_VERSION=17
 }
 
 
@@ -97,6 +73,9 @@ ANDROID_EXTRA_LIBS += $${OUT_PWD}/../lib/lib$${a}.so
 else:win32{
 DESTDIR = ../lib/
 winrt:INCLUDEPATH += $$_PRO_FILE_PWD_/moc/
+
+CONFIG += c++1z
+DEFINES += TDP_CPP_VERSION=17
 }
 
 
@@ -105,6 +84,9 @@ else:osx{
 DEFINES += TDP_OSX
 contains(TEMPLATE, app): DESTDIR = ../bin/
 contains(TEMPLATE, lib): DESTDIR = ../lib/
+
+CONFIG += c++1z
+DEFINES += TDP_CPP_VERSION=17
 }
 
 #== Special handling for iOS =======================================================================
@@ -112,6 +94,9 @@ else:iphoneos{
 DEFINES += TDP_IOS
 contains(TEMPLATE, app): DESTDIR = ../bin/
 contains(TEMPLATE, lib): DESTDIR = ../lib/
+
+CONFIG += c++1z
+DEFINES += TDP_CPP_VERSION=17
 }
 
 
@@ -119,6 +104,31 @@ contains(TEMPLATE, lib): DESTDIR = ../lib/
 else{
 contains(TEMPLATE, app): DESTDIR = ../bin/
 contains(TEMPLATE, lib): DESTDIR = ../lib/
+
+CONFIG += c++1z
+DEFINES += TDP_CPP_VERSION=17
+
+CONFIG(debug, debug|release) {
+  QMAKE_CXXFLAGS += -Wpedantic
+ #dnf install libasan
+ QMAKE_CXXFLAGS += -fsanitize=address
+ QMAKE_LFLAGS   += -fsanitize=address
+ #dnf install libubsan
+ QMAKE_CXXFLAGS += -fsanitize=undefined
+ QMAKE_LFLAGS   += -fsanitize=undefined
+
+ QMAKE_CXXFLAGS += -fsanitize-address-use-after-scope
+ QMAKE_LFLAGS   += -fsanitize-address-use-after-scope
+
+ QMAKE_CXXFLAGS += -fstack-protector-all
+ QMAKE_LFLAGS   += -fstack-protector-all
+ # #dnf install libtsan
+ # QMAKE_CXXFLAGS += -fsanitize=thread
+ # QMAKE_LFLAGS   += -fsanitize=thread
+ # #Generate output for prof
+ # QMAKE_CXXFLAGS += -pg
+ # QMAKE_LFLAGS   += -pg
+}
 }
 
 # Copies the given files to the destination directory

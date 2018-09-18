@@ -14,10 +14,6 @@ include(../../$${TARGET}/dependencies.pri)
 # Bring in the dependencies tree
 include(parse_dependencies.pri)
 
-equals(TEMPLATE, app) {
-LIBS += $${SLIBS}
-}
-
 for(INCLUDE, INCLUDEPATHS) {
   INCLUDEPATH += $$PWD/../../$${INCLUDE}
 }
@@ -27,6 +23,12 @@ INCLUDEPATH = $$unique(INCLUDEPATH)
 LIBRARIES = $$reverse(LIBRARIES)
 for(LIB, LIBRARIES) {
   !equals(TARGET, $${LIB}){
+    LIBS += -l$${LIB}
+  }
+}
+
+equals(TEMPLATE, app) {
+  for(LIB, SLIBS) {
     LIBS += -l$${LIB}
   }
 }

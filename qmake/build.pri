@@ -85,8 +85,10 @@ DEFINES += TDP_CPP_VERSION=17
 else:osx{
 DEFINES += TDP_OSX
 contains(TEMPLATE, app): DESTDIR = ../bin/
-contains(TEMPLATE, lib): DESTDIR = ../lib/
-
+contains(TEMPLATE, lib){
+  DESTDIR = ../lib/
+  CONFIG += staticlib
+}
 CONFIG += c++1z
 DEFINES += TDP_CPP_VERSION=17
 }

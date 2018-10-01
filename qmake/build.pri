@@ -1,4 +1,7 @@
 
+android {
+}
+
 exists(../../project.inc) {
 include(../../project.inc)
 }
@@ -48,7 +51,6 @@ LIBS = $$reverse(LIBS)
 
 #== Special handling for Android ===================================================================
 android{
-
 DEFINES += TDP_ANDROID
 
 #If we are building the executable we will also need to list all of the libs that it depends on
@@ -68,6 +70,11 @@ ANDROID_EXTRA_LIBS += $${OUT_PWD}/../lib/lib$${a}.so
 
 CONFIG += c++14
 DEFINES += TDP_CPP_VERSION=17
+
+QMAKE_LIBS_EGL = -lGLESv3
+QMAKE_LIBS_OPENGL = -lGLESv3
+QMAKE_LIBS_OPENGL_ES1 = -lGLESv3
+QMAKE_LIBS_OPENGL_ES2 = -lGLESv3
 }
 
 

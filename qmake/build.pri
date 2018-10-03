@@ -1,7 +1,4 @@
 
-android {
-}
-
 exists(../../project.inc) {
 include(../../project.inc)
 }

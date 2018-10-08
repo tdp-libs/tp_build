@@ -117,19 +117,19 @@ CONFIG += c++1z
 DEFINES += TDP_CPP_VERSION=17
 
 CONFIG(debug, debug|release) {
-  QMAKE_CXXFLAGS += -Wpedantic
+ QMAKE_CXXFLAGS += -Wpedantic
  #dnf install libasan
- #QMAKE_CXXFLAGS += -fsanitize=address
- #QMAKE_LFLAGS   += -fsanitize=address
+ # QMAKE_CXXFLAGS += -fsanitize=address
+ # QMAKE_LFLAGS   += -fsanitize=address
  #dnf install libubsan
- #QMAKE_CXXFLAGS += -fsanitize=undefined
- #QMAKE_LFLAGS   += -fsanitize=undefined
+ # QMAKE_CXXFLAGS += -fsanitize=undefined
+ # QMAKE_LFLAGS   += -fsanitize=undefined
 
- #QMAKE_CXXFLAGS += -fsanitize-address-use-after-scope
- #QMAKE_LFLAGS   += -fsanitize-address-use-after-scope
+ # QMAKE_CXXFLAGS += -fsanitize-address-use-after-scope
+ # QMAKE_LFLAGS   += -fsanitize-address-use-after-scope
 
- #QMAKE_CXXFLAGS += -fstack-protector-all
- #QMAKE_LFLAGS   += -fstack-protector-all
+ # QMAKE_CXXFLAGS += -fstack-protector-all
+ # QMAKE_LFLAGS   += -fstack-protector-all
  # #dnf install libtsan
  # QMAKE_CXXFLAGS += -fsanitize=thread
  # QMAKE_LFLAGS   += -fsanitize=thread

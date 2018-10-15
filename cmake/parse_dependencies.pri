@@ -1,0 +1,31 @@
+
+include dependencies.pri
+
+DEPENDENCIES_ := $(foreach DEPENDENCY,$(DEPENDENCIES),../$(DEPENDENCY)/dependencies.pri)
+DEPENDENCIES = 
+include $(DEPENDENCIES_)
+
+DEPENDENCIES_ := $(foreach DEPENDENCY,$(DEPENDENCIES),../$(DEPENDENCY)/dependencies.pri)
+DEPENDENCIES = 
+include $(DEPENDENCIES_)
+
+DEPENDENCIES_ := $(foreach DEPENDENCY,$(DEPENDENCIES),../$(DEPENDENCY)/dependencies.pri)
+DEPENDENCIES = 
+include $(DEPENDENCIES_)
+
+DEPENDENCIES_ := $(foreach DEPENDENCY,$(DEPENDENCIES),../$(DEPENDENCY)/dependencies.pri)
+DEPENDENCIES = 
+include $(DEPENDENCIES_)
+
+DEPENDENCIES_ := $(foreach DEPENDENCY,$(DEPENDENCIES),../$(DEPENDENCY)/dependencies.pri)
+DEPENDENCIES = 
+include $(DEPENDENCIES_)
+
+DEPENDENCIES_ := $(foreach DEPENDENCY,$(DEPENDENCIES),../$(DEPENDENCY)/dependencies.pri)
+DEPENDENCIES = 
+include $(DEPENDENCIES_)
+
+DEPENDENCIES_ := $(foreach DEPENDENCY,$(DEPENDENCIES),../$(DEPENDENCY)/dependencies.pri)
+DEPENDENCIES = 
+include $(DEPENDENCIES_)
+

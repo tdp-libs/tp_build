@@ -97,6 +97,9 @@ contains(TEMPLATE, lib){
 }
 CONFIG += c++1z
 DEFINES += TDP_CPP_VERSION=17
+
+#Silence SDK version warning on Mac.
+CONFIG+=sdk_no_version_check
 }
 
 #== Special handling for iOS =======================================================================
@@ -107,6 +110,9 @@ contains(TEMPLATE, lib): DESTDIR = ../lib/
 
 CONFIG += c++1z
 DEFINES += TDP_CPP_VERSION=17
+
+#Silence SDK version warning on iOS.
+CONFIG+=sdk_no_version_check
 }
 
 

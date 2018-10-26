@@ -23,8 +23,6 @@ CXXOBJECTS = $(filter %.bc,$(SOURCES:.cpp=.cpp.bc))
 DEFINES  := $(foreach DEFINE,$(DEFINES),-D$(DEFINE))
 INCLUDES += $(foreach INCLUDE,$(INCLUDEPATHS),-I../$(INCLUDE))
 
-DEFINES += -DTDP_EMSCRIPTEN
-
 all: $(BUILD_DIRS) $(ROOT)$(BUILD_DIR)$(TARGET).bc
 
 $(ROOT)$(BUILD_DIR)$(TARGET).bc: $(addprefix $(ROOT)$(BUILD_DIR)$(TARGET)/,$(CCOBJECTS)) $(addprefix $(ROOT)$(BUILD_DIR)$(TARGET)/,$(CXXOBJECTS))

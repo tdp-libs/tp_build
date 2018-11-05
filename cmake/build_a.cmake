@@ -27,6 +27,14 @@ function(tdp_parse_vars)
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
                   OUTPUT_VARIABLE TDP_LIBRARIES)
 
+  execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/../tdp_build/cmake/extract_dependencies.sh" LIBS
+                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
+                  OUTPUT_VARIABLE TDP_LIBS)
+
+  execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/../tdp_build/cmake/extract_dependencies.sh" LIBRARYPATHS
+                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
+                  OUTPUT_VARIABLE TDP_LIBRARYPATHS)
+
   execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/../tdp_build/cmake/extract_dependencies.sh" DEFINES
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
                   OUTPUT_VARIABLE TDP_DEFINES)
@@ -44,10 +52,28 @@ function(tdp_parse_vars)
   endforeach(f)
   set(TDP_INCLUDEPATHS "${TDP_TMP_LIST}")
 
+  string(REPLACE " " ";" TDP_LIBRARYPATHS ${TDP_LIBRARYPATHS})
+  string(STRIP "${TDP_LIBRARYPATHS}" TDP_LIBRARYPATHS)
+  set(TDP_TMP_LIST "")
+  foreach(f ${TDP_LIBRARYPATHS})
+    string(FIND "${f}" "/" out)
+    if("${out}" EQUAL 0)
+      list(APPEND TDP_TMP_LIST "${f}")
+    else()
+      list(APPEND TDP_TMP_LIST "../${f}")
+    endif()
+  endforeach(f)
+  set(TDP_LIBRARYPATHS "${TDP_TMP_LIST}")
+
   string(REPLACE " " ";" TDP_LIBRARIES ${TDP_LIBRARIES})
   string(STRIP "${TDP_LIBRARIES}" TDP_LIBRARIES)
+  string(REPLACE " " ";" TDP_LIBS ${TDP_LIBS})
+  string(STRIP "${TDP_LIBS}" TDP_LIBS)
   set(TDP_TMP_LIST "")
   foreach(f ${TDP_LIBRARIES})
+    list(APPEND TDP_TMP_LIST "${f}")
+  endforeach(f)
+  foreach(f ${TDP_LIBS})
     list(APPEND TDP_TMP_LIST "${f}")
   endforeach(f)
   set(TDP_LIBRARIES "${TDP_TMP_LIST}")
@@ -72,16 +98,22 @@ function(tdp_parse_vars)
 
   if(APPLE)
     list(APPEND TDP_DEFINES -DTDP_OSX)
+  elseif( ANDROID )
+    list(APPEND TDP_DEFINES -DTDP_ANDROID)
+  elseif( UNIX )
+  
   endif()
 
   if(TDP_TEMPLATE STREQUAL "lib")
     include_directories(${TDP_INCLUDEPATHS})
+    link_directories(${TDP_LIBRARYPATHS})
     add_definitions(${TDP_DEFINES})
     add_library("${TDP_TARGET}" ${TDP_SOURCES})
   endif()
 
   if(TDP_TEMPLATE STREQUAL "app")
     include_directories(${TDP_INCLUDEPATHS})
+    link_directories(${TDP_LIBRARYPATHS})
     add_definitions(${TDP_DEFINES})
     add_executable("${TDP_TARGET}" ${TDP_SOURCES})
     target_link_libraries("${TDP_TARGET}"  ${TDP_LIBRARIES})

@@ -11,6 +11,8 @@ exists(../../$${TARGET}/dependencies.pri) {
 include(../../$${TARGET}/dependencies.pri)
 }
 
+include(x_parse_modules_dependencies.pri)
+
 # Bring in the dependencies tree
 include(parse_dependencies.pri)
 

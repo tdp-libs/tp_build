@@ -17,7 +17,12 @@ include(x_parse_modules_dependencies.pri)
 include(parse_dependencies.pri)
 
 for(INCLUDE, INCLUDEPATHS) {
-  INCLUDEPATH += $$PWD/../../$${INCLUDE}
+  STARTS_WITH_RESULT = $$find(INCLUDE, "^/")
+  count(STARTS_WITH_RESULT, 1){
+    INCLUDEPATH += $${INCLUDE}
+  } else {
+    INCLUDEPATH += $$PWD/../../$${INCLUDE}
+  }
 }
 
 INCLUDEPATH = $$unique(INCLUDEPATH)
@@ -28,6 +33,10 @@ for(LIB, LIBRARIES) {
   !equals(TARGET, $${LIB}){
     LIBS += -l$${LIB}
   }
+}
+
+for(LIBRARYPATH, LIBRARYPATHS) {
+  LIBS += -L$${LIBRARYPATH}
 }
 
 equals(TEMPLATE, app) {

@@ -81,7 +81,7 @@ ANDROID_EXTRA_LIBS += $${OUT_PWD}/../lib/lib$${a}.so
 !contains(TEMPLATE, app): DESTDIR = ../lib/
 
 CONFIG += c++14
-DEFINES += TDP_CPP_VERSION=17
+DEFINES += TP_CPP_VERSION=17
 
 QMAKE_LIBS_EGL = -lGLESv3
 QMAKE_LIBS_OPENGL = -lGLESv3
@@ -96,7 +96,7 @@ DESTDIR = ../lib/
 winrt:INCLUDEPATH += $$_PRO_FILE_PWD_/moc/
 
 CONFIG += c++1z
-DEFINES += TDP_CPP_VERSION=17
+DEFINES += TP_CPP_VERSION=17
 }
 
 
@@ -109,7 +109,7 @@ contains(TEMPLATE, lib){
   CONFIG += staticlib
 }
 CONFIG += c++1z
-DEFINES += TDP_CPP_VERSION=17
+DEFINES += TP_CPP_VERSION=17
 
 #Silence SDK version warning on Mac.
 CONFIG+=sdk_no_version_check
@@ -122,7 +122,7 @@ contains(TEMPLATE, app): DESTDIR = ../bin/
 contains(TEMPLATE, lib): DESTDIR = ../lib/
 
 CONFIG += c++1z
-DEFINES += TDP_CPP_VERSION=17
+DEFINES += TP_CPP_VERSION=17
 
 #Silence SDK version warning on iOS.
 CONFIG+=sdk_no_version_check
@@ -135,7 +135,7 @@ contains(TEMPLATE, app): DESTDIR = ../bin/
 contains(TEMPLATE, lib): DESTDIR = ../lib/
 
 CONFIG += c++1z
-DEFINES += TDP_CPP_VERSION=17
+DEFINES += TP_CPP_VERSION=17
 
 CONFIG(debug, debug|release) {
   QMAKE_CXXFLAGS += -Wpedantic

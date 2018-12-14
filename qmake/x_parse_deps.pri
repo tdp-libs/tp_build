@@ -1,3 +1,6 @@
+
+SUBDIRS = $$unique(SUBDIRS)
+
 for(SUBDIR, SUBDIRS) {
   DEPENDENCIES =
   include(../../$${SUBDIR}/dependencies.pri)

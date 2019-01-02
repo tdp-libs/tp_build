@@ -9,3 +9,9 @@ for(a, ITERATIONS) {
   }
   DEPENDENCIES_ =
 }
+
+TP_DEPENDENCIES = $$unique(TP_DEPENDENCIES)
+for(TP_DEPENDENCY, TP_DEPENDENCIES) {
+  include($$PWD/../dependencies/$${TP_DEPENDENCY}/qmake.pri)
+}
+

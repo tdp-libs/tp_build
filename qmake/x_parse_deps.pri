@@ -5,7 +5,7 @@ for(SUBDIR, SUBDIRS) {
   DEPENDENCIES =
   include(../../$${SUBDIR}/dependencies.pri)
 
-  equals(SUBDIR, $${PROJECT_DIR}) {
+  equals(SUBDIR, $${PROJECT_DIR})|contains(PROJECT_APPS, $${SUBDIR}) {
     for(MODULE, MODULES) {
       include(../../$${MODULE}/dependencies.pri)
     }

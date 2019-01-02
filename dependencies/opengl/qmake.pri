@@ -1,0 +1,7 @@
+QT += opengl
+
+#LIBS += -lGL
+#LIBS += -lGLESv3
+DEFINES += GL_SILENCE_DEPRECATION
+
+

@@ -5,8 +5,10 @@ for(SUBDIR, SUBDIRS) {
   DEPENDENCIES =
   include(../../$${SUBDIR}/dependencies.pri)
 
-  equals(SUBDIR, $${PROJECT_DIR})|contains(PROJECT_APPS, $${SUBDIR}) {
-    for(MODULE, MODULES) {
+  for(MODULE, MODULES) {
+    TP_INJECT=
+    include(../../$${MODULE}/inject.pri)
+    contains(TP_INJECT, $${SUBDIR}) {
       include(../../$${MODULE}/dependencies.pri)
     }
   }

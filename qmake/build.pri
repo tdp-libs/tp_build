@@ -11,11 +11,7 @@ exists(../../$${TARGET}/dependencies.pri) {
 include(../../$${TARGET}/dependencies.pri)
 }
 
-equals(TEMPLATE, app) {
-isEmpty(NO_MODULE_HACK) {
 include(x_parse_modules_dependencies.pri)
-}
-}
 
 # Bring in the dependencies tree
 include(parse_dependencies.pri)
@@ -43,15 +39,17 @@ for(LIBRARYPATH, LIBRARYPATHS) {
   LIBS += -L$${LIBRARYPATH}
 }
 
-equals(TEMPLATE, app) {  
-  isEmpty(NO_MODULE_HACK) {
-    for(MODULE, MODULES) {
-      include(../../$${MODULE}/vars.pri)
-    }
+for(MODULE, MODULES) {
+  TP_INJECT=
+  include(../../$${MODULE}/inject.pri)
+  contains(TP_INJECT, $${TARGET}) {
+    include(../../$${MODULE}/vars.pri)
+  }
+}
 
-    for(LIB, SLIBS) {
-      LIBS += -l$${LIB}
-    }
+equals(TEMPLATE, app) {
+  for(LIB, SLIBS) {
+    LIBS += -l$${LIB}
   }
 }
 

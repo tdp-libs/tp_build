@@ -1,4 +1,8 @@
 for(MODULE, MODULES) {
-  include(../../$${MODULE}/dependencies.pri)
+  TP_INJECT=
+  include(../../$${MODULE}/inject.pri)
+  contains(TP_INJECT, $${TARGET}) {
+    include(../../$${MODULE}/dependencies.pri)
+  }
 }
 

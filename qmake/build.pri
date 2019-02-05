@@ -98,6 +98,7 @@ QMAKE_LIBS_OPENGL_ES2 = -lGLESv3
 
 #== Special handling for Windows ===================================================================
 else:win32{
+DEFINES += TDP_WIN32
 DESTDIR = ../lib/
 winrt:INCLUDEPATH += $$_PRO_FILE_PWD_/moc/
 

@@ -1,7 +1,10 @@
 QT += opengl
 
-#LIBS += -lGL
-#LIBS += -lGLESv3
+android{
+LIBS += -lEGL
+LIBS += -lGLESv3
+}
+
+else:iphoneos{
 DEFINES += GL_SILENCE_DEPRECATION
-
-
+}

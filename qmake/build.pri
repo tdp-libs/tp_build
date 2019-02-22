@@ -86,13 +86,8 @@ ANDROID_EXTRA_LIBS += $${OUT_PWD}/../lib/lib$${a}.so
 #If we are building a lib just do the usual
 !contains(TEMPLATE, app): DESTDIR = ../lib/
 
-CONFIG += c++14
+CONFIG += c++1z
 DEFINES += TP_CPP_VERSION=17
-
-QMAKE_LIBS_EGL = -lGLESv3
-QMAKE_LIBS_OPENGL = -lGLESv3
-QMAKE_LIBS_OPENGL_ES1 = -lGLESv3
-QMAKE_LIBS_OPENGL_ES2 = -lGLESv3
 }
 
 

@@ -71,12 +71,18 @@ LIBS = $$reverse(LIBS)
 android{
 DEFINES += TDP_ANDROID
 
+QMAKE_CFLAGS   += -frtti
+QMAKE_CXXFLAGS += -frtti
+QMAKE_LFLAGS   += -frtti
+
+QMAKE_LFLAGS += -Wl,--export-dynamic
+QMAKE_LFLAGS += -Wl,-E
+QMAKE_LFLAGS += -Bsymbolic
+
 #If we are building the executable we will also need to list all of the libs that it depends on
 contains(TEMPLATE, app) {
-
 DESTDIR = ../bin/
 
-#PLATFORM_ABSTRACTIONS
 MESSAGE = $$replace(LIBS, "-l", "")
 for(a, MESSAGE) {
 ANDROID_EXTRA_LIBS += $${OUT_PWD}/../lib/lib$${a}.so

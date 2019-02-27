@@ -139,6 +139,11 @@ CONFIG+=sdk_no_version_check
 
 #== Everything else ================================================================================
 else{
+
+linux{
+DEFINES += TDP_LINUX
+}
+
 contains(TEMPLATE, app): DESTDIR = ../bin/
 contains(TEMPLATE, lib): DESTDIR = ../lib/
 

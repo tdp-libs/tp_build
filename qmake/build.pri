@@ -205,3 +205,6 @@ defined(TDP_COPY, var) {
   OTHER_FILES += $$TDP_COPY
   tdpCopy($$TDP_COPY)
 }
+
+include(rc.pri)
+

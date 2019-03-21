@@ -19,6 +19,10 @@ function(tdp_parse_vars)
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
                   OUTPUT_VARIABLE TDP_TEMPLATE)
 
+  execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/../tdp_build/cmake/extract_vars.sh" TP_RC
+                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
+                  OUTPUT_VARIABLE TDP_RC)
+
   execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/../tdp_build/cmake/extract_dependencies.sh" INCLUDEPATHS
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
                   OUTPUT_VARIABLE TDP_INCLUDEPATHS)
@@ -38,6 +42,10 @@ function(tdp_parse_vars)
   execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/../tdp_build/cmake/extract_dependencies.sh" DEFINES
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
                   OUTPUT_VARIABLE TDP_DEFINES)
+
+  execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/../tdp_build/cmake/extract_dependencies.sh" TP_DEPENDENCIES
+                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
+                  OUTPUT_VARIABLE TDP_DEPENDENCIES)
 
   string(REPLACE " " ";" TDP_INCLUDEPATHS ${TDP_INCLUDEPATHS})
   string(STRIP "${TDP_INCLUDEPATHS}" TDP_INCLUDEPATHS)
@@ -78,6 +86,15 @@ function(tdp_parse_vars)
   endforeach(f)
   set(TDP_LIBRARIES "${TDP_TMP_LIST}")
 
+  string(REPLACE " " ";" TDP_DEPENDENCIES ${TDP_DEPENDENCIES})
+  string(STRIP "${TDP_DEPENDENCIES}" TDP_DEPENDENCIES)
+  list(REMOVE_DUPLICATES TDP_DEPENDENCIES)
+  foreach(f ${TDP_DEPENDENCIES})
+    include("${CMAKE_CURRENT_LIST_DIR}/../tdp_build/dependencies/${f}/cmake.cmake")
+  endforeach(f)
+
+  list(REMOVE_DUPLICATES TDP_LIBRARIES)
+
   string(REPLACE " " ";" TDP_DEFINES ${TDP_DEFINES})
   string(STRIP "${TDP_DEFINES}" TDP_DEFINES)
   set(TDP_TMP_LIST "")
@@ -95,6 +112,24 @@ function(tdp_parse_vars)
 
   string(REPLACE " " ";" TDP_HEADERS ${TDP_HEADERS})
   string(STRIP "${TDP_HEADERS}" TDP_HEADERS)
+
+  add_custom_command(
+    OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/tpRc"
+    COMMAND g++ -std=gnu++1z -O2 "${CMAKE_CURRENT_LIST_DIR}/../tdp_build/tp_rc/tp_rc.cpp" -o "${CMAKE_CURRENT_BINARY_DIR}/tpRc"
+    DEPENDS "${CMAKE_CURRENT_LIST_DIR}/../tdp_build/tp_rc/tp_rc.cpp"
+  )
+
+  string(REPLACE " " ";" TDP_RC ${TDP_RC})
+  string(STRIP "${TDP_RC}" TDP_RC)
+  foreach(f ${TDP_RC})
+    get_filename_component(QRC_NAME "${f}" NAME_WE)
+    add_custom_command(
+      OUTPUT  "${QRC_NAME}.cpp"
+      COMMAND "${CMAKE_CURRENT_BINARY_DIR}/tpRc" "${CMAKE_CURRENT_LIST_DIR}/${f}" "${CMAKE_CURRENT_BINARY_DIR}/${QRC_NAME}.cpp"
+      DEPENDS "${CMAKE_CURRENT_LIST_DIR}/${f}" "${CMAKE_CURRENT_BINARY_DIR}/tpRc"
+    )
+    list(APPEND TDP_SOURCES "${QRC_NAME}.cpp")
+  endforeach(f)
 
   if(APPLE)
     list(APPEND TDP_DEFINES -DTDP_OSX)

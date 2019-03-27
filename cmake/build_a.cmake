@@ -95,7 +95,9 @@ function(tdp_parse_vars)
     include("${CMAKE_CURRENT_LIST_DIR}/../tdp_build/dependencies/${f}/cmake.cmake")
   endforeach(f)
 
+  list(REVERSE TDP_LIBRARIES)
   list(REMOVE_DUPLICATES TDP_LIBRARIES)
+  list(REVERSE TDP_LIBRARIES)
 
   string(REPLACE " " ";" TDP_DEFINES ${TDP_DEFINES})
   string(STRIP "${TDP_DEFINES}" TDP_DEFINES)

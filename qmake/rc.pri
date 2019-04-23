@@ -1,4 +1,4 @@
-
+tp
 ##Use:
 ##TP_RC += file.qrc
 

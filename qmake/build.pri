@@ -207,4 +207,5 @@ defined(TDP_COPY, var) {
 }
 
 include(rc.pri)
+include(static_init.pri)
 

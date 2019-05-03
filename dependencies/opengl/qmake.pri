@@ -1,6 +1,8 @@
 QT += opengl
 
 android{
+#In Projects->Build->Build Environment
+#Set ANDROID_NDK_PLATFORM to android-24 or what ever you need.
 LIBS += -lEGL
 LIBS += -lGLESv3
 }

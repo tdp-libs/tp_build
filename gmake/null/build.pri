@@ -6,7 +6,9 @@ PUB_O  = $(ROOT)$(BUILD_DIR)$(PUB_TARGET).o
 
 OBJ_DIR = $(ROOT)$(BUILD_DIR)/obj/
 
-all: $(PUB_AR)
+#All must be the first target in the makefile
+.PHONY: all
+all: $(BUILD_DIR) $(SUBDIRS)
 
 $(PUB_AR): $(BUILD_DIR) $(SUBDIRS) $(SUB_AR)
 	"$(LD)" --whole-archive -r $(SUB_AR) -o $(PUB_O)
@@ -15,15 +17,13 @@ $(PUB_AR): $(BUILD_DIR) $(SUBDIRS) $(SUB_AR)
 $(BUILD_DIR): 
 	$(MKDIR) $(BUILD_DIR) 
 
+.PHONY: force_look
 $(SUBDIRS): force_look
-	for d in $@ ; do (cd $$d ; make -j4 ) ; done
+	for d in $@ ; do (cd $$d ; make -j${JOBS} ) ; done
 
 install:
 	-for d in $(SUBDIRS) ; do (cd $$d; $(MAKE) install ); done
 
 clean:
 	-for d in $(SUBDIRS); do (cd $$d; $(MAKE) clean ); done
-
-force_look :
-	true
 

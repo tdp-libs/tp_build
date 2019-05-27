@@ -175,8 +175,8 @@ CONFIG(debug, debug|release) {
 
 # Copies the given files to the destination directory
 #Use:
-#TDP_COPY += file.xyz
-defineTest(tdpCopy) {
+#TP_COPY += file.xyz
+defineTest(tpCopy) {
   files = $$1
 
   first.depends = $(first) copydata
@@ -200,10 +200,10 @@ defineTest(tdpCopy) {
   export(QMAKE_EXTRA_TARGETS)
 }
 
-#== TDP_COPY =======================================================================================
-defined(TDP_COPY, var) {
-  OTHER_FILES += $$TDP_COPY
-  tdpCopy($$TDP_COPY)
+#== TP_COPY ========================================================================================
+defined(TP_COPY, var) {
+  OTHER_FILES += $$TP_COPY
+  tpCopy($$TP_COPY)
 }
 
 include(rc.pri)

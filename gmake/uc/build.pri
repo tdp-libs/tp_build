@@ -1,17 +1,3 @@
-ROOT = ./
-
-include $(ROOT)tdp_build/gmake/uc/common.pri
-
-# Bring in project wide config
-include $(ROOT)project.inc
-include $(ROOT)$(PROJECT_DIR)/project.conf
-
-include $(ROOT)$(PROJECT_DIR)/submodules.pri
-
-# Bring in the dependencies tree 
-include $(PROJECT_DIR)/dependencies.pri
-include $(ROOT)tdp_build/gmake/parse_dependencies.pri
-
 ARCHIVES = $(addsuffix .a,$(addprefix $(ROOT)$(BUILD_DIR),$(SUBDIRS)))
 ELF = $(ROOT)$(BUILD_DIR)$(TARGET).elf
 HEX = $(ROOT)$(BUILD_DIR)$(TARGET).hex

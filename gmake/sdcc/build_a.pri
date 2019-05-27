@@ -1,18 +1,3 @@
-ROOT = ../
-
-include $(ROOT)tdp_build/gmake/sdcc/common.pri
-
-# Bring in project wide config
-include $(ROOT)project.inc
-include $(ROOT)$(PROJECT_DIR)/project.conf
-
-# Bring in the dependencies tree 
-include dependencies.pri
-include $(ROOT)tdp_build/gmake/parse_dependencies.pri
-
-# Bring in the source files for this module
-include vars.pri
-
 #Sort to remove duplicates
 BUILD_DIRS = $(sort $(addprefix $(ROOT)$(BUILD_DIR)$(TARGET)/,$(dir $(SOURCES))))
 
@@ -24,7 +9,7 @@ DEFINES += -DTDP_SDCC
 SOBJECTS = $(filter %.rel,$(SOURCES:.S=.rel))
 CCOBJECTS = $(filter %.rel,$(SOURCES:.c=.rel))
 
-all: $(BUILD_DIRS) $(ROOT)$(BUILD_DIR)$(TARGET).lib
+all_a: $(BUILD_DIRS) $(ROOT)$(BUILD_DIR)$(TARGET).lib
 
 $(ROOT)$(BUILD_DIR)$(TARGET).lib: $(addprefix $(ROOT)$(BUILD_DIR)$(TARGET)/,$(SOBJECTS)) $(addprefix $(ROOT)$(BUILD_DIR)$(TARGET)/,$(CCOBJECTS)) $(addprefix $(ROOT)$(BUILD_DIR)$(TARGET)/,$(CXXOBJECTS))
 	"$(AR)" -rc $@ $^

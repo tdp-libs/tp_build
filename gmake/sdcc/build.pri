@@ -1,17 +1,3 @@
-ROOT = ./
-
-include $(ROOT)tdp_build/gmake/sdcc/common.pri
-
-# Bring in project wide config
-include $(ROOT)project.inc
-include $(ROOT)$(PROJECT_DIR)/project.conf
-
-include $(ROOT)$(PROJECT_DIR)/submodules.pri
-
-# Bring in the dependencies tree 
-include $(PROJECT_DIR)/dependencies.pri
-include $(ROOT)tdp_build/gmake/parse_dependencies.pri
-
 DEFINES  := $(foreach DEFINE,$(DEFINES),-D$(DEFINE))
 INCLUDES += $(foreach INCLUDE,$(INCLUDEPATHS),-I./$(INCLUDE))
 

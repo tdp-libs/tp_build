@@ -1,0 +1,11 @@
+TP_COPY_BUILD_FILES=$(addprefix $(ROOT)$(BUILD_DIR), $(TP_COPY))
+TP_COPY_BUILD_DIRS=$(sort $(dir $(TP_COPY_BUILD_FILES)))
+
+tp_copy: $(TP_COPY_BUILD_FILES) 
+
+$(ROOT)$(BUILD_DIR)%: % $(TP_COPY_BUILD_DIRS)
+	cp $< $@
+
+$(TP_COPY_BUILD_DIRS):
+	$(MKDIR) $@
+

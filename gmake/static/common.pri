@@ -11,9 +11,3 @@ MKDIR=mkdir -p
 CXXFLAGS += -std=c++1z
 LDFLAGS += -std=c++1z
 
-define uniq =
-  $(eval seen :=)
-  $(foreach _,$1,$(if $(filter $_,${seen}),,$(eval seen += $_)))
-  ${seen}
-endef
-

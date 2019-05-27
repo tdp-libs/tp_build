@@ -1,18 +1,3 @@
-ROOT = ../
-
-include $(ROOT)tdp_build/gmake/static/common.pri
-
-# Bring in project wide config
-include $(ROOT)project.inc
-include $(ROOT)$(PROJECT_DIR)/project.conf
-
-# Bring in the dependencies tree 
-include dependencies.pri
-include $(ROOT)tdp_build/gmake/parse_dependencies.pri
-
-# Bring in the source files for this module
-include vars.pri
-
 UNIQUE_INCLUDEPATHS = $(call uniq,$(INCLUDEPATHS))
 
 #Sort to remove duplicates
@@ -24,7 +9,7 @@ CXXOBJECTS = $(filter %.o,$(SOURCES:.cpp=.cpp.o))
 DEFINES  := $(foreach DEFINE,$(DEFINES),-D$(DEFINE))
 INCLUDES += $(foreach INCLUDE,$(UNIQUE_INCLUDEPATHS),-I../$(INCLUDE))
 
-all: $(BUILD_DIRS) $(ROOT)$(BUILD_DIR)$(TARGET).a
+all_a: $(BUILD_DIRS) $(ROOT)$(BUILD_DIR)$(TARGET).a
 
 $(ROOT)$(BUILD_DIR)$(TARGET).a: $(addprefix $(ROOT)$(BUILD_DIR)$(TARGET)/,$(CCOBJECTS)) $(addprefix $(ROOT)$(BUILD_DIR)$(TARGET)/,$(CXXOBJECTS))
 	"$(AR)" rcs $@ $^

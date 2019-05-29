@@ -3,7 +3,7 @@ PAGES_MAKEFILES = $(addsuffix /Makefile, $(PAGES_BUILD_DIRS))
 
 .PHONY: pages
 pages: $(PAGES_BUILD_DIRS) $(PAGES_MAKEFILES)
-	-for d in $(PAGES_MAKEFILES) ; do (echo $$d; echo `dirname $$d`; cd `dirname $$d`; $(MAKE)); done
+	-for d in $(PAGES_MAKEFILES) ; do (cd `dirname $$d`; $(MAKE)); done
 
 $(ROOT)$(BUILD_DIR)$(TARGET)/%/Makefile: % $(ROOT)tdp_build/gmake/common/template_page_Makefile
 	echo "SOURCE_DIR=`realpath $<`/" > $@

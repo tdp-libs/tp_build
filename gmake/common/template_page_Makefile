@@ -5,6 +5,8 @@ SOURCE_PATHS=$(addprefix $(SOURCE_DIR)/, $(SOURCES))
 PAGE_PATH=$(BUILD_DIR)/$(PAGE_NAME).html
 PAGE_DIRECTORY=$(dir $(PAGE_PATH))
 
+ROOT_URL=$(BUILD_DIR)pages/
+
 all: $(PAGE_PATH)
 
 $(PAGE_PATH): result.html $(PAGE_DIRECTORY)
@@ -14,5 +16,5 @@ $(PAGE_DIRECTORY):
 	mkdir -p $@	
 
 result.html: $(SOURCE_DIR)/$(TEMPLATE) $(SOURCE_PATHS) $(ROOT_DIR)tdp_build/pages/build_pages.sh
-	$(ROOT_DIR)tdp_build/pages/build_pages.sh $(SOURCE_DIR) $(SOURCE_DIR)/$(TEMPLATE) $(SOURCE_PATHS)
+	$(ROOT_DIR)tdp_build/pages/build_pages.sh $(SOURCE_DIR) $(SOURCE_DIR)/$(TEMPLATE) $(ROOT_URL) $(SOURCE_PATHS)
 

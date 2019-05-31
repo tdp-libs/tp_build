@@ -30,5 +30,6 @@ do
 
 done
 
-/home/tom/Desktop/mo ${TEMPLATE} -u > result.html
-
+mo ${TEMPLATE} -u > result1.html
+mo result1.html -u > result2.html
+mv result2.html result.html

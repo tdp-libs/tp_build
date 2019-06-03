@@ -5,7 +5,8 @@ SOURCE_PATHS=$(addprefix $(SOURCE_DIR)/, $(SOURCES))
 PAGE_PATH=$(BUILD_DIR)/$(PAGE_NAME).html
 PAGE_DIRECTORY=$(dir $(PAGE_PATH))
 
-ROOT_URL=$(BUILD_DIR)pages/
+#ROOT_URL=$(BUILD_DIR)pages/
+ROOT_URL="https://www.tompaynter.co.uk/"
 
 all: $(PAGE_PATH)
 

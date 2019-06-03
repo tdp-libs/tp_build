@@ -9,6 +9,8 @@ pages: $(PAGES_BUILD_DIRS) $(PAGES_MAKEFILES) $(PAGES_MAKETARGETS)
 $(PAGES_MAKETARGETS):
 	cd `dirname $@` && $(MAKE)
 
+#
+
 $(ROOT)$(BUILD_DIR)$(TARGET)/%/Makefile: % $(ROOT)tdp_build/gmake/common/template_page_Makefile
 	echo "SOURCE_DIR=`realpath $<`/" > $@
 	echo "ROOT_DIR=`realpath $(ROOT)`/" >> $@

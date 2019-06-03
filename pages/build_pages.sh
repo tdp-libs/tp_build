@@ -6,8 +6,7 @@ SOURCES_DIR=$1
 TEMPLATE=$2
 ROOT_URL=$3
 
-export WINDOW_TITLE="aaa"
-export PAGE_TITLE="bbb"
+export WINDOW_TITLE="Thomas Paynter CV"
 export ROOT_URL
 
 for var in "${@:4}"

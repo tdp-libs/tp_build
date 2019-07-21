@@ -139,38 +139,42 @@ CONFIG+=sdk_no_version_check
 
 #== Everything else ================================================================================
 else{
+  linux{
+    DEFINES += TDP_LINUX
+  }
 
-linux{
-DEFINES += TDP_LINUX
-}
+  contains(TEMPLATE, app): DESTDIR = ../bin/
+  contains(TEMPLATE, lib): DESTDIR = ../lib/
 
-contains(TEMPLATE, app): DESTDIR = ../bin/
-contains(TEMPLATE, lib): DESTDIR = ../lib/
+  CONFIG += c++1z
+  DEFINES += TP_CPP_VERSION=17
 
-CONFIG += c++1z
-DEFINES += TP_CPP_VERSION=17
-
-CONFIG(debug, debug|release) {
   QMAKE_CXXFLAGS += -Wpedantic
- #dnf install libasan
- #QMAKE_CXXFLAGS += -fsanitize=address
- #QMAKE_LFLAGS   += -fsanitize=address
- #dnf install libubsan
- #QMAKE_CXXFLAGS += -fsanitize=undefined
- #QMAKE_LFLAGS   += -fsanitize=undefined
+  QMAKE_CXXFLAGS += -Wall
+  QMAKE_CXXFLAGS += -Wextra
+  QMAKE_CXXFLAGS += -Wdouble-promotion
+  QMAKE_CXXFLAGS += -Wold-style-cast
 
- #QMAKE_CXXFLAGS += -fsanitize-address-use-after-scope
- #QMAKE_LFLAGS   += -fsanitize-address-use-after-scope
+  CONFIG(debug, debug|release) {
+    #dnf install libasan
+    #QMAKE_CXXFLAGS += -fsanitize=address
+    #QMAKE_LFLAGS   += -fsanitize=address
+    #dnf install libubsan
+    #QMAKE_CXXFLAGS += -fsanitize=undefined
+    #QMAKE_LFLAGS   += -fsanitize=undefined
 
- #QMAKE_CXXFLAGS += -fstack-protector-all
- #QMAKE_LFLAGS   += -fstack-protector-all
- # #dnf install libtsan
- # QMAKE_CXXFLAGS += -fsanitize=thread
- # QMAKE_LFLAGS   += -fsanitize=thread
- # #Generate output for prof
- # QMAKE_CXXFLAGS += -pg
- # QMAKE_LFLAGS   += -pg
-}
+    #QMAKE_CXXFLAGS += -fsanitize-address-use-after-scope
+    #QMAKE_LFLAGS   += -fsanitize-address-use-after-scope
+
+    #QMAKE_CXXFLAGS += -fstack-protector-all
+    #QMAKE_LFLAGS   += -fstack-protector-all
+    # #dnf install libtsan
+    # QMAKE_CXXFLAGS += -fsanitize=thread
+    # QMAKE_LFLAGS   += -fsanitize=thread
+    # #Generate output for prof
+    # QMAKE_CXXFLAGS += -pg
+    # QMAKE_LFLAGS   += -pg
+  }
 }
 
 # Copies the given files to the destination directory

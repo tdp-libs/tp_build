@@ -2,7 +2,7 @@
 
 set -e
 
-testCommands=(./test_tp_utils/test_tp_utils ./test_tp_utils/test_tp_utils ./test_tp_utils/test_tp_utils)
+testCommands=`cat tests.txt`
 
 results="\nTest Results:\n"
 for testCommand in ${testCommands[@]}; do

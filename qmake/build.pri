@@ -47,6 +47,11 @@ for(MODULE, MODULES) {
   }
 }
 
+equals(TEMPLATE, test) {
+  TEMPLATE = app
+  IS_TEST = test
+}
+
 equals(TEMPLATE, app) {
   for(LIB, SLIBS) {
     LIBS += -l$${LIB}

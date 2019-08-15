@@ -12,6 +12,10 @@ for(a, ITERATIONS) {
 
 TP_DEPENDENCIES = $$unique(TP_DEPENDENCIES)
 for(TP_DEPENDENCY, TP_DEPENDENCIES) {
-  include($$PWD/../dependencies/$${TP_DEPENDENCY}/qmake.pri)
+  exists(../../$${TP_DEPENDENCY}/qmake.pri){
+    include(../../$${TP_DEPENDENCY}/qmake.pri)
+  } else {
+    include(../../tdp_build/dependencies/$${TP_DEPENDENCY}/qmake.pri)
+  }
 }
 

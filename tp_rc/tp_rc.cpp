@@ -109,6 +109,7 @@ int main(int argc, const char * argv[])
       return 1;
     }
 
+#if 0
     cppText += "const char* data" + std::to_string(c) + " = \"";
 
     const char digits[] = "0123456789ABCDEF";
@@ -119,6 +120,19 @@ int main(int argc, const char * argv[])
     }
 
     cppText += "\";\n";
+#else
+    cppText += "const char data" + std::to_string(c) + "[] = {";
+
+    for(size_t i=0; i<fileData.size(); i++)
+    {
+      uint8_t b = uint8_t(fileData.at(i));
+      cppText += std::to_string(b);
+      cppText += ',';
+    }
+
+    cppText += "0};\n";
+#endif
+
     cppText += "size_t size" + std::to_string(c) + "=" + std::to_string(fileData.size()) + ";\n\n";
     initText += "  tp_utils::addResource(\"" + prefix + alias + "\",data" + std::to_string(c) + ",size" + std::to_string(c) + ");\n";
     c++;

@@ -119,6 +119,10 @@ DEFINES += TDP_WIN32
 DESTDIR = ../lib/
 winrt:INCLUDEPATH += $$_PRO_FILE_PWD_/moc/
 
+contains(TEMPLATE, lib){
+  CONFIG += staticlib
+}
+
 CONFIG += c++1z
 DEFINES += TP_CPP_VERSION=17
 }

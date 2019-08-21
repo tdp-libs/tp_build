@@ -124,6 +124,7 @@ contains(TEMPLATE, lib){
 }
 
 CONFIG += c++1z
+QMAKE_CXXFLAGS *= /std:c++17
 DEFINES += TP_CPP_VERSION=17
 }
 

@@ -28,10 +28,20 @@ for(INCLUDE, INCLUDEPATHS) {
 INCLUDEPATH = $$unique(INCLUDEPATH)
 DEFINES = $$unique(DEFINES)
 
-LIBRARIES = $$reverse(LIBRARIES)
-for(LIB, LIBRARIES) {
-  !equals(TARGET, $${LIB}){
-    LIBS += -l$${LIB}
+win32 {
+  LIBRARIES = $$reverse(LIBRARIES)
+  for(LIB, LIBRARIES) {
+    !equals(TARGET, $${LIB}){
+      LIBS += -l$${LIB}
+    }
+  }
+}
+else {
+  LIBRARIES = $$reverse(LIBRARIES)
+  for(LIB, LIBRARIES) {
+    !equals(TARGET, $${LIB}){
+      LIBS += -l$${LIB}
+    }
   }
 }
 
@@ -52,7 +62,8 @@ equals(TEMPLATE, test) {
   IS_TEST = test
 }
 
-equals(TEMPLATE, app) {
+# Win32 also needs static libs in libraries
+equals(TEMPLATE, app)|win32 {
   for(LIB, SLIBS) {
     LIBS += -l$${LIB}
   }

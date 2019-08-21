@@ -11,3 +11,9 @@ else:iphoneos{
 DEFINES += GL_SILENCE_DEPRECATION
 DEFINES += GLES_SILENCE_DEPRECATION
 }
+
+else:win32{
+LIBS += -lglu32
+LIBS += -lglew32
+LIBS += -lopengl32
+}

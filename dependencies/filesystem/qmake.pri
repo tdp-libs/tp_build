@@ -13,6 +13,10 @@ else:android {
 
 }
 
+else:win32 {
+
+}
+
 else {
 SLIBS        += stdc++fs
 }

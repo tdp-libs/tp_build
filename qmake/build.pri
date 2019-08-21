@@ -165,7 +165,7 @@ else{
   QMAKE_CXXFLAGS += -Wextra
   QMAKE_CXXFLAGS += -Wdouble-promotion
   QMAKE_CXXFLAGS += -Wold-style-cast
-  QMAKE_CXXFLAGS += -Wconversion
+  #QMAKE_CXXFLAGS += -Wconversion # very noisy in Qt headers
 
   CONFIG(debug, debug|release) {
     tp_sanitize {

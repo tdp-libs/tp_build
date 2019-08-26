@@ -1,12 +1,40 @@
 function(tdp_parse_submodules directory)
 
+  execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/tdp_build/cmake/extract_submodules.sh" SUBPROJECTS
+                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/${directory}"
+                  OUTPUT_VARIABLE TDP_SUBPROJECTS)
+
+  string(REPLACE " " ";" TDP_SUBPROJECTS ${TDP_SUBPROJECTS})
+  string(STRIP "${TDP_SUBPROJECTS}" TDP_SUBPROJECTS)
+
+  set(TDP_SUBDIRS "")
+  foreach(subproject ${TDP_SUBPROJECTS})
+    set(TDP_SUBDIRS_TMP "")
+    execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/tdp_build/cmake/extract_submodules.sh" SUBDIRS
+                    WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/${subproject}"
+                    OUTPUT_VARIABLE TDP_SUBDIRS_TMP)
+
+    string(REPLACE " " ";" TDP_SUBDIRS_TMP ${TDP_SUBDIRS_TMP})
+    string(STRIP "${TDP_SUBDIRS_TMP}" TDP_SUBDIRS_TMP)
+
+    foreach(subdir ${TDP_SUBDIRS_TMP})
+      list(APPEND TDP_SUBDIRS ${subdir})
+    endforeach()
+  endforeach()
+
+  set(TDP_SUBDIRS_TMP "")
   execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/tdp_build/cmake/extract_submodules.sh" SUBDIRS
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/${directory}"
-                  OUTPUT_VARIABLE TDP_SUBDIRS)
+                  OUTPUT_VARIABLE TDP_SUBDIRS_TMP)
 
-  string(REPLACE " " ";" TDP_SUBDIRS ${TDP_SUBDIRS})
-  string(STRIP "${TDP_SUBDIRS}" TDP_SUBDIRS)
+  string(REPLACE " " ";" TDP_SUBDIRS_TMP ${TDP_SUBDIRS_TMP})
+  string(STRIP "${TDP_SUBDIRS_TMP}" TDP_SUBDIRS_TMP)
 
+  foreach(subdir ${TDP_SUBDIRS_TMP})
+    list(APPEND TDP_SUBDIRS ${subdir})
+  endforeach()
+
+  list(REMOVE_DUPLICATES TDP_SUBDIRS)
 
   foreach(subdir ${TDP_SUBDIRS})
     add_subdirectory(${subdir})

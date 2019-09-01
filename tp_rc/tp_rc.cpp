@@ -125,7 +125,7 @@ int main(int argc, const char * argv[])
 
     for(size_t i=0; i<fileData.size(); i++)
     {
-      uint8_t b = uint8_t(fileData.at(i));
+      int8_t b = int8_t(fileData.at(i));
       cppText += std::to_string(b);
       cppText += ',';
     }

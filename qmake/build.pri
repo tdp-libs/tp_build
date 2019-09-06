@@ -106,7 +106,14 @@ android{
 #== Special handling for Windows ===================================================================
 else:win32{
   DEFINES += TDP_WIN32
-  DESTDIR = ../lib/
+
+  contains(TEMPLATE, app){
+    DESTDIR = ../bin/
+  }
+  else{
+    DESTDIR = ../lib/
+  }
+
   winrt:INCLUDEPATH += $$_PRO_FILE_PWD_/moc/
 
   contains(TEMPLATE, lib){

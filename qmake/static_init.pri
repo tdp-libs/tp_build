@@ -15,7 +15,7 @@ contains(TEMPLATE, app){
   tpStaticInit.depends += $$PWD/../tp_static_init/generate_static_init.sh
   tpStaticInit.depends += $$PWD/../../${QMAKE_FILE_IN_BASE}/inc/${QMAKE_FILE_IN_BASE}/Globals.h
   tpStaticInit.depends += $$PWD/../../${QMAKE_FILE_IN_BASE}/src/Globals.cpp
-  tpStaticInit.commands = $$PWD/../tp_static_init/generate_static_init.sh ${QMAKE_FILE_OUT} ${QMAKE_FILE_IN_BASE}
+  tpStaticInit.commands = bash $$PWD/../tp_static_init/generate_static_init.sh ${QMAKE_FILE_OUT} ${QMAKE_FILE_IN_BASE}
   tpStaticInit.output = ${QMAKE_VAR_OBJECTS_DIR}/${QMAKE_FILE_IN_BASE}_static_init.cpp
   tpStaticInit.clean = ${QMAKE_VAR_OBJECTS_DIR}/${QMAKE_FILE_IN_BASE}_static_init.cpp
   tpStaticInit.variable_out = SOURCES

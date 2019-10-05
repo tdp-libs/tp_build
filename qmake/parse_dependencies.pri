@@ -15,7 +15,7 @@ for(TP_DEPENDENCY, TP_DEPENDENCIES) {
   exists(../../$${TP_DEPENDENCY}/qmake.pri){
     include(../../$${TP_DEPENDENCY}/qmake.pri)
   } else {
-    include(../../tdp_build/dependencies/$${TP_DEPENDENCY}/qmake.pri)
+    include(../../tp_build/dependencies/$${TP_DEPENDENCY}/qmake.pri)
   }
 }
 

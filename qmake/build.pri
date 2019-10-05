@@ -75,7 +75,7 @@ staticlib {
 
 #== Special handling for Android ===================================================================
 android{
-  DEFINES += tp_qt_ANDROID
+  DEFINES += TP_ANDROID
 
   QMAKE_CFLAGS   += -frtti
   QMAKE_CXXFLAGS += -frtti
@@ -105,7 +105,7 @@ android{
 
 #== Special handling for Windows ===================================================================
 else:win32{
-  DEFINES += tp_qt_WIN32
+  DEFINES += TP_WIN32
 
   contains(TEMPLATE, app){
     DESTDIR = ../bin/
@@ -128,7 +128,7 @@ else:win32{
 
 #== Special handling for OSX =======================================================================
 else:osx{
-  DEFINES += tp_qt_OSX
+  DEFINES += TP_OSX
   contains(TEMPLATE, app): DESTDIR = ../bin/
   contains(TEMPLATE, lib){
     DESTDIR = ../lib/
@@ -143,7 +143,7 @@ else:osx{
 
 #== Special handling for iOS =======================================================================
 else:iphoneos{
-  DEFINES += tp_qt_IOS
+  DEFINES += TP_IOS
   contains(TEMPLATE, app): DESTDIR = ../bin/
   contains(TEMPLATE, lib): DESTDIR = ../lib/
 
@@ -158,7 +158,7 @@ else:iphoneos{
 #== Everything else ================================================================================
 else{
   linux{
-    DEFINES += tp_qt_LINUX
+    DEFINES += TP_LINUX
   }
 
   contains(TEMPLATE, app): DESTDIR = ../bin/

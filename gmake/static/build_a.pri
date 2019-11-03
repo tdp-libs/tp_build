@@ -1,5 +1,3 @@
-UNIQUE_INCLUDEPATHS = $(call uniq,$(INCLUDEPATHS))
-
 #Sort to remove duplicates
 BUILD_DIRS = $(sort $(addprefix $(ROOT)$(BUILD_DIR)$(TARGET)/,$(dir $(SOURCES))))
 
@@ -7,7 +5,7 @@ CCOBJECTS = $(filter %.o,$(SOURCES:.c=.c.o))
 CXXOBJECTS = $(filter %.o,$(SOURCES:.cpp=.cpp.o))
 
 DEFINES  := $(foreach DEFINE,$(DEFINES),-D$(DEFINE))
-INCLUDES += $(foreach INCLUDE,$(UNIQUE_INCLUDEPATHS),-I../$(INCLUDE))
+INCLUDES += $(foreach INCLUDE,$(INCLUDEPATHS),-I../$(INCLUDE))
 
 all_a: $(BUILD_DIRS) $(ROOT)$(BUILD_DIR)$(TARGET).a
 
@@ -22,4 +20,8 @@ $(ROOT)$(BUILD_DIR)$(TARGET)/%.cpp.o: %.cpp
 
 $(BUILD_DIRS):
 	$(MKDIR) $@
+
+
+#UNIQUE_INCLUDEPATHS = $(call uniq,$(INCLUDEPATHS))
+
 

@@ -1,6 +1,6 @@
 ROOT = ./
 
-TDP_BUILD_TYPE = static
+TP_BUILD_TYPE = static
 -include $(ROOT)toolchain.pri
 
 define uniq =
@@ -15,7 +15,7 @@ ifeq "${JOBS}" ""
 JOBS := 1
 endif
 
-include $(ROOT)tdp_build/gmake/$(TDP_BUILD_TYPE)/common.pri
+include $(ROOT)tp_build/gmake/$(TP_BUILD_TYPE)/common.pri
 
 # Bring in project wide config
 include $(ROOT)project.inc
@@ -25,7 +25,7 @@ include $(ROOT)$(PROJECT_DIR)/submodules.pri
 
 # Bring in the dependencies tree 
 include $(PROJECT_DIR)/dependencies.pri
-include $(ROOT)tdp_build/gmake/parse_dependencies.pri
+include $(ROOT)tp_build/gmake/parse_dependencies.pri
 
-include $(ROOT)tdp_build/gmake/$(TDP_BUILD_TYPE)/build.pri
+include $(ROOT)tp_build/gmake/$(TP_BUILD_TYPE)/build.pri
 

@@ -6,6 +6,8 @@ CXXOBJECTS = $(filter %.o,$(SOURCES:.cpp=.cpp.o))
 
 DEFINES  := $(foreach DEFINE,$(DEFINES),-D$(DEFINE))
 INCLUDES += $(foreach INCLUDE,$(INCLUDEPATHS),-I../$(INCLUDE))
+INCLUDES := $(INCLUDES:-I..//%=-I/%) # Remove ../ from absolute paths
+
 
 all_a: $(BUILD_DIRS) $(ROOT)$(BUILD_DIR)$(TARGET).a
 

@@ -1,22 +1,16 @@
-UNIQUE_LIBRARIES = $(call uniq,$(LIBRARIES))
-
-SUB_AR = $(addsuffix .a,$(addprefix $(ROOT)$(BUILD_DIR),$(UNIQUE_LIBRARIES)))
-PUB_AR = $(ROOT)$(BUILD_DIR)lib$(PUB_TARGET).a
-PUB_O  = $(ROOT)$(BUILD_DIR)$(PUB_TARGET).o
-
-OBJ_DIR = $(ROOT)$(BUILD_DIR)/obj/
-
-all: $(PUB_AR)
-
-$(PUB_AR): $(BUILD_DIR) $(SUBDIRS) $(SUB_AR)
-	"$(LD)" --whole-archive -r $(SUB_AR) -o $(PUB_O)
-	"$(AR)" rcs $@ $(PUB_O)
+all: $(SUBDIRS)
 
 $(BUILD_DIR): 
 	$(MKDIR) $(BUILD_DIR) 
 
-$(SUBDIRS): force_look
-	for d in $@ ; do (cd $$d ; make -j4 ) ; done
+define BUILD_SUBDIR
+DEPENDENCIES:=
+$(eval -include $(ROOT)$(1)/dependencies.pri)
+$(info Target: $(1) Dependencies: $(DEPENDENCIES))
+$(1): $(BUILD_DIR) $(DEPENDENCIES) force_look
+	cd $(1);$$(MAKE)
+endef
+$(foreach i,$(SUBDIRS),$(eval $(call BUILD_SUBDIR,$(i))))
 
 install:
 	-for d in $(SUBDIRS) ; do (cd $$d; $(MAKE) install ); done
@@ -26,4 +20,3 @@ clean:
 
 force_look :
 	true
-

@@ -1,68 +1,68 @@
-function(tdp_parse_submodules directory)
+function(tp_parse_submodules directory)
 
-  execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/tdp_build/cmake/extract_submodules.sh" SUBPROJECTS
+  execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/tp_build/cmake/extract_submodules.sh" SUBPROJECTS
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/${directory}"
-                  OUTPUT_VARIABLE TDP_SUBPROJECTS)
+                  OUTPUT_VARIABLE TP_SUBPROJECTS)
 
-  string(REPLACE " " ";" TDP_SUBPROJECTS ${TDP_SUBPROJECTS})
-  string(STRIP "${TDP_SUBPROJECTS}" TDP_SUBPROJECTS)
+  string(REPLACE " " ";" TP_SUBPROJECTS ${TP_SUBPROJECTS})
+  string(STRIP "${TP_SUBPROJECTS}" TP_SUBPROJECTS)
 
-  set(TDP_SUBDIRS "")
-  foreach(subproject ${TDP_SUBPROJECTS})
-    set(TDP_SUBDIRS_TMP "")
-    execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/tdp_build/cmake/extract_submodules.sh" SUBDIRS
+  set(TP_SUBDIRS "")
+  foreach(subproject ${TP_SUBPROJECTS})
+    set(TP_SUBDIRS_TMP "")
+    execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/tp_build/cmake/extract_submodules.sh" SUBDIRS
                     WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/${subproject}"
-                    OUTPUT_VARIABLE TDP_SUBDIRS_TMP)
+                    OUTPUT_VARIABLE TP_SUBDIRS_TMP)
 
-    string(REPLACE " " ";" TDP_SUBDIRS_TMP ${TDP_SUBDIRS_TMP})
-    string(STRIP "${TDP_SUBDIRS_TMP}" TDP_SUBDIRS_TMP)
+    string(REPLACE " " ";" TP_SUBDIRS_TMP ${TP_SUBDIRS_TMP})
+    string(STRIP "${TP_SUBDIRS_TMP}" TP_SUBDIRS_TMP)
 
-    foreach(subdir ${TDP_SUBDIRS_TMP})
-      list(APPEND TDP_SUBDIRS ${subdir})
+    foreach(subdir ${TP_SUBDIRS_TMP})
+      list(APPEND TP_SUBDIRS ${subdir})
     endforeach()
   endforeach()
 
-  set(TDP_SUBDIRS_TMP "")
-  execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/tdp_build/cmake/extract_submodules.sh" SUBDIRS
+  set(TP_SUBDIRS_TMP "")
+  execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/tp_build/cmake/extract_submodules.sh" SUBDIRS
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/${directory}"
-                  OUTPUT_VARIABLE TDP_SUBDIRS_TMP)
+                  OUTPUT_VARIABLE TP_SUBDIRS_TMP)
 
-  string(REPLACE " " ";" TDP_SUBDIRS_TMP ${TDP_SUBDIRS_TMP})
-  string(STRIP "${TDP_SUBDIRS_TMP}" TDP_SUBDIRS_TMP)
+  string(REPLACE " " ";" TP_SUBDIRS_TMP ${TP_SUBDIRS_TMP})
+  string(STRIP "${TP_SUBDIRS_TMP}" TP_SUBDIRS_TMP)
 
-  foreach(subdir ${TDP_SUBDIRS_TMP})
-    list(APPEND TDP_SUBDIRS ${subdir})
+  foreach(subdir ${TP_SUBDIRS_TMP})
+    list(APPEND TP_SUBDIRS ${subdir})
   endforeach()
 
-  list(REMOVE_DUPLICATES TDP_SUBDIRS)
+  list(REMOVE_DUPLICATES TP_SUBDIRS)
 
-  foreach(subdir ${TDP_SUBDIRS})
+  foreach(subdir ${TP_SUBDIRS})
     add_subdirectory(${subdir})
   endforeach()
 
-  set(TDP_TEST_TARGETS "")
-  set(TDP_TESTS "")
-  foreach(subdir ${TDP_SUBDIRS})
-    set(TDP_TEMPLATE "")
-    execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/tdp_build/cmake/extract_vars.sh" TEMPLATE
+  set(TP_TEST_TARGETS "")
+  set(TP_TESTS "")
+  foreach(subdir ${TP_SUBDIRS})
+    set(TP_TEMPLATE "")
+    execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/tp_build/cmake/extract_vars.sh" TEMPLATE
                     WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/${subdir}"
-                    OUTPUT_VARIABLE TDP_TEMPLATE)
-    string(STRIP "${TDP_TEMPLATE}" TDP_TEMPLATE)
-    if(TDP_TEMPLATE STREQUAL "test")
-      set(TDP_TESTS "${TDP_TESTS}./${subdir}/${subdir}\n")
-      list(APPEND TDP_TEST_TARGETS "${subdir}")
+                    OUTPUT_VARIABLE TP_TEMPLATE)
+    string(STRIP "${TP_TEMPLATE}" TP_TEMPLATE)
+    if(TP_TEMPLATE STREQUAL "test")
+      set(TP_TESTS "${TP_TESTS}./${subdir}/${subdir}\n")
+      list(APPEND TP_TEST_TARGETS "${subdir}")
     endif()
   endforeach()
 
-  file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/tests.txt" "${TDP_TESTS}")
+  file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/tests.txt" "${TP_TESTS}")
 
-  configure_file("${CMAKE_CURRENT_LIST_DIR}/tdp_build/tp_test/run_tests.sh" 
+  configure_file("${CMAKE_CURRENT_LIST_DIR}/tp_build/tp_test/run_tests.sh" 
                  "${CMAKE_CURRENT_BINARY_DIR}/run_tests.sh" 
                  COPYONLY)
 
   add_custom_target(tests
                     COMMAND "${CMAKE_CURRENT_BINARY_DIR}/run_tests.sh"
-                    DEPENDS "${TDP_TEST_TARGETS}"
+                    DEPENDS "${TP_TEST_TARGETS}"
                     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
 endfunction()
 

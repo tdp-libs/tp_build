@@ -14,8 +14,8 @@ $(PAGE_PATH): result.html $(PAGE_DIRECTORY)
 	cp result.html $(PAGE_PATH)
 
 $(PAGE_DIRECTORY):
-	mkdir -p $@	
+	mkdir -p $@
 
-result.html: $(SOURCE_DIR)/$(TEMPLATE) $(SOURCE_PATHS) $(ROOT_DIR)tdp_build/pages/build_pages.sh
-	$(ROOT_DIR)tdp_build/pages/build_pages.sh $(SOURCE_DIR) $(SOURCE_DIR)/$(TEMPLATE) $(ROOT_URL) $(SOURCE_PATHS)
+result.html: $(SOURCE_DIR)/$(TEMPLATE) $(SOURCE_PATHS) $(ROOT_DIR)tp_build/pages/build_pages.sh
+	$(ROOT_DIR)tp_build/pages/build_pages.sh $(SOURCE_DIR) $(SOURCE_DIR)/$(TEMPLATE) $(ROOT_URL) $(SOURCE_PATHS)
 

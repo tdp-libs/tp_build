@@ -12,4 +12,4 @@ A module is a directory containing a number of files that are included in the bu
 * global_vars.pri
 * submodules.pri
 * vars.pri
-Examples of these files can be found in the [example_module](https://github.com/tdp-libs/tdp_build/blob/master/documentation/example_module).
+Examples of these files can be found in the [example_module](https://github.com/tdp-libs/tp_build/blob/master/documentation/example_module).

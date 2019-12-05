@@ -1,21 +1,21 @@
 
 # Copies the given files to the destination directory
-defineTest(tdpInstall) {
+defineTest(tpInstall) {
   location = $${1}/
   DESTDIR = $$shadowed($$PWD)
   DESTDIR = $$DESTDIR/../
 
-  tdp_libs.path = $${location}lib
-  tdp_libs.files = $${DESTDIR}lib/*
+  tp_libs.path = $${location}lib
+  tp_libs.files = $${DESTDIR}lib/*
 
-  tdp_bins.path = $${location}bin
-  tdp_bins.files = $${DESTDIR}bin/*
+  tp_bins.path = $${location}bin
+  tp_bins.files = $${DESTDIR}bin/*
 
-  INSTALLS += tdp_libs tdp_bins
+  INSTALLS += tp_libs tp_bins
 
-  export(tdp_libs.path)
-  export(tdp_libs.files)
-  export(tdp_bins.path)
-  export(tdp_bins.files)
+  export(tp_libs.path)
+  export(tp_libs.files)
+  export(tp_bins.path)
+  export(tp_bins.files)
   export(INSTALLS)
 }

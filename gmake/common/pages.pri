@@ -11,12 +11,12 @@ $(PAGES_MAKETARGETS):
 
 #
 
-$(ROOT)$(BUILD_DIR)$(TARGET)/%/Makefile: % $(ROOT)tdp_build/gmake/common/template_page_Makefile
+$(ROOT)$(BUILD_DIR)$(TARGET)/%/Makefile: % $(ROOT)tp_build/gmake/common/template_page_Makefile
 	echo "SOURCE_DIR=`realpath $<`/" > $@
 	echo "ROOT_DIR=`realpath $(ROOT)`/" >> $@
 	echo "BUILD_DIR=`realpath $(ROOT)$(BUILD_DIR)`/" >> $@
 	echo "PAGE_NAME=$<" >> $@
-	cat $(ROOT)tdp_build/gmake/common/template_page_Makefile >> $@
+	cat $(ROOT)tp_build/gmake/common/template_page_Makefile >> $@
 
 $(PAGES_BUILD_DIRS):
 	$(MKDIR) $@

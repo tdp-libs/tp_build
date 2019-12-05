@@ -25,6 +25,10 @@ function(tp_parse_vars)
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
                   OUTPUT_VARIABLE TP_RC)
 
+  execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_vars.sh" RESOURCES
+                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
+                  OUTPUT_VARIABLE TP_RESOURCES)
+
   execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" INCLUDEPATHS
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
                   OUTPUT_VARIABLE TP_INCLUDEPATHS)
@@ -48,6 +52,14 @@ function(tp_parse_vars)
   execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" TP_DEPENDENCIES
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
                   OUTPUT_VARIABLE TP_DEPENDENCIES)
+
+  execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" QT
+                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
+                  OUTPUT_VARIABLE TP_QT)
+
+  execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" TP_STATIC_INIT
+                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
+                  OUTPUT_VARIABLE TP_STATIC_INIT)
 
   string(REPLACE " " ";" TP_INCLUDEPATHS ${TP_INCLUDEPATHS})
   string(STRIP "${TP_INCLUDEPATHS}" TP_INCLUDEPATHS)
@@ -121,6 +133,9 @@ function(tp_parse_vars)
   string(REPLACE " " ";" TP_HEADERS ${TP_HEADERS})
   string(STRIP "${TP_HEADERS}" TP_HEADERS)
 
+  string(REPLACE " " ";" TP_RESOURCES ${TP_RESOURCES})
+  string(STRIP "${TP_RESOURCES}" TP_RESOURCES)
+
   add_custom_command(
     OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/tpRc"
     COMMAND g++ -std=gnu++1z -O2 "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_rc/tp_rc.cpp" -o "${CMAKE_CURRENT_BINARY_DIR}/tpRc"
@@ -139,6 +154,101 @@ function(tp_parse_vars)
     list(APPEND TP_SOURCES "${QRC_NAME}.cpp")
   endforeach(f)
 
+  if(TP_TEMPLATE STREQUAL "app" OR TP_TEMPLATE STREQUAL "test")
+    string(REPLACE " " ";" TP_STATIC_INIT ${TP_STATIC_INIT})
+    string(STRIP "${TP_STATIC_INIT}" TP_STATIC_INIT)
+    foreach(f ${TP_STATIC_INIT})
+      add_custom_command(
+        OUTPUT  "${f}.cpp"
+        COMMAND "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_static_init/generate_static_init.sh" "${f}.cpp" ${f}
+        DEPENDS "${CMAKE_CURRENT_LIST_DIR}/../${f}/inc/${f}/Globals.h" "${CMAKE_CURRENT_LIST_DIR}/../${f}/src/Globals.cpp" "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_static_init/generate_static_init.sh"
+      )
+
+      list(APPEND TP_SOURCES "${f}.cpp")
+    endforeach(f)
+  endif()
+
+  ### execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" QT
+  ###                 WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
+  ###                 OUTPUT_VARIABLE TP_QT)
+
+
+
+######## ##Use:
+######## ##In dependencies.pri
+######## ##TP_STATIC_INIT += module_name
+######## 
+######## if(TP_TEMPLATE STREQUAL "app" OR TP_TEMPLATE STREQUAL "test")
+######## 
+######## 
+########   #execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_vars.sh" RESOURCES
+########   #                WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
+########   #                OUTPUT_VARIABLE TP_RESOURCES)
+######## 
+######## 
+######## 
+########   TP_STATIC_INIT = $$unique(TP_STATIC_INIT)
+########   for(SRC, TP_STATIC_INIT) {
+########     TP_STATIC_INIT_SOURCES += ../$${SRC}/$${SRC}.pro
+########   }
+######## 
+########   tpStaticInit.name = Generate init code
+########   tpStaticInit.input = TP_STATIC_INIT_SOURCES
+########   tpStaticInit.depends += $$PWD/../tp_static_init/generate_static_init.sh
+########   tpStaticInit.depends += $$PWD/../../${QMAKE_FILE_IN_BASE}/inc/${QMAKE_FILE_IN_BASE}/Globals.h
+########   tpStaticInit.depends += $$PWD/../../${QMAKE_FILE_IN_BASE}/src/Globals.cpp
+########   tpStaticInit.commands = bash $$PWD/../tp_static_init/generate_static_init.sh ${QMAKE_FILE_OUT} ${QMAKE_FILE_IN_BASE}
+########   tpStaticInit.output = ${QMAKE_VAR_OBJECTS_DIR}/${QMAKE_FILE_IN_BASE}_static_init.cpp
+########   tpStaticInit.clean = ${QMAKE_VAR_OBJECTS_DIR}/${QMAKE_FILE_IN_BASE}_static_init.cpp
+########   tpStaticInit.variable_out = SOURCES
+########   QMAKE_EXTRA_COMPILERS += tpStaticInit
+######## endif()
+
+
+
+  string(REPLACE " " ";" TP_QT ${TP_QT})
+  string(STRIP "${TP_QT}" TP_QT)
+  list(REMOVE_DUPLICATES TP_QT)
+  if(TP_QT)
+    message("${TP_TARGET} uses Qt modules: (${TP_QT})")
+
+    set(CMAKE_AUTOMOC ON)
+    set(CMAKE_AUTORCC ON)
+    # As moc files are generated in the binary dir, tell CMake
+    # to always look for includes there:
+    set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+    foreach(f ${TP_QT})
+      if(f STREQUAL "core")
+        find_package(Qt5Core REQUIRED)
+        list(APPEND TP_QT_MODULES "Core")
+      elseif(f STREQUAL "gui")
+        find_package(Qt5Gui REQUIRED)
+        list(APPEND TP_QT_MODULES "Gui")
+      elseif(f STREQUAL "widgets")
+        find_package(Qt5Widgets REQUIRED)
+        list(APPEND TP_QT_MODULES "Widgets")
+      elseif(f STREQUAL "opengl")
+        find_package(Qt5OpenGL REQUIRED)
+        list(APPEND TP_QT_MODULES "OpenGL")
+      endif()
+    endforeach(f)
+
+    find_package(Qt5 COMPONENTS Core)
+
+    #Qt4
+    set_property(DIRECTORY PROPERTY QT_VERSION_MAJOR ${QT_VERSION_MAJOR})
+    set_property(DIRECTORY PROPERTY QT_VERSION_MINOR ${QT_VERSION_MINOR})
+
+    #Qt5
+    set_property(DIRECTORY PROPERTY Qt5Core_VERSION_MAJOR ${Qt5Core_VERSION_MAJOR})
+    set_property(DIRECTORY PROPERTY Qt5Core_VERSION_MINOR ${Qt5Core_VERSION_MINOR})
+
+    #Qt6
+    set_property(DIRECTORY PROPERTY Qt6Core_VERSION_MAJOR ${Qt6Core_VERSION_MAJOR})
+    set_property(DIRECTORY PROPERTY Qt6Core_VERSION_MINOR ${Qt6Core_VERSION_MINOR})
+  endif()
+
   if(APPLE)
     list(APPEND TP_DEFINES -DTP_OSX)
   elseif( ANDROID )
@@ -151,19 +261,23 @@ function(tp_parse_vars)
     include_directories(${TP_INCLUDEPATHS})
     link_directories(${TP_LIBRARYPATHS})
     add_definitions(${TP_DEFINES})
-    add_library("${TP_TARGET}" ${TP_SOURCES})
+    add_library("${TP_TARGET}" ${TP_SOURCES} ${TP_HEADERS} ${TP_RESOURCES})
   endif()
 
   if(TP_TEMPLATE STREQUAL "app" OR TP_TEMPLATE STREQUAL "test")
     include_directories(${TP_INCLUDEPATHS})
     link_directories(${TP_LIBRARYPATHS})
     add_definitions(${TP_DEFINES})
-    add_executable("${TP_TARGET}" ${TP_SOURCES})
-    target_link_libraries("${TP_TARGET}"  ${TP_LIBRARIES})
+    add_executable("${TP_TARGET}" ${TP_SOURCES} ${TP_HEADERS} ${TP_RESOURCES})
+    target_link_libraries("${TP_TARGET}" ${TP_LIBRARIES})
   endif()
 
   if(TP_TEMPLATE STREQUAL "subdirs")
     
+  endif()
+
+  if(TP_QT_MODULES)
+    qt5_use_modules("${TP_TARGET}" ${TP_QT_MODULES})
   endif()
 
 endfunction() 

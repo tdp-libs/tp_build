@@ -1,2 +1,2 @@
-list(APPEND TDP_LIBRARIES "-lstdc++fs")
+list(APPEND TP_LIBRARIES "-lstdc++fs")
 

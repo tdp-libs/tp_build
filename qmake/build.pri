@@ -205,7 +205,11 @@ else{
   }
 }
 
+osx          {TP_HOST_CXX=env -i g++}
+else:iphoneos{TP_HOST_CXX=env -i g++}
+else         {TP_HOST_CXX=g++       }
+
 include(copy.pri)
 include(rc.pri)
 include(static_init.pri)
-
+include(tr.pri)

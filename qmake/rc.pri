@@ -1,10 +1,6 @@
-tp
+
 ##Use:
 ##TP_RC += file.qrc
-
-osx          {TP_HOST_CXX=env -i g++}
-else:iphoneos{TP_HOST_CXX=env -i g++}
-else         {TP_HOST_CXX=g++       }
 
 TP_RC_TOOL_SOURCE = $$absolute_path(../tp_rc/tp_rc.cpp)
 TP_RC_TOOL = $$absolute_path($$OUT_PWD/../tpRc)

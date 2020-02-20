@@ -31,23 +31,23 @@ function(tp_parse_vars)
 
   execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" INCLUDEPATHS
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-                  OUTPUT_VARIABLE TP_INCLUDEPATHS)
+                  OUTPUT_VARIABLE TP_INCLUDEPATHS_)
 
   execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" LIBRARIES
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-                  OUTPUT_VARIABLE TP_LIBRARIES)
+                  OUTPUT_VARIABLE TP_LIBRARIES_)
 
   execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" LIBS
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-                  OUTPUT_VARIABLE TP_LIBS)
+                  OUTPUT_VARIABLE TP_LIBS_)
 
   execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" LIBRARYPATHS
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-                  OUTPUT_VARIABLE TP_LIBRARYPATHS)
+                  OUTPUT_VARIABLE TP_LIBRARYPATHS_)
 
   execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" DEFINES
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-                  OUTPUT_VARIABLE TP_DEFINES)
+                  OUTPUT_VARIABLE TP_DEFINES_)
 
   execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" TP_DEPENDENCIES
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
@@ -61,7 +61,7 @@ function(tp_parse_vars)
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
                   OUTPUT_VARIABLE TP_STATIC_INIT)
 
-  string(REPLACE " " ";" TP_INCLUDEPATHS ${TP_INCLUDEPATHS})
+  string(REPLACE " " ";" TP_INCLUDEPATHS "${TP_INCLUDEPATHS} ${TP_INCLUDEPATHS_}")
   string(STRIP "${TP_INCLUDEPATHS}" TP_INCLUDEPATHS)
   set(TP_TMP_LIST "")
   foreach(f ${TP_INCLUDEPATHS})
@@ -74,7 +74,7 @@ function(tp_parse_vars)
   endforeach(f)
   set(TP_INCLUDEPATHS "${TP_TMP_LIST}")
 
-  string(REPLACE " " ";" TP_LIBRARYPATHS ${TP_LIBRARYPATHS})
+  string(REPLACE " " ";" TP_LIBRARYPATHS "${TP_LIBRARYPATHS} ${TP_LIBRARYPATHS_}")
   string(STRIP "${TP_LIBRARYPATHS}" TP_LIBRARYPATHS)
   set(TP_TMP_LIST "")
   foreach(f ${TP_LIBRARYPATHS})
@@ -87,9 +87,9 @@ function(tp_parse_vars)
   endforeach(f)
   set(TP_LIBRARYPATHS "${TP_TMP_LIST}")
 
-  string(REPLACE " " ";" TP_LIBRARIES ${TP_LIBRARIES})
+  string(REPLACE " " ";" TP_LIBRARIES "${TP_LIBRARIES} ${TP_LIBRARIES_}")
   string(STRIP "${TP_LIBRARIES}" TP_LIBRARIES)
-  string(REPLACE " " ";" TP_LIBS ${TP_LIBS})
+  string(REPLACE " " ";" TP_LIBS "${TP_LIBS} ${TP_LIBS_}")
   string(STRIP "${TP_LIBS}" TP_LIBS)
   set(TP_TMP_LIST "")
   foreach(f ${TP_LIBRARIES})
@@ -115,7 +115,7 @@ function(tp_parse_vars)
   list(REMOVE_DUPLICATES TP_LIBRARIES)
   list(REVERSE TP_LIBRARIES)
 
-  string(REPLACE " " ";" TP_DEFINES ${TP_DEFINES})
+  string(REPLACE " " ";" TP_DEFINES "${DEFINES} ${TP_DEFINES} ${TP_DEFINES_}")
   string(STRIP "${TP_DEFINES}" TP_DEFINES)
   set(TP_TMP_LIST "")
   foreach(f ${TP_DEFINES})

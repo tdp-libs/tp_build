@@ -4,6 +4,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 SET(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-pthread")
 
+# For documentation of the supported variabls see:
+# https://github.com/tdp-libs/tp_build/blob/master/documentation/variables.md
 function(tp_parse_vars)  
   execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_vars.sh" HEADERS
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
@@ -53,13 +55,17 @@ function(tp_parse_vars)
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
                   OUTPUT_VARIABLE TP_DEPENDENCIES)
 
+  execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" TP_STATIC_INIT
+                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
+                  OUTPUT_VARIABLE TP_STATIC_INIT)
+
   execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" QT
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
                   OUTPUT_VARIABLE TP_QT)
 
-  execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" TP_STATIC_INIT
+  execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" QTPLUGIN
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-                  OUTPUT_VARIABLE TP_STATIC_INIT)
+                  OUTPUT_VARIABLE TP_QTPLUGIN)
 
   string(REPLACE " " ";" TP_INCLUDEPATHS "${TP_INCLUDEPATHS} ${TP_INCLUDEPATHS_}")
   string(STRIP "${TP_INCLUDEPATHS}" TP_INCLUDEPATHS)
@@ -168,49 +174,15 @@ function(tp_parse_vars)
     endforeach(f)
   endif()
 
-  ### execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" QT
-  ###                 WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-  ###                 OUTPUT_VARIABLE TP_QT)
-
-
-
-######## ##Use:
-######## ##In dependencies.pri
-######## ##TP_STATIC_INIT += module_name
-######## 
-######## if(TP_TEMPLATE STREQUAL "app" OR TP_TEMPLATE STREQUAL "test")
-######## 
-######## 
-########   #execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_vars.sh" RESOURCES
-########   #                WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-########   #                OUTPUT_VARIABLE TP_RESOURCES)
-######## 
-######## 
-######## 
-########   TP_STATIC_INIT = $$unique(TP_STATIC_INIT)
-########   for(SRC, TP_STATIC_INIT) {
-########     TP_STATIC_INIT_SOURCES += ../$${SRC}/$${SRC}.pro
-########   }
-######## 
-########   tpStaticInit.name = Generate init code
-########   tpStaticInit.input = TP_STATIC_INIT_SOURCES
-########   tpStaticInit.depends += $$PWD/../tp_static_init/generate_static_init.sh
-########   tpStaticInit.depends += $$PWD/../../${QMAKE_FILE_IN_BASE}/inc/${QMAKE_FILE_IN_BASE}/Globals.h
-########   tpStaticInit.depends += $$PWD/../../${QMAKE_FILE_IN_BASE}/src/Globals.cpp
-########   tpStaticInit.commands = bash $$PWD/../tp_static_init/generate_static_init.sh ${QMAKE_FILE_OUT} ${QMAKE_FILE_IN_BASE}
-########   tpStaticInit.output = ${QMAKE_VAR_OBJECTS_DIR}/${QMAKE_FILE_IN_BASE}_static_init.cpp
-########   tpStaticInit.clean = ${QMAKE_VAR_OBJECTS_DIR}/${QMAKE_FILE_IN_BASE}_static_init.cpp
-########   tpStaticInit.variable_out = SOURCES
-########   QMAKE_EXTRA_COMPILERS += tpStaticInit
-######## endif()
-
-
-
   string(REPLACE " " ";" TP_QT ${TP_QT})
   string(STRIP "${TP_QT}" TP_QT)
   list(REMOVE_DUPLICATES TP_QT)
   if(TP_QT)
     message("${TP_TARGET} uses Qt modules: (${TP_QT})")
+
+    if(QT_STATIC)
+      list(APPEND TP_DEFINES -DTP_QT_STATIC)
+    endif()
 
     set(CMAKE_AUTOMOC ON)
     set(CMAKE_AUTORCC ON)
@@ -231,7 +203,7 @@ function(tp_parse_vars)
         find_package(Qt5Widgets REQUIRED)
         list(APPEND TP_QT_MODULES "Widgets")
 
-        if(UNIX)
+        if(UNIX AND QT_STATIC)
           get_target_property(tmp_loc Qt5::QXcbGlxIntegrationPlugin LOCATION)
           list(APPEND TP_LIBRARIES "${tmp_loc}")
           list(APPEND TP_LIBRARIES "${Qt5Gui_PLUGINS}")
@@ -244,6 +216,28 @@ function(tp_parse_vars)
     endforeach(f)
 
     find_package(Qt5 COMPONENTS Core)
+
+    string(REPLACE " " ";" TP_QTPLUGIN ${TP_QTPLUGIN})
+    string(STRIP "${TP_QTPLUGIN}" TP_QTPLUGIN)
+    list(REMOVE_DUPLICATES TP_QTPLUGIN)
+    if(TP_QTPLUGIN AND QT_STATIC)
+      message("${TP_TARGET} uses Qt plugins: (${TP_QTPLUGIN})")
+      foreach(f ${TP_QTPLUGIN})
+        if(f STREQUAL "qpng" AND TARGET Qt5::QPngPlugin)
+          get_target_property(tmp_loc Qt5::QPngPlugin LOCATION_Debug)
+          list(APPEND TP_LIBRARIES "${tmp_loc}")
+        elseif(f STREQUAL "qjpeg" AND TARGET Qt5::QJpegPlugin)
+          get_target_property(tmp_loc Qt5::QJpegPlugin LOCATION_Debug)
+          list(APPEND TP_LIBRARIES "${tmp_loc}")
+        elseif(f STREQUAL "qbmp" AND TARGET Qt5::QBmpPlugin)
+          get_target_property(tmp_loc Qt5::QBmpPlugin LOCATION_Debug)
+          list(APPEND TP_LIBRARIES "${tmp_loc}")
+        elseif(f STREQUAL "qgif" AND TARGET Qt5::QGifPlugin)
+          get_target_property(tmp_loc Qt5::QGifPlugin LOCATION_Debug)
+          list(APPEND TP_LIBRARIES "${tmp_loc}")
+        endif()
+      endforeach(f)
+    endif()
 
     #Qt4
     set_property(DIRECTORY PROPERTY QT_VERSION_MAJOR ${QT_VERSION_MAJOR})
@@ -282,10 +276,6 @@ function(tp_parse_vars)
     if(TP_TEMPLATE STREQUAL "app")
       install(TARGETS "${TP_TARGET}" RUNTIME DESTINATION bin)
     endif()
-  endif()
-
-  if(TP_TEMPLATE STREQUAL "subdirs")
-    
   endif()
 
   if(TP_QT_MODULES)

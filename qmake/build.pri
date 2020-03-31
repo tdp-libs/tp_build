@@ -1,3 +1,5 @@
+# For documentation of the supported variabls see:
+# https://github.com/tdp-libs/tp_build/blob/master/documentation/variables.md
 
 exists(../../project.inc) {
 include(../../project.inc)

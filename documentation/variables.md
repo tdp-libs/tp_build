@@ -90,3 +90,7 @@ Found in the following locations:
 * All - Top level project.inc
 * All - project.conf
 * All - dependencies.pri
+
+### QT
+
+### TP_QTPLUGIN

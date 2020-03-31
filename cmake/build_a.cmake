@@ -222,12 +222,21 @@ function(tp_parse_vars)
       if(f STREQUAL "core")
         find_package(Qt5Core REQUIRED)
         list(APPEND TP_QT_MODULES "Core")
+
       elseif(f STREQUAL "gui")
         find_package(Qt5Gui REQUIRED)
         list(APPEND TP_QT_MODULES "Gui")
+
       elseif(f STREQUAL "widgets")
         find_package(Qt5Widgets REQUIRED)
         list(APPEND TP_QT_MODULES "Widgets")
+
+        if(UNIX)
+          get_target_property(tmp_loc Qt5::QXcbGlxIntegrationPlugin LOCATION)
+          list(APPEND TP_LIBRARIES "${tmp_loc}")
+          list(APPEND TP_LIBRARIES "${Qt5Gui_PLUGINS}")
+        endif()
+
       elseif(f STREQUAL "opengl")
         find_package(Qt5OpenGL REQUIRED)
         list(APPEND TP_QT_MODULES "OpenGL")
@@ -254,7 +263,7 @@ function(tp_parse_vars)
   elseif( ANDROID )
     list(APPEND TP_DEFINES -DTP_ANDROID)
   elseif( UNIX )
-  
+    list(APPEND TP_DEFINES -DTP_LINUX)
   endif()
 
   if(TP_TEMPLATE STREQUAL "lib")

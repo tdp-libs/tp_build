@@ -278,8 +278,10 @@ function(tp_parse_vars)
     endif()
   endif()
 
-  if(TP_QT_MODULES)
-    qt5_use_modules("${TP_TARGET}" ${TP_QT_MODULES})
+  if(NOT TP_TEMPLATE STREQUAL "subdirs")
+    if(TP_QT_MODULES)
+      qt5_use_modules("${TP_TARGET}" ${TP_QT_MODULES})
+    endif()
   endif()
 
 endfunction() 

@@ -12,5 +12,5 @@ CXXFLAGS += -std=c++1z
 LDFLAGS += -std=c++1z
 INCLUDES += -I/opt/tools/emsdk-portable/include/
 
-DEFINES += TDP_EMSCRIPTEN
+DEFINES += TP_EMSCRIPTEN
 

@@ -4,7 +4,7 @@ BUILD_DIRS = $(sort $(addprefix $(ROOT)$(BUILD_DIR)$(TARGET)/,$(dir $(SOURCES)))
 DEFINES  := $(foreach DEFINE,$(DEFINES),-D$(DEFINE))
 INCLUDES += $(foreach INCLUDE,$(INCLUDEPATHS),-I../$(INCLUDE))
 
-DEFINES += -DTDP_SDCC
+DEFINES += -DTP_SDCC
 
 SOBJECTS = $(filter %.rel,$(SOURCES:.S=.rel))
 CCOBJECTS = $(filter %.rel,$(SOURCES:.c=.rel))

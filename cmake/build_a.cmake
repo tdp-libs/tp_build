@@ -39,6 +39,10 @@ function(tp_parse_vars)
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
                   OUTPUT_VARIABLE TP_LIBRARIES_)
 
+  execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" TP_FRAMEWORKS
+                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
+                  OUTPUT_VARIABLE TP_FRAMEWORKS_)
+
   execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" LIBS
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
                   OUTPUT_VARIABLE TP_LIBS_)
@@ -121,6 +125,12 @@ function(tp_parse_vars)
   list(REMOVE_DUPLICATES TP_LIBRARIES)
   list(REVERSE TP_LIBRARIES)
 
+  string(REPLACE " " ";" TP_FRAMEWORKS "${TP_FRAMEWORKS} ${TP_FRAMEWORKS_}")
+  string(STRIP "${TP_FRAMEWORKS}" TP_FRAMEWORKS)
+  foreach(f ${TP_FRAMEWORKS})
+    list(APPEND TP_LIBRARIES "-framework ${f}")
+  endforeach(f)
+
   string(REPLACE " " ";" TP_DEFINES "${DEFINES} ${TP_DEFINES} ${TP_DEFINES_}")
   string(STRIP "${TP_DEFINES}" TP_DEFINES)
   set(TP_TMP_LIST "")
@@ -142,9 +152,15 @@ function(tp_parse_vars)
   string(REPLACE " " ";" TP_RESOURCES ${TP_RESOURCES})
   string(STRIP "${TP_RESOURCES}" TP_RESOURCES)
 
+  if(APPLE)
+    SET(HOST_CXX env -i clang++)
+  else()
+    SET(HOST_CXX g++)
+  endif()
+
   add_custom_command(
     OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/tpRc"
-    COMMAND g++ -std=gnu++1z -O2 "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_rc/tp_rc.cpp" -o "${CMAKE_CURRENT_BINARY_DIR}/tpRc"
+    COMMAND ${HOST_CXX} -std=gnu++1z -O2 "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_rc/tp_rc.cpp" -o "${CMAKE_CURRENT_BINARY_DIR}/tpRc"
     DEPENDS "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_rc/tp_rc.cpp"
   )
 
@@ -252,11 +268,13 @@ function(tp_parse_vars)
     set_property(DIRECTORY PROPERTY Qt6Core_VERSION_MINOR ${Qt6Core_VERSION_MINOR})
   endif()
 
-  if(APPLE)
+  if(IOS)
+    list(APPEND TP_DEFINES -DTP_IOS)
+  elseif(APPLE)
     list(APPEND TP_DEFINES -DTP_OSX)
-  elseif( ANDROID )
+  elseif(ANDROID)
     list(APPEND TP_DEFINES -DTP_ANDROID)
-  elseif( UNIX )
+  elseif(UNIX)
     list(APPEND TP_DEFINES -DTP_LINUX)
   endif()
 
@@ -274,7 +292,30 @@ function(tp_parse_vars)
     add_executable("${TP_TARGET}" ${TP_SOURCES} ${TP_HEADERS} ${TP_RESOURCES})
     target_link_libraries("${TP_TARGET}" ${TP_LIBRARIES})
     if(TP_TEMPLATE STREQUAL "app")
-      install(TARGETS "${TP_TARGET}" RUNTIME DESTINATION bin)
+      if(APPLE)
+        install(TARGETS "${TP_TARGET}" 
+                RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+                BUNDLE  DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+
+        if(IOS)
+          execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" PRODUCT_BUNDLE_IDENTIFIER
+                          WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
+                          OUTPUT_VARIABLE PRODUCT_BUNDLE_IDENTIFIER)
+          string(STRIP "${PRODUCT_BUNDLE_IDENTIFIER}" PRODUCT_BUNDLE_IDENTIFIER)
+
+          execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" DEVELOPMENT_TEAM
+                          WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
+                          OUTPUT_VARIABLE DEVELOPMENT_TEAM)
+          string(STRIP "${DEVELOPMENT_TEAM}" DEVELOPMENT_TEAM)
+
+          set_xcode_property("${TP_TARGET}" PRODUCT_BUNDLE_IDENTIFIER "${PRODUCT_BUNDLE_IDENTIFIER}" "All")
+          set_xcode_property(${TP_TARGET} DEVELOPMENT_TEAM "${DEVELOPMENT_TEAM}" "All")
+        endif()
+
+      else( UNIX )
+        install(TARGETS "${TP_TARGET}" 
+                RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+      endif()
     endif()
   endif()
 

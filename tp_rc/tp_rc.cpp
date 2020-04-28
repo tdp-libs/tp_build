@@ -121,11 +121,11 @@ int main(int argc, const char * argv[])
 
     cppText += "\";\n";
 #else
-    cppText += "const char data" + std::to_string(c) + "[] = {";
+    cppText += "const uint8_t data" + std::to_string(c) + "[] = {";
 
     for(size_t i=0; i<fileData.size(); i++)
     {
-      int8_t b = int8_t(fileData.at(i));
+      uint8_t b = uint8_t(fileData.at(i));
       cppText += std::to_string(b);
       cppText += ',';
     }
@@ -134,7 +134,7 @@ int main(int argc, const char * argv[])
 #endif
 
     cppText += "size_t size" + std::to_string(c) + "=" + std::to_string(fileData.size()) + ";\n\n";
-    initText += "  tp_utils::addResource(\"" + prefix + alias + "\",data" + std::to_string(c) + ",size" + std::to_string(c) + ");\n";
+    initText += "  tp_utils::addResource(\"" + prefix + alias + "\",reinterpret_cast<const char*>(data" + std::to_string(c) + "),size" + std::to_string(c) + ");\n";
     c++;
   }
   cppText += "extern int initialized;\n";

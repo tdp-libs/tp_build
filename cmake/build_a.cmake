@@ -2,7 +2,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-SET(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-pthread")
+#SET(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-pthread")
 
 # For documentation of the supported variabls see:
 # https://github.com/tdp-libs/tp_build/blob/master/documentation/variables.md
@@ -125,11 +125,13 @@ function(tp_parse_vars)
   list(REMOVE_DUPLICATES TP_LIBRARIES)
   list(REVERSE TP_LIBRARIES)
 
-  string(REPLACE " " ";" TP_FRAMEWORKS "${TP_FRAMEWORKS} ${TP_FRAMEWORKS_}")
-  string(STRIP "${TP_FRAMEWORKS}" TP_FRAMEWORKS)
-  foreach(f ${TP_FRAMEWORKS})
-    list(APPEND TP_LIBRARIES "-framework ${f}")
-  endforeach(f)
+  if(APPLE)
+    string(REPLACE " " ";" TP_FRAMEWORKS "${TP_FRAMEWORKS} ${TP_FRAMEWORKS_}")
+    string(STRIP "${TP_FRAMEWORKS}" TP_FRAMEWORKS)
+    foreach(f ${TP_FRAMEWORKS})
+      list(APPEND TP_LIBRARIES "-framework ${f}")
+    endforeach(f)
+  endif()
 
   string(REPLACE " " ";" TP_DEFINES "${DEFINES} ${TP_DEFINES} ${TP_DEFINES_}")
   string(STRIP "${TP_DEFINES}" TP_DEFINES)
@@ -289,7 +291,14 @@ function(tp_parse_vars)
     include_directories(${TP_INCLUDEPATHS})
     link_directories(${TP_LIBRARYPATHS})
     add_definitions(${TP_DEFINES})
-    add_executable("${TP_TARGET}" ${TP_SOURCES} ${TP_HEADERS} ${TP_RESOURCES})
+    
+    if(ANDROID)
+      # For Android we build a shared library then call it from Java.
+      add_library("${TP_TARGET}" SHARED ${TP_SOURCES} ${TP_HEADERS} ${TP_RESOURCES})
+    else()
+      add_executable("${TP_TARGET}" ${TP_SOURCES} ${TP_HEADERS} ${TP_RESOURCES})
+    endif()
+
     target_link_libraries("${TP_TARGET}" ${TP_LIBRARIES})
     if(TP_TEMPLATE STREQUAL "app")
       if(APPLE)
@@ -314,7 +323,8 @@ function(tp_parse_vars)
 
       else( UNIX )
         install(TARGETS "${TP_TARGET}" 
-                RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+                RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+                LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
       endif()
     endif()
   endif()

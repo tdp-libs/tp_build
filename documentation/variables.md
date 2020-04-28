@@ -94,3 +94,16 @@ Found in the following locations:
 ### QT
 
 ### TP_QTPLUGIN
+
+### TP_DEPENDENCIES
+Used to find extra dependencies.
+
+Possible values:
+* Built in values found in tp_build/dependencies.
+  * TP_DEPENDENCIES += filesystem
+  * TP_DEPENDENCIES += opengl
+* Values provided by other modules.
+  * TP_DEPENDENCIES += tp_maps_mobile/dependencies/
+
+Found in the following locations:
+* All - dependencies.pri

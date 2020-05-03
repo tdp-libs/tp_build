@@ -1,3 +1,7 @@
+# Bring in the dependencies tree 
+include $(ROOT)$(PROJECT_DIR)/dependencies.pri
+include $(ROOT)tp_build/gmake/parse_dependencies.pri
+
 DEFINES  := $(foreach DEFINE,$(DEFINES),-D$(DEFINE))
 INCLUDES += $(foreach INCLUDE,$(INCLUDEPATHS),-I./$(INCLUDE))
 

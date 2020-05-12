@@ -4,35 +4,42 @@ function(tp_parse_submodules directory)
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/${directory}"
                   OUTPUT_VARIABLE TP_SUBPROJECTS)
 
-  string(REPLACE " " ";" TP_SUBPROJECTS ${TP_SUBPROJECTS})
-  string(STRIP "${TP_SUBPROJECTS}" TP_SUBPROJECTS)
-
   set(TP_SUBDIRS "")
-  foreach(subproject ${TP_SUBPROJECTS})
-    set(TP_SUBDIRS_TMP "")
-    execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/tp_build/cmake/extract_submodules.sh" SUBDIRS
-                    WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/${subproject}"
-                    OUTPUT_VARIABLE TP_SUBDIRS_TMP)
 
-    string(REPLACE " " ";" TP_SUBDIRS_TMP ${TP_SUBDIRS_TMP})
-    string(STRIP "${TP_SUBDIRS_TMP}" TP_SUBDIRS_TMP)
+  if(NOT "${TP_SUBPROJECTS}" STREQUAL "")
+    string(REPLACE " " ";" TP_SUBPROJECTS ${TP_SUBPROJECTS})
+    string(STRIP "${TP_SUBPROJECTS}" TP_SUBPROJECTS)
 
-    foreach(subdir ${TP_SUBDIRS_TMP})
-      list(APPEND TP_SUBDIRS ${subdir})
+    foreach(subproject ${TP_SUBPROJECTS})
+      set(TP_SUBDIRS_TMP "")
+      execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/tp_build/cmake/extract_submodules.sh" SUBDIRS
+                      WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/${subproject}"
+                      OUTPUT_VARIABLE TP_SUBDIRS_TMP)
+
+      if(NOT "${TP_SUBDIRS_TMP}" STREQUAL "")
+        string(REPLACE " " ";" TP_SUBDIRS_TMP ${TP_SUBDIRS_TMP})
+        string(STRIP "${TP_SUBDIRS_TMP}" TP_SUBDIRS_TMP)
+
+        foreach(subdir ${TP_SUBDIRS_TMP})
+          list(APPEND TP_SUBDIRS ${subdir})
+        endforeach()
+      endif()
     endforeach()
-  endforeach()
+  endif()
 
   set(TP_SUBDIRS_TMP "")
   execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/tp_build/cmake/extract_submodules.sh" SUBDIRS
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/${directory}"
                   OUTPUT_VARIABLE TP_SUBDIRS_TMP)
 
-  string(REPLACE " " ";" TP_SUBDIRS_TMP ${TP_SUBDIRS_TMP})
-  string(STRIP "${TP_SUBDIRS_TMP}" TP_SUBDIRS_TMP)
+  if(NOT "${TP_SUBDIRS_TMP}" STREQUAL "")
+    string(REPLACE " " ";" TP_SUBDIRS_TMP ${TP_SUBDIRS_TMP})
+    string(STRIP "${TP_SUBDIRS_TMP}" TP_SUBDIRS_TMP)
 
-  foreach(subdir ${TP_SUBDIRS_TMP})
-    list(APPEND TP_SUBDIRS ${subdir})
-  endforeach()
+    foreach(subdir ${TP_SUBDIRS_TMP})
+      list(APPEND TP_SUBDIRS ${subdir})
+    endforeach()
+  endif()
 
   list(REMOVE_DUPLICATES TP_SUBDIRS)
 

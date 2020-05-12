@@ -1,6 +1,6 @@
 function(tp_parse_submodules directory)
 
-  execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/tp_build/cmake/extract_submodules.sh" SUBPROJECTS
+  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/tp_build/cmake/extract_submodules.sh" SUBPROJECTS
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/${directory}"
                   OUTPUT_VARIABLE TP_SUBPROJECTS)
 
@@ -12,7 +12,7 @@ function(tp_parse_submodules directory)
 
     foreach(subproject ${TP_SUBPROJECTS})
       set(TP_SUBDIRS_TMP "")
-      execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/tp_build/cmake/extract_submodules.sh" SUBDIRS
+      execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/tp_build/cmake/extract_submodules.sh" SUBDIRS
                       WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/${subproject}"
                       OUTPUT_VARIABLE TP_SUBDIRS_TMP)
 
@@ -28,7 +28,8 @@ function(tp_parse_submodules directory)
   endif()
 
   set(TP_SUBDIRS_TMP "")
-  execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/tp_build/cmake/extract_submodules.sh" SUBDIRS
+
+  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/tp_build/cmake/extract_submodules.sh" SUBDIRS
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/${directory}"
                   OUTPUT_VARIABLE TP_SUBDIRS_TMP)
 
@@ -51,7 +52,7 @@ function(tp_parse_submodules directory)
   set(TP_TESTS "")
   foreach(subdir ${TP_SUBDIRS})
     set(TP_TEMPLATE "")
-    execute_process(COMMAND "${CMAKE_CURRENT_LIST_DIR}/tp_build/cmake/extract_vars.sh" TEMPLATE
+    execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/tp_build/cmake/extract_vars.sh" TEMPLATE
                     WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/${subdir}"
                     OUTPUT_VARIABLE TP_TEMPLATE)
     string(STRIP "${TP_TEMPLATE}" TP_TEMPLATE)

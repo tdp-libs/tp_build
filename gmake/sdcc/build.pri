@@ -1,7 +1,11 @@
+# Bring in the dependencies tree 
+include $(ROOT)$(PROJECT_DIR)/dependencies.pri
+include $(ROOT)tp_build/gmake/parse_dependencies.pri
+
 DEFINES  := $(foreach DEFINE,$(DEFINES),-D$(DEFINE))
 INCLUDES += $(foreach INCLUDE,$(INCLUDEPATHS),-I./$(INCLUDE))
 
-DEFINES += -DTDP_SDCC
+DEFINES += -DTP_SDCC
 
 ARCHIVES = $(addsuffix .lib,$(addprefix $(ROOT)$(BUILD_DIR),$(SUBDIRS)))
 HEX = $(ROOT)$(BUILD_DIR)$(TARGET).hex

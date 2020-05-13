@@ -7,7 +7,7 @@ This module contains scrips used to build tdp-libs based projects, this module w
 * [Installation](https://github.com/tdp-libs/general_machine_installation) - Follow these instructions to prepare your system for building tdp-libs based projects.
 
 ## Features
-* [Modules](https://github.com/tdp-libs/tdp_build/blob/master/documentation/modules.md) - Are used to make parts of a build conditional.
+* [Modules](https://github.com/tdp-libs/tp_build/blob/master/documentation/modules.md) - Are used to make parts of a build conditional.
 
 ## Examples
 

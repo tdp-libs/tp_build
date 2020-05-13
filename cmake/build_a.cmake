@@ -159,7 +159,7 @@ function(tp_parse_vars)
     set(TP_RC_CMD "${CMAKE_CURRENT_BINARY_DIR}/tpRc.exe")
     add_custom_command(
       OUTPUT  "${TP_RC_CMD}"
-      COMMAND cl /EHsc /std:c++17 "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_rc/tp_rc.cpp"
+      COMMAND cl /EHsc /std:c++17 "/Fe\"${TP_RC_CMD}\"" "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_rc/tp_rc.cpp"
       DEPENDS "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_rc/tp_rc.cpp"
     )
   else()

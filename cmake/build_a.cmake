@@ -162,7 +162,6 @@ function(tp_parse_vars)
       COMMAND cl /EHsc "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_rc/tp_rc.cpp"
       DEPENDS "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_rc/tp_rc.cpp"
     )
-    cl /EHsc hello.cpp
   else()
     if(APPLE)
       SET(HOST_CXX env -i clang++)

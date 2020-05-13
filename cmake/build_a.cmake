@@ -2,8 +2,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-SET(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-pthread")
-
 # For documentation of the supported variabls see:
 # https://github.com/tdp-libs/tp_build/blob/master/documentation/variables.md
 function(tp_parse_vars)  
@@ -257,10 +255,13 @@ function(tp_parse_vars)
 
   if(APPLE)
     list(APPEND TP_DEFINES -DTP_OSX)
+    set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-pthread")
   elseif(ANDROID)
     list(APPEND TP_DEFINES -DTP_ANDROID)
+    set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-pthread")
   elseif(UNIX)
     list(APPEND TP_DEFINES -DTP_LINUX)
+    set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-pthread")
   elseif(WIN32)
     list(APPEND TP_DEFINES -DTP_WIN32)
   endif()

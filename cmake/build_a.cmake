@@ -316,6 +316,7 @@ function(tp_parse_vars)
       add_executable("${TP_TARGET}" ${TP_SOURCES} ${TP_HEADERS} ${TP_RESOURCES})
     endif()
 
+    message("TP_LIBRARIES:${TP_LIBRARIES}")
     target_link_libraries("${TP_TARGET}" ${TP_LIBRARIES})
     if(TP_TEMPLATE STREQUAL "app")
       if(APPLE)

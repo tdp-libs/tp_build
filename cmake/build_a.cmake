@@ -310,6 +310,7 @@ function(tp_parse_vars)
       # For Android we build a shared library then call it from Java.
       add_library("${TP_TARGET}" SHARED ${TP_SOURCES} ${TP_HEADERS} ${TP_RESOURCES})
     else()
+      message("${TP_TARGET} ${TP_SOURCES} ${TP_HEADERS} ${TP_RESOURCES}")
       add_executable("${TP_TARGET}" ${TP_SOURCES} ${TP_HEADERS} ${TP_RESOURCES})
     endif()
 

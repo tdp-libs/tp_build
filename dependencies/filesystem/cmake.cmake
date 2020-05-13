@@ -1,1 +1,6 @@
+list(APPEND TP_LIBRARIES "-lstdc++fs")
 list(APPEND TP_LIBRARIES "stdc++fs")
+list(APPEND TP_LIBRARIES "libstdc++fs")
+list(APPEND TP_LIBRARIES "-lc++fs")
+list(APPEND TP_LIBRARIES "c++fs")
+list(APPEND TP_LIBRARIES "libc++fs")

@@ -155,17 +155,28 @@ function(tp_parse_vars)
   string(REPLACE " " ";" TP_RESOURCES ${TP_RESOURCES})
   string(STRIP "${TP_RESOURCES}" TP_RESOURCES)
 
-  if(APPLE)
-    SET(HOST_CXX env -i clang++)
+  if(WIN32)
+    set(TP_RC_CMD "${CMAKE_CURRENT_BINARY_DIR}/tpRc.exe")
+    add_custom_command(
+      OUTPUT  "${TP_RC_CMD}"
+      COMMAND cl /EHsc "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_rc/tp_rc.cpp"
+      DEPENDS "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_rc/tp_rc.cpp"
+    )
+    cl /EHsc hello.cpp
   else()
-    SET(HOST_CXX g++)
+    if(APPLE)
+      SET(HOST_CXX env -i clang++)
+    else()
+      SET(HOST_CXX g++)
+    endif()
+    
+    set(TP_RC_CMD "${CMAKE_CURRENT_BINARY_DIR}/tpRc")
+    add_custom_command(
+      OUTPUT  "${TP_RC_CMD}"
+      COMMAND ${HOST_CXX} -std=gnu++1z -O2 "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_rc/tp_rc.cpp" -o "${TP_RC_CMD}"
+      DEPENDS "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_rc/tp_rc.cpp"
+    )
   endif()
-
-  add_custom_command(
-    OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/tpRc"
-    COMMAND ${HOST_CXX} -std=gnu++1z -O2 "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_rc/tp_rc.cpp" -o "${CMAKE_CURRENT_BINARY_DIR}/tpRc"
-    DEPENDS "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_rc/tp_rc.cpp"
-  )
 
   string(REPLACE " " ";" TP_RC ${TP_RC})
   string(STRIP "${TP_RC}" TP_RC)
@@ -173,8 +184,8 @@ function(tp_parse_vars)
     get_filename_component(QRC_NAME "${f}" NAME_WE)
     add_custom_command(
       OUTPUT  "${QRC_NAME}.cpp"
-      COMMAND "${CMAKE_CURRENT_BINARY_DIR}/tpRc" "${CMAKE_CURRENT_LIST_DIR}/${f}" "${CMAKE_CURRENT_BINARY_DIR}/${QRC_NAME}.cpp"
-      DEPENDS "${CMAKE_CURRENT_LIST_DIR}/${f}" "${CMAKE_CURRENT_BINARY_DIR}/tpRc"
+      COMMAND "${TP_RC_CMD}" "${CMAKE_CURRENT_LIST_DIR}/${f}" "${CMAKE_CURRENT_BINARY_DIR}/${QRC_NAME}.cpp"
+      DEPENDS "${CMAKE_CURRENT_LIST_DIR}/${f}" "${TP_RC_CMD}"
     )
     list(APPEND TP_SOURCES "${QRC_NAME}.cpp")
   endforeach(f)

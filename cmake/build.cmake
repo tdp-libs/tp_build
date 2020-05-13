@@ -2,7 +2,8 @@ function(tp_parse_submodules directory)
 
   execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/tp_build/cmake/extract_submodules.sh" SUBPROJECTS
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/${directory}"
-                  OUTPUT_VARIABLE TP_SUBPROJECTS)
+                  OUTPUT_VARIABLE TP_SUBPROJECTS
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
 
   set(TP_SUBDIRS "")
 
@@ -14,7 +15,8 @@ function(tp_parse_submodules directory)
       set(TP_SUBDIRS_TMP "")
       execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/tp_build/cmake/extract_submodules.sh" SUBDIRS
                       WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/${subproject}"
-                      OUTPUT_VARIABLE TP_SUBDIRS_TMP)
+                      OUTPUT_VARIABLE TP_SUBDIRS_TMP
+                      OUTPUT_STRIP_TRAILING_WHITESPACE)
 
       if(NOT "${TP_SUBDIRS_TMP}" STREQUAL "")
         string(REPLACE " " ";" TP_SUBDIRS_TMP ${TP_SUBDIRS_TMP})
@@ -31,7 +33,8 @@ function(tp_parse_submodules directory)
 
   execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/tp_build/cmake/extract_submodules.sh" SUBDIRS
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/${directory}"
-                  OUTPUT_VARIABLE TP_SUBDIRS_TMP)
+                  OUTPUT_VARIABLE TP_SUBDIRS_TMP
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
 
   if(NOT "${TP_SUBDIRS_TMP}" STREQUAL "")
     string(REPLACE " " ";" TP_SUBDIRS_TMP ${TP_SUBDIRS_TMP})
@@ -54,7 +57,8 @@ function(tp_parse_submodules directory)
     set(TP_TEMPLATE "")
     execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/tp_build/cmake/extract_vars.sh" TEMPLATE
                     WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/${subdir}"
-                    OUTPUT_VARIABLE TP_TEMPLATE)
+                    OUTPUT_VARIABLE TP_TEMPLATE
+                    OUTPUT_STRIP_TRAILING_WHITESPACE)
     string(STRIP "${TP_TEMPLATE}" TP_TEMPLATE)
     if(TP_TEMPLATE STREQUAL "test")
       set(TP_TESTS "${TP_TESTS}./${subdir}/${subdir}\n")

@@ -278,18 +278,22 @@ function(tp_parse_vars)
           list(APPEND TP_QT_MODULES "Widgets")
   
           if(UNIX AND QT_STATIC)
+            #Remember that you need this somewhere in your application.
+            # Q_IMPORT_PLUGIN(QXcbIntegrationPlugin)
+            # Q_IMPORT_PLUGIN(QXcbGlxIntegrationPlugin)
+
             get_target_property(tmp_loc Qt5::QXcbGlxIntegrationPlugin LOCATION)
             list(APPEND TP_LIBRARIES "${tmp_loc}")
             list(APPEND TP_LIBRARIES "${Qt5Gui_PLUGINS}")
           endif()
   
-          message("----------- A")
           if(WIN32 AND QT_STATIC)
+            #Remember that you need this somewhere in your application.
+            # Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)
+
             get_target_property(tmp_loc Qt5::QWindowsIntegrationPlugin LOCATION)
             list(APPEND TP_LIBRARIES "${tmp_loc}")
             list(APPEND TP_LIBRARIES "${Qt5Gui_PLUGINS}")
-          message("----------- Qt5::QWindowsIntegrationPlugin ${tmp_loc}")
-          message("----------- Qt5Gui_PLUGINS ${Qt5Gui_PLUGINS}")
           endif()
   
         elseif(f STREQUAL "opengl")
@@ -300,9 +304,7 @@ function(tp_parse_vars)
   
       find_package(Qt5 COMPONENTS Core)
   
-      message("----------- C ${TP_QTPLUGIN}")
       if(NOT "${TP_QTPLUGIN}" STREQUAL "")
-        message("----------- D")
         string(REPLACE " " ";" TP_QTPLUGIN ${TP_QTPLUGIN})
         string(STRIP "${TP_QTPLUGIN}" TP_QTPLUGIN)
         list(REMOVE_DUPLICATES TP_QTPLUGIN)

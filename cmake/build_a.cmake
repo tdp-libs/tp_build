@@ -285,10 +285,11 @@ function(tp_parse_vars)
   
           message("----------- A")
           if(WIN32 AND QT_STATIC)
-          message("----------- B")
             get_target_property(tmp_loc Qt5::QWindowsIntegrationPlugin LOCATION)
             list(APPEND TP_LIBRARIES "${tmp_loc}")
             list(APPEND TP_LIBRARIES "${Qt5Gui_PLUGINS}")
+          message("----------- Qt5::QWindowsIntegrationPlugin ${tmp_loc}")
+          message("----------- Qt5Gui_PLUGINS ${Qt5Gui_PLUGINS}")
           endif()
   
         elseif(f STREQUAL "opengl")

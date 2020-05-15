@@ -86,28 +86,18 @@ function(tp_parse_vars)
                   OUTPUT_STRIP_TRAILING_WHITESPACE)
 
   #== INCLUDEPATHS =================================================================================
+  string(REPLACE " " ";" TP_INCLUDEPATHS "${TP_INCLUDEPATHS} ${TP_INCLUDEPATHS_}")
+  string(STRIP "${TP_INCLUDEPATHS}" TP_INCLUDEPATHS)
   set(TP_TMP_LIST "")
-  macro(clean_and_add_include_paths PARTS_ARG)
-    if(NOT "${PARTS_ARG}" STREQUAL "")
-      string(STRIP "${PARTS_ARG}" PARTS)
-      if(NOT "${PARTS}" STREQUAL "")
-        string(REPLACE " " ";" PARTS "${PARTS}")
-        string(REGEX REPLACE "\n$" "" PARTS "${PARTS}")
-        string(REGEX REPLACE "\r$" "" PARTS "${PARTS}")
-        foreach(f ${PARTS})          
-          if(IS_ABSOLUTE "${f}")
-            list(APPEND TP_TMP_LIST "${f}")
-          else()
-            list(APPEND TP_TMP_LIST "../${f}")
-          endif()
-        endforeach(f)
-      endif()
+  foreach(f ${TP_INCLUDEPATHS})
+    if(IS_ABSOLUTE "${f}")
+      list(APPEND TP_TMP_LIST "${f}")
+    else()
+      list(APPEND TP_TMP_LIST "../${f}")
     endif()
-  endmacro()
-
-  clean_and_add_include_paths("${TP_INCLUDEPATHS}")
-  clean_and_add_include_paths("${TP_INCLUDEPATHS_}")
+  endforeach(f)
   set(TP_INCLUDEPATHS "${TP_TMP_LIST}")
+
 
   #== LIBRARYPATHS =================================================================================
   # This does not work with paths that have spaces in them.

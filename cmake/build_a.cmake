@@ -15,16 +15,6 @@ function(tp_parse_vars)
                   OUTPUT_VARIABLE TP_SOURCES
                   OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_vars.sh" TARGET
-                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-                  OUTPUT_VARIABLE TP_TARGET
-                  OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_vars.sh" TEMPLATE
-                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-                  OUTPUT_VARIABLE TP_TEMPLATE
-                  OUTPUT_STRIP_TRAILING_WHITESPACE)
-
   execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_vars.sh" TP_RC
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
                   OUTPUT_VARIABLE TP_RC
@@ -33,6 +23,16 @@ function(tp_parse_vars)
   execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_vars.sh" RESOURCES
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
                   OUTPUT_VARIABLE TP_RESOURCES
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_vars.sh" TARGET
+                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
+                  OUTPUT_VARIABLE TP_TARGET
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_vars.sh" TEMPLATE
+                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
+                  OUTPUT_VARIABLE TP_TEMPLATE
                   OUTPUT_STRIP_TRAILING_WHITESPACE)
 
   execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" INCLUDEPATHS
@@ -85,48 +85,65 @@ function(tp_parse_vars)
                   OUTPUT_VARIABLE TP_QTPLUGIN
                   OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-  string(REPLACE " " ";" TP_INCLUDEPATHS "${TP_INCLUDEPATHS} ${TP_INCLUDEPATHS_}")
-  string(STRIP "${TP_INCLUDEPATHS}" TP_INCLUDEPATHS)
+  #== INCLUDEPATHS =================================================================================
   set(TP_TMP_LIST "")
-  foreach(f ${TP_INCLUDEPATHS})
-    if(IS_ABSOLUTE "${f}")
-      list(APPEND TP_TMP_LIST "${f}")
-    else()
-      list(APPEND TP_TMP_LIST "../${f}")
+  macro(clean_and_add_include_paths PARTS_ARG)
+    if(NOT "${PARTS_ARG}" STREQUAL "")
+      string(STRIP "${PARTS_ARG}" PARTS)
+      if(NOT "${PARTS}" STREQUAL "")
+        string(REPLACE " " ";" PARTS "${PARTS}")
+        string(REGEX REPLACE "\n$" "" PARTS "${PARTS}")
+        string(REGEX REPLACE "\r$" "" PARTS "${PARTS}")
+        foreach(f ${PARTS})          
+          if(IS_ABSOLUTE "${f}")
+            list(APPEND TP_TMP_LIST "${f}")
+          else()
+            list(APPEND TP_TMP_LIST "../${f}")
+          endif()
+        endforeach(f)
+      endif()
     endif()
-  endforeach(f)
+  endmacro()
+
+  clean_and_add_include_paths("${TP_INCLUDEPATHS}")
+  clean_and_add_include_paths("${TP_INCLUDEPATHS_}")
   set(TP_INCLUDEPATHS "${TP_TMP_LIST}")
 
-  string(STRIP "${TP_LIBRARYPATHS}" TP_LIBRARYPATHS)
-  string(STRIP "${TP_LIBRARYPATHS_}" TP_LIBRARYPATHS_)
-  string(REPLACE " " ";" TP_LIBRARYPATHS "${TP_LIBRARYPATHS}")
-  string(REPLACE " " ";" TP_LIBRARYPATHS_ "${TP_LIBRARYPATHS_}")
+  #== LIBRARYPATHS =================================================================================
+  # This does not work with paths that have spaces in them.
   set(TP_TMP_LIST "")
-  foreach(f ${TP_LIBRARYPATHS})
-    if(IS_ABSOLUTE "${f}")
-      list(APPEND TP_TMP_LIST "${f}")
-    else()
-      list(APPEND TP_TMP_LIST "../${f}")
+  macro(clean_and_add_library_paths PARTS_ARG)
+    if(NOT "${PARTS_ARG}" STREQUAL "")
+      string(STRIP "${PARTS_ARG}" PARTS)
+      if(NOT "${PARTS}" STREQUAL "")
+        string(REPLACE " " ";" PARTS "${PARTS}")
+        string(REGEX REPLACE "\n$" "" PARTS "${PARTS}")
+        string(REGEX REPLACE "\r$" "" PARTS "${PARTS}")
+        foreach(f ${PARTS})          
+          if(IS_ABSOLUTE "${f}")
+            list(APPEND TP_TMP_LIST "${f}")
+          else()
+            list(APPEND TP_TMP_LIST "../${f}")
+          endif()
+        endforeach(f)
+      endif()
     endif()
-  endforeach(f)
-  foreach(f ${TP_LIBRARYPATHS_})
-    if(IS_ABSOLUTE "${f}")
-      list(APPEND TP_TMP_LIST "${f}")
-    else()
-      list(APPEND TP_TMP_LIST "../${f}")
-    endif()
-  endforeach(f)
+  endmacro()
+
+  clean_and_add_library_paths("${TP_LIBRARYPATHS}")
+  clean_and_add_library_paths("${TP_LIBRARYPATHS_}")
   set(TP_LIBRARYPATHS "${TP_TMP_LIST}")
 
+  #== LIBRARIES ====================================================================================
   set(TP_TMP_LIST "")
-  macro(clean_and_add_libraries LIBS_ARG)
-    if(NOT "${LIBS_ARG}" STREQUAL "")
-      string(STRIP "${LIBS_ARG}" LIBS)
-      if(NOT "${LIBS}" STREQUAL "")
-        string(REPLACE " " ";" LIBS "${LIBS}")
-        string(REGEX REPLACE "\n$" "" LIBS "${LIBS}")
-        string(REGEX REPLACE "\r$" "" LIBS "${LIBS}")
-        foreach(f ${LIBS})          
+  macro(clean_and_add_libraries PARTS_ARG)
+    if(NOT "${PARTS_ARG}" STREQUAL "")
+      string(STRIP "${PARTS_ARG}" PARTS)
+      if(NOT "${PARTS}" STREQUAL "")
+        string(REPLACE " " ";" PARTS "${PARTS}")
+        string(REGEX REPLACE "\n$" "" PARTS "${PARTS}")
+        string(REGEX REPLACE "\r$" "" PARTS "${PARTS}")
+        foreach(f ${PARTS})          
           string(STRIP "${f}" f)
           list(APPEND TP_TMP_LIST "${f}")
         endforeach(f)
@@ -157,25 +174,50 @@ function(tp_parse_vars)
   list(REMOVE_DUPLICATES TP_LIBRARIES)
   list(REVERSE TP_LIBRARIES)
 
+  #== FRAMEWORKS ===================================================================================
   if(APPLE)
-    string(REPLACE " " ";" TP_FRAMEWORKS "${TP_FRAMEWORKS} ${TP_FRAMEWORKS_}")
-    string(STRIP "${TP_FRAMEWORKS}" TP_FRAMEWORKS)
-    foreach(f ${TP_FRAMEWORKS})
-      list(APPEND TP_LIBRARIES "-framework ${f}")
-    endforeach(f)
+    macro(clean_and_add_frameworks PARTS_ARG)
+      if(NOT "${PARTS_ARG}" STREQUAL "")
+        string(STRIP "${PARTS_ARG}" PARTS)
+        if(NOT "${PARTS}" STREQUAL "")
+          string(REPLACE " " ";" PARTS "${PARTS}")
+          string(REGEX REPLACE "\n$" "" PARTS "${PARTS}")
+          string(REGEX REPLACE "\r$" "" PARTS "${PARTS}")
+          foreach(f ${PARTS})
+            list(APPEND TP_LIBRARIES "-framework ${f}")
+          endforeach(f)
+        endif()
+      endif()
+    endmacro()
+
+    clean_and_add_frameworks("${TP_FRAMEWORKS}")
+    clean_and_add_frameworks("${TP_FRAMEWORKS_}")
   endif()
 
-  string(REPLACE " " ";" TP_DEFINES "${DEFINES} ${TP_DEFINES} ${TP_DEFINES_}")
-  string(STRIP "${TP_DEFINES}" TP_DEFINES)
+  #== DEFINES ======================================================================================
   set(TP_TMP_LIST "")
-  foreach(f ${TP_DEFINES})
-    string(FIND "${f}" "-" out)
-    if("${out}" EQUAL 0)
-      list(APPEND TP_TMP_LIST "${f}")
-    else()
-      list(APPEND TP_TMP_LIST "-D${f}")
+  macro(clean_and_add_defines PARTS_ARG)
+    if(NOT "${PARTS_ARG}" STREQUAL "")
+      string(STRIP "${PARTS_ARG}" PARTS)
+      if(NOT "${PARTS}" STREQUAL "")
+        string(REPLACE " " ";" PARTS "${PARTS}")
+        string(REGEX REPLACE "\n$" "" PARTS "${PARTS}")
+        string(REGEX REPLACE "\r$" "" PARTS "${PARTS}")
+        foreach(f ${PARTS})          
+          string(FIND "${f}" "-" out)
+          if("${out}" EQUAL 0)
+            list(APPEND TP_TMP_LIST "${f}")
+          else()
+            list(APPEND TP_TMP_LIST "-D${f}")
+          endif()
+        endforeach(f)
+      endif()
     endif()
-  endforeach(f)
+  endmacro()
+
+  clean_and_add_defines("${DEFINES}")
+  clean_and_add_defines("${TP_DEFINES}")
+  clean_and_add_defines("${TP_DEFINES_}")
   set(TP_DEFINES "${TP_TMP_LIST}")
 
   string(STRIP "${TP_TEMPLATE}" TP_TEMPLATE)

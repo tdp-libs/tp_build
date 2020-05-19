@@ -18,6 +18,15 @@ include(x_parse_modules_dependencies.pri)
 # Bring in the dependencies tree
 include(parse_dependencies.pri)
 
+for(INCLUDE, SYSTEM_INCLUDEPATHS) {
+  unix{
+    QMAKE_CFLAGS   += -isystem $${INCLUDE}
+    QMAKE_CXXFLAGS += -isystem $${INCLUDE}
+  }else{
+    INCLUDEPATHS += $${INCLUDE}
+  }
+}
+
 for(INCLUDE, INCLUDEPATHS) {
   STARTS_WITH_RESULT = $$find(INCLUDE, "^/")
   count(STARTS_WITH_RESULT, 1){

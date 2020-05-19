@@ -264,17 +264,19 @@ function(tp_parse_vars)
   endif()
 
   if(TP_TEMPLATE STREQUAL "app" OR TP_TEMPLATE STREQUAL "test")
-    string(REPLACE " " ";" TP_STATIC_INIT ${TP_STATIC_INIT})
-    string(STRIP "${TP_STATIC_INIT}" TP_STATIC_INIT)
-    foreach(f ${TP_STATIC_INIT})
-      add_custom_command(
-        OUTPUT  "${f}.cpp"
-        COMMAND "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_static_init/generate_static_init.sh" "${f}.cpp" ${f}
-        DEPENDS "${CMAKE_CURRENT_LIST_DIR}/../${f}/inc/${f}/Globals.h" "${CMAKE_CURRENT_LIST_DIR}/../${f}/src/Globals.cpp" "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_static_init/generate_static_init.sh"
-      )
-
-      list(APPEND TP_SOURCES "${f}.cpp")
-    endforeach(f)
+    if(NOT "${TP_STATIC_INIT}" STREQUAL "")
+      string(REPLACE " " ";" TP_STATIC_INIT ${TP_STATIC_INIT})
+      string(STRIP "${TP_STATIC_INIT}" TP_STATIC_INIT)
+      foreach(f ${TP_STATIC_INIT})
+        add_custom_command(
+          OUTPUT  "${f}.cpp"
+          COMMAND "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_static_init/generate_static_init.sh" "${f}.cpp" ${f}
+          DEPENDS "${CMAKE_CURRENT_LIST_DIR}/../${f}/inc/${f}/Globals.h" "${CMAKE_CURRENT_LIST_DIR}/../${f}/src/Globals.cpp" "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_static_init/generate_static_init.sh"
+        )
+  
+        list(APPEND TP_SOURCES "${f}.cpp")
+      endforeach(f)
+    endif()
   endif()
 
   if(NOT "${TP_QT}" STREQUAL "")

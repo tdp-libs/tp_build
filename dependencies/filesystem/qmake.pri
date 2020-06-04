@@ -1,8 +1,13 @@
 DEFINES += TP_FILESYSTEM
 
 macx {
-SLIBS        += boost_system
-SLIBS        += boost_filesystem
+  custom_boost {
+    # Custom bost config has been specified in project.inc
+    # CONFIG += custom_boost
+  }else {
+    SLIBS        += boost_system
+    SLIBS        += boost_filesystem
+  }
 }
 
 else:iphoneos {
@@ -18,5 +23,5 @@ else:win32 {
 }
 
 else {
-SLIBS        += stdc++fs
+  SLIBS        += stdc++fs
 }

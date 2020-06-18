@@ -1,6 +1,6 @@
 # tdp-libs Build System
 
-This module contains scrips used to build tdp-libs based projects, this module will be cloned into the project directory by the [tdpUpdate](https://github.com/tdp-libs/tdp_tools) script. Depending on the use case tdp-libs based projects can be build using either qmake, cmake, or gmake.
+This module contains scrips used to build tdp-libs based projects, this module will be cloned into the project directory by the [tdpUpdate](https://github.com/tdp-libs/tp_tools) script. Depending on the use case tdp-libs based projects can be build using either qmake, cmake, or gmake.
 
 ## Installation
 

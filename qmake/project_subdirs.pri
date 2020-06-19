@@ -9,4 +9,3 @@ for(SUBPROJECT, SUBPROJECTS) {
 
 include(x_parse_modules_submodules.pri)
 include(x_parse_deps.pri)
-

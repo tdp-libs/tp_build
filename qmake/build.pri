@@ -1,6 +1,9 @@
 # For documentation of the supported variabls see:
 # https://github.com/tdp-libs/tp_build/blob/master/documentation/variables.md
 
+# This makes Qt Creator add ../lib to the library path so that we dont need to add it manually.
+LIBRARYPATHS+=../lib
+
 exists(../../project.inc) {
 include(../../project.inc)
 }

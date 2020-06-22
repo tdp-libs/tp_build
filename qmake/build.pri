@@ -32,13 +32,6 @@ for(INCLUDE, SYSTEM_INCLUDEPATHS) {
 
 for(INCLUDE, INCLUDEPATHS) {
   INCLUDEPATH += $$absolute_path($${INCLUDE}, "$$PWD/../../")
-
-  # STARTS_WITH_RESULT = $$find(INCLUDE, "^/")
-  # count(STARTS_WITH_RESULT, 1){
-  #   INCLUDEPATH += $${INCLUDE}
-  # } else {
-  #   INCLUDEPATH += $$PWD/../../$${INCLUDE}
-  # }
 }
 
 INCLUDEPATH = $$unique(INCLUDEPATH)

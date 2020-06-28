@@ -19,7 +19,7 @@ $(BUILD_DIR):
 
 .PHONY: force_look
 $(SUBDIRS): force_look
-	for d in $@ ; do (cd $$d ; make -j${JOBS} ) ; done
+	for d in $@ ; do (cd $$d ; make  ) ; done
 
 install:
 	-for d in $(SUBDIRS) ; do (cd $$d; $(MAKE) install ); done

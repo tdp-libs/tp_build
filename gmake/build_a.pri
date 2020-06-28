@@ -1,4 +1,4 @@
-ROOT = ../
+ROOT = $(CURDIR)/../
 
 TP_BUILD_TYPE = emcc
 -include $(ROOT)toolchain.pri

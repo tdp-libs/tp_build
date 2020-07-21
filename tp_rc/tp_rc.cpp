@@ -43,7 +43,7 @@ bool writeBinaryFile(const std::string& fileName, const std::string& textOutput)
 //##################################################################################################
 int main(int argc, const char * argv[])
 {
-  if(argc!=3)
+  if(argc!=4)
   {
     std::cerr << "error: Incorrect number of arguments passed to tpRc!" << std::endl;
     return 1;
@@ -138,11 +138,17 @@ int main(int argc, const char * argv[])
     initText += "  tp_utils::addResource(\"" + prefix + alias + "\",reinterpret_cast<const char*>(data" + std::to_string(c) + "),size" + std::to_string(c) + ");\n";
     c++;
   }
-  cppText += "extern int initialized;\n";
+  //cppText += "extern int initialized;\n";
   cppText += "int initialize()\n{\n" + initText + "return 0;\n}\n";
   cppText += "int initialized=initialize();\n";
 
   cppText += "}\n";
+
+  cppText += "namespace " + std::string(argv[3]) + "\n";
+  cppText += "{\n";
+  cppText += "  int tp_rc(){return initialized;}\n";
+  cppText += "}\n";
+
 
 
   writeBinaryFile(argv[2], cppText);

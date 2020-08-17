@@ -50,7 +50,7 @@ function(tp_parse_vars)
                   OUTPUT_VARIABLE TP_FRAMEWORKS_
                   OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" LIB
+  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" LIBS
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
                   OUTPUT_VARIABLE TP_LIBS_
                   OUTPUT_STRIP_TRAILING_WHITESPACE)

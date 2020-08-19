@@ -100,8 +100,8 @@ Used to find extra dependencies.
 
 Possible values:
 * Built in values found in tp_build/dependencies.
-  * TP_DEPENDENCIES += filesystem
-  * TP_DEPENDENCIES += opengl
+  * TP_DEPENDENCIES += tp_utils_filesystem/filesystem
+  * TP_DEPENDENCIES += tp_maps/dependencies/opengl
 * Values provided by other modules.
   * TP_DEPENDENCIES += tp_maps_mobile/dependencies/
 

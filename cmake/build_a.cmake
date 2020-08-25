@@ -208,25 +208,45 @@ function(tp_parse_vars)
   clean_and_add_defines("${TP_DEFINES_}")
   set(TP_DEFINES "${TP_TMP_LIST}")
 
+  if(IOS)
+    list(APPEND TP_DEFINES -DTP_IOS)
+  elseif(APPLE)
+    list(APPEND TP_DEFINES -DTP_OSX)
+  elseif(ANDROID)
+    list(APPEND TP_DEFINES -DTP_ANDROID)
+  elseif(UNIX)
+    list(APPEND TP_DEFINES -DTP_LINUX)
+    set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-pthread")
+      list(APPEND TP_LIBRARIES "pthread")
+  elseif(WIN32)
+    list(APPEND TP_DEFINES -DTP_WIN32)
+  endif()
+
+  #== TP_TEMPLATE ==================================================================================
   string(STRIP "${TP_TEMPLATE}" TP_TEMPLATE)
 
+  #== TP_TARGET ====================================================================================
   string(STRIP "${TP_TARGET}" TP_TARGET)
 
+  #== SOURCES ======================================================================================
   if(NOT "${TP_SOURCES}" STREQUAL "")
     string(REPLACE " " ";" TP_SOURCES ${TP_SOURCES})
     string(STRIP "${TP_SOURCES}" TP_SOURCES)
   endif()
 
+  #== HEADERS ======================================================================================
   if(NOT "${TP_HEADERS}" STREQUAL "")
     string(REPLACE " " ";" TP_HEADERS ${TP_HEADERS})
     string(STRIP "${TP_HEADERS}" TP_HEADERS)
   endif()
 
+  #== Qt RESOURCES =================================================================================
   if(NOT "${TP_RESOURCES}" STREQUAL "")
     string(REPLACE " " ";" TP_RESOURCES ${TP_RESOURCES})
     string(STRIP "${TP_RESOURCES}" TP_RESOURCES)
   endif()
 
+  #== TP RESOURCES =================================================================================
   if(WIN32)
     set(TP_RC_CMD "${CMAKE_CURRENT_BINARY_DIR}/tpRc.exe")
     add_custom_command(
@@ -263,6 +283,7 @@ function(tp_parse_vars)
     endforeach(f)
   endif()
 
+  #== STATIC_INIT ==================================================================================
   if(TP_TEMPLATE STREQUAL "app" OR TP_TEMPLATE STREQUAL "test")
     if(NOT "${TP_STATIC_INIT}" STREQUAL "")
       string(REPLACE " " ";" TP_STATIC_INIT ${TP_STATIC_INIT})
@@ -279,6 +300,7 @@ function(tp_parse_vars)
     endif()
   endif()
 
+  #== QT ===========================================================================================
   if(NOT "${TP_QT}" STREQUAL "")
     string(REPLACE " " ";" TP_QT ${TP_QT})
     string(STRIP "${TP_QT}" TP_QT)  
@@ -374,20 +396,7 @@ function(tp_parse_vars)
     endif()
   endif()
 
-  if(IOS)
-    list(APPEND TP_DEFINES -DTP_IOS)
-  elseif(APPLE)
-    list(APPEND TP_DEFINES -DTP_OSX)
-  elseif(ANDROID)
-    list(APPEND TP_DEFINES -DTP_ANDROID)
-  elseif(UNIX)
-    list(APPEND TP_DEFINES -DTP_LINUX)
-    set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-pthread")
-      list(APPEND TP_LIBRARIES "pthread")
-  elseif(WIN32)
-    list(APPEND TP_DEFINES -DTP_WIN32)
-  endif()
-
+  #== Build Lib ====================================================================================
   if(TP_TEMPLATE STREQUAL "lib")
     include_directories(${TP_INCLUDEPATHS})
     link_directories(${TP_LIBRARYPATHS})
@@ -399,6 +408,7 @@ function(tp_parse_vars)
     endif()
   endif()
 
+  #== Build App ====================================================================================
   if(TP_TEMPLATE STREQUAL "app" OR TP_TEMPLATE STREQUAL "test")
     include_directories(${TP_INCLUDEPATHS})
     link_directories(${TP_LIBRARYPATHS})
@@ -441,6 +451,7 @@ function(tp_parse_vars)
     endif()
   endif()
 
+  #== Build Subdirs ================================================================================
   if(NOT TP_TEMPLATE STREQUAL "subdirs")
     if(TP_QT_MODULES)
       qt5_use_modules("${TP_TARGET}" ${TP_QT_MODULES})

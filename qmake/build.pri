@@ -21,6 +21,16 @@ include(x_parse_modules_dependencies.pri)
 # Bring in the dependencies tree
 include(parse_dependencies.pri)
 
+# Hack to make Qt Creator parse the emscripten code model correctly.
+for(INCLUDE, SYSTEM_INCLUDEPATHS_QT_CREATOR) {
+  unix{
+    QMAKE_CFLAGS   += -isystem $${INCLUDE}
+    QMAKE_CXXFLAGS += -isystem $${INCLUDE}
+  }else{
+    INCLUDEPATHS += $${INCLUDE}
+  }
+}
+
 for(INCLUDE, SYSTEM_INCLUDEPATHS) {
   unix{
     QMAKE_CFLAGS   += -isystem $${INCLUDE}

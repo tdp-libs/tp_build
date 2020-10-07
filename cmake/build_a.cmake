@@ -276,7 +276,7 @@ function(tp_parse_vars)
       get_filename_component(QRC_NAME "${f}" NAME_WE)
       add_custom_command(
         OUTPUT  "${QRC_NAME}.cpp"
-        COMMAND "${TP_RC_CMD}" "${CMAKE_CURRENT_LIST_DIR}/${f}" "${CMAKE_CURRENT_BINARY_DIR}/${QRC_NAME}.cpp"
+        COMMAND "${TP_RC_CMD}" "${CMAKE_CURRENT_LIST_DIR}/${f}" "${CMAKE_CURRENT_BINARY_DIR}/${QRC_NAME}.cpp" ${QRC_NAME}
         DEPENDS "${CMAKE_CURRENT_LIST_DIR}/${f}" "${TP_RC_CMD}"
       )
       list(APPEND TP_SOURCES "${QRC_NAME}.cpp")

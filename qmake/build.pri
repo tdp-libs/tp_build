@@ -141,6 +141,7 @@ else:win32{
 
   CONFIG += c++1z
   QMAKE_CXXFLAGS *= /std:c++17
+  QMAKE_CXXFLAGS *= /bigobj    # Win32 issue in exprtk.hpp
   DEFINES += TP_CPP_VERSION=17
 }
 

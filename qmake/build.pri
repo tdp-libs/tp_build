@@ -40,6 +40,15 @@ for(INCLUDE, SYSTEM_INCLUDEPATHS) {
   }
 }
 
+for(INCLUDE, RELATIVE_SYSTEM_INCLUDEPATHS) {
+  unix{
+    QMAKE_CFLAGS   += -isystem $$absolute_path($${INCLUDE}, "$$PWD/../../")
+    QMAKE_CXXFLAGS += -isystem $$absolute_path($${INCLUDE}, "$$PWD/../../")
+  }else{
+    INCLUDEPATHS += $${INCLUDE}
+  }
+}
+
 for(INCLUDE, INCLUDEPATHS) {
   INCLUDEPATH += $$absolute_path($${INCLUDE}, "$$PWD/../../")
 }

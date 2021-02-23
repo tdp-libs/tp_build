@@ -3,7 +3,7 @@
 ##TP_RC += file.qrc
 
 TP_RC_TOOL_SOURCE = $$absolute_path(../tp_rc/tp_rc.cpp)
-TP_RC_TOOL = $$absolute_path($$OUT_PWD/../tpRc)
+TP_RC_TOOL = $$absolute_path($$OUT_PWD/tpRc)
 
 buildtprc.output = $${TP_RC_TOOL}
 buildtprc.target = buildtprc

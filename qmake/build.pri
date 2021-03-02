@@ -95,12 +95,6 @@ QMAKE_LIBDIR += ../lib
 QMAKE_LIBDIR += ..
 QMAKE_LIBDIR += .
 
-#Correct the order of libs
-LIBS = $$unique(LIBS)
-staticlib {
-  LIBS = $$reverse(LIBS)
-}
-
 #== Special handling for Android ===================================================================
 android{
   DEFINES += TP_ANDROID
@@ -147,10 +141,22 @@ else:win32{
   contains(TEMPLATE, lib){
     CONFIG += staticlib
   }
+  else:contains(TEMPLATE, app){
+    CONFIG += reverse_libs
+  }
 
   CONFIG += c++1z
-  QMAKE_CXXFLAGS *= /std:c++17
-  QMAKE_CXXFLAGS *= /bigobj    # Win32 issue in exprtk.hpp
+  win32-msvc* {
+    QMAKE_CXXFLAGS *= /std:c++17
+    QMAKE_CXXFLAGS *= /bigobj    # Win32 issue in exprtk.hpp
+    DEFINES += TP_WIN32_MSVC
+  }
+  else {
+    DEFINES += TP_WIN32_MINGW
+    QMAKE_CXXFLAGS *= -std=c++1z
+    QMAKE_CXXFLAGS *= -Wa,-mbig-obj
+  }
+
   DEFINES += TP_CPP_VERSION=17
 }
 
@@ -237,6 +243,13 @@ else{
 osx          {TP_HOST_CXX=env -i g++}
 else:iphoneos{TP_HOST_CXX=env -i g++}
 else         {TP_HOST_CXX=g++       }
+
+#Correct the order of libs
+LIBS = $$unique(LIBS)
+staticlib|reverse_libs {
+  message("Reverse")
+  LIBS = $$reverse(LIBS)
+}
 
 include(copy.pri)
 include(rc.pri)

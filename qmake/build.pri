@@ -247,7 +247,6 @@ else         {TP_HOST_CXX=g++       }
 #Correct the order of libs
 LIBS = $$unique(LIBS)
 staticlib|reverse_libs {
-  message("Reverse")
   LIBS = $$reverse(LIBS)
 }
 

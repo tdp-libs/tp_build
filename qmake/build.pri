@@ -95,6 +95,10 @@ QMAKE_LIBDIR += ../lib
 QMAKE_LIBDIR += ..
 QMAKE_LIBDIR += .
 
+CONFIG(debug, debug|release) {
+  DEFINES += TP_DEBUG
+}
+
 #== Special handling for Android ===================================================================
 android{
   DEFINES += TP_ANDROID

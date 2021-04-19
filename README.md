@@ -9,7 +9,14 @@ the use case tdp-libs based projects can be build using either qmake, cmake, or 
 * [Installation](https://github.com/tdp-libs/general_machine_installation) - Follow these 
 instructions to prepare your system for building tdp-libs based projects.
 
-## Features
+## Operation
+
+* [Files](https://github.com/tdp-libs/tp_build/blob/master/documentation/files.md) - Describes the 
+role of each file in the build.
+
+* [Variables](https://github.com/tdp-libs/tp_build/blob/master/documentation/variables.md) - This 
+describes the variables that are used to configure the build.
+
 * [Modules](https://github.com/tdp-libs/tp_build/blob/master/documentation/modules.md) - Are used to
 make parts of a build conditional.
 

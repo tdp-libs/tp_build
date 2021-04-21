@@ -244,9 +244,7 @@ else{
   }
 }
 
-osx          {TP_HOST_CXX=env -i g++}
-else:iphoneos{TP_HOST_CXX=env -i g++}
-else         {TP_HOST_CXX=g++       }
+include(host_cxx.pri)
 
 #Correct the order of libs
 LIBS = $$unique(LIBS)

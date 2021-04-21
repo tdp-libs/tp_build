@@ -15,6 +15,7 @@ for(SUBDIR, SUBDIRS) {
 
   $${SUBDIR}.subdir = $${SUBDIR}
   $${SUBDIR}.target = $${SUBDIR}
-  $${SUBDIR}.depends = $${DEPENDENCIES}
+  $${SUBDIR}.depends = $${DEPENDENCIES} tp_build
 }
 
+SUBDIRS += tp_build

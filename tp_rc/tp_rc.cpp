@@ -62,6 +62,7 @@ int main(int argc, const char * argv[])
   }
 
   std::cout << inputData << std::endl;
+
   rapidxml::xml_document<> doc;
   doc.parse<0>(inputData.data());
 
@@ -89,15 +90,15 @@ int main(int argc, const char * argv[])
 
   std::string cppText = "#include \"tp_utils/Resources.h\"\n\nnamespace\n{\n\n";
   std::string initText;
+  std::string depText;
 
   int c=0;
   for(auto fileNode = qresourceNode->first_node("file"); fileNode; fileNode=fileNode->next_sibling("file"))
   {
     std::string inputFile = fileNode->value();
-    std::string alias = inputFile;
-
     std::string inputFilePath = qrcDirectory + inputFile;
 
+    std::string alias = inputFile;
     if(auto aliasAttribute = fileNode->first_attribute("alias"); aliasAttribute)
       alias = aliasAttribute->value();
 
@@ -137,7 +138,10 @@ int main(int argc, const char * argv[])
     cppText += "size_t size" + std::to_string(c) + "=" + std::to_string(fileData.size()) + ";\n\n";
     initText += "  tp_utils::addResource(\"" + prefix + alias + "\",reinterpret_cast<const char*>(data" + std::to_string(c) + "),size" + std::to_string(c) + ");\n";
     c++;
+
+    depText += inputFilePath + '\n';
   }
+
   //cppText += "extern int initialized;\n";
   cppText += "int initialize()\n{\n" + initText + "return 0;\n}\n";
   cppText += "int initialized=initialize();\n";
@@ -149,9 +153,8 @@ int main(int argc, const char * argv[])
   cppText += "  int tp_rc(){return initialized;}\n";
   cppText += "}\n";
 
-
-
   writeBinaryFile(argv[2], cppText);
+  writeBinaryFile(std::string(argv[2]) + ".dep", depText);
 
   return 0;
 }

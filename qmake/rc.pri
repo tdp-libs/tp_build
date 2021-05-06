@@ -13,4 +13,8 @@ tpRc.input = TP_RC
 tpRc.output = $${OUT_PWD}/${QMAKE_FILE_BASE}.cpp
 tpRc.commands = $${TP_RC_TOOL} ${QMAKE_FILE_IN} $${OUT_PWD}/${QMAKE_FILE_BASE}.cpp ${QMAKE_FILE_BASE}
 tpRc.variable_out = SOURCES
+
+tpRc.depend_command = grep -hs ^ $${OUT_PWD}/${QMAKE_FILE_BASE}.cpp.dep
+tpRc.CONFIG = dep_lines
+
 QMAKE_EXTRA_COMPILERS += tpRc

@@ -85,6 +85,16 @@ function(tp_parse_vars)
                   OUTPUT_VARIABLE TP_QTPLUGIN
                   OUTPUT_STRIP_TRAILING_WHITESPACE)
 
+  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_vars.sh" CFLAGS
+                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
+                  OUTPUT_VARIABLE CFLAGS
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_vars.sh" CXXFLAGS
+                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
+                  OUTPUT_VARIABLE CXXFLAGS
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+
   #== INCLUDEPATHS =================================================================================
   string(REPLACE " " ";" TP_INCLUDEPATHS "${TP_INCLUDEPATHS} ${TP_INCLUDEPATHS_}")
   string(STRIP "${TP_INCLUDEPATHS}" TP_INCLUDEPATHS)

@@ -85,15 +85,16 @@ function(tp_parse_vars)
                   OUTPUT_VARIABLE TP_QTPLUGIN
                   OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_vars.sh" CFLAGS
+  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" CFLAGS
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-                  OUTPUT_VARIABLE CFLAGS
+                  OUTPUT_VARIABLE TP_CFLAGS
                   OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_vars.sh" CXXFLAGS
+  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" CXXFLAGS
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-                  OUTPUT_VARIABLE CXXFLAGS
+                  OUTPUT_VARIABLE TP_CXXFLAGS
                   OUTPUT_STRIP_TRAILING_WHITESPACE)
+
 
   #== INCLUDEPATHS =================================================================================
   string(REPLACE " " ";" TP_INCLUDEPATHS "${TP_INCLUDEPATHS} ${TP_INCLUDEPATHS_}")
@@ -411,6 +412,8 @@ function(tp_parse_vars)
     include_directories(${TP_INCLUDEPATHS})
     link_directories(${TP_LIBRARYPATHS})
     add_definitions(${TP_DEFINES})
+    add_definitions("${TP_CFLAGS} ${TP_CXXFLAGS} ${TP_LFLAGS}")
+
     if(WIN32)
       add_library("${TP_TARGET}" STATIC ${TP_SOURCES} ${TP_HEADERS} ${TP_RESOURCES})
     else()

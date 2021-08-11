@@ -99,6 +99,16 @@ CONFIG(debug, debug|release) {
   DEFINES += TP_DEBUG
 }
 
+message($${TARGET} depends on $${ALL_DEPENDENCIES})
+QMAKE_POST_LINK = "touch $${TARGET}.txt"
+for(DEPENDENCY, ALL_DEPENDENCIES) {
+  TARGETDEPS += $${OUT_PWD}/../$${DEPENDENCY}/$${DEPENDENCY}.txt
+}
+
+contains(TEMPLATE, subdirs) {
+  system("touch $${OUT_PWD}/$${TARGET}.txt")
+}
+
 #== Special handling for Android ===================================================================
 android{
   DEFINES += TP_ANDROID

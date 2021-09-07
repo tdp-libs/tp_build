@@ -166,6 +166,7 @@ else:win32{
     DEFINES += TP_WIN32_MINGW
     QMAKE_CXXFLAGS *= -std=c++1z
     QMAKE_CXXFLAGS *= -Wa,-mbig-obj
+    #QMAKE_LFLAGS *= -fuse-ld=bfd
   }
 
   DEFINES += TP_CPP_VERSION=17

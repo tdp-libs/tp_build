@@ -1,7 +1,12 @@
-function(tp_parse_submodules directory)
+function(tp_parse_submodules)
+
+  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/tp_build/cmake/extract_project.sh" PROJECT_DIR
+                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
+                  OUTPUT_VARIABLE PROJECT_DIR
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
 
   execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/tp_build/cmake/extract_submodules.sh" SUBPROJECTS
-                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/${directory}"
+                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/${PROJECT_DIR}"
                   OUTPUT_VARIABLE TP_SUBPROJECTS
                   OUTPUT_STRIP_TRAILING_WHITESPACE)
 
@@ -32,7 +37,7 @@ function(tp_parse_submodules directory)
   set(TP_SUBDIRS_TMP "")
 
   execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/tp_build/cmake/extract_submodules.sh" SUBDIRS
-                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/${directory}"
+                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/${PROJECT_DIR}"
                   OUTPUT_VARIABLE TP_SUBDIRS_TMP
                   OUTPUT_STRIP_TRAILING_WHITESPACE)
 

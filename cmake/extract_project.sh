@@ -2,7 +2,7 @@
 TMP_DB_FILE="/tmp/$$_make.db.txt"
 RESULT=""
 
-env -i `which make` -pn -f ../project.inc > $TMP_DB_FILE 2>/dev/null
+env -i `which make` -pn -f project.inc > $TMP_DB_FILE 2>/dev/null
 while read var assign value; do
   if [[ ${var} = $1 ]] && [[ ${assign} = '=' ]]; then
     RESULT+="$value "

@@ -133,11 +133,17 @@ android{
 else:win32{
   DEFINES += TP_WIN32
 
-  # Fix the issue where static libs don't trigger a re-link of dependent libs.
-  QMAKE_POST_LINK = "touch $${TARGET}.txt"
-  system("touch $${OUT_PWD}/$${TARGET}.txt")
-  for(DEPENDENCY, ALL_DEPENDENCIES) {
-    TARGETDEPS += $${OUT_PWD}/../$${DEPENDENCY}/$${DEPENDENCY}.txt
+  CONFIG += win32_static
+
+  win32_static{
+    DEFINES+=TP_WIN32_STATIC
+
+    # Fix the issue where static libs don't trigger a re-link of dependent libs.
+    QMAKE_POST_LINK = "copy /Y NUL $$shell_path($${OUT_PWD}/$${TARGET}.txt) > NUL"
+    system("copy /Y NUL $$shell_path($${OUT_PWD}/$${TARGET}.txt) > NUL")
+    for(DEPENDENCY, ALL_DEPENDENCIES) {
+      TARGETDEPS += $${OUT_PWD}/../$${DEPENDENCY}/$${DEPENDENCY}.txt
+    }
   }
 
   contains(TEMPLATE, app){
@@ -150,7 +156,9 @@ else:win32{
   winrt:INCLUDEPATH += $$_PRO_FILE_PWD_/moc/
 
   contains(TEMPLATE, lib){
-    CONFIG += staticlib
+    win32_static{
+      CONFIG += staticlib
+    }
   }
   else:contains(TEMPLATE, app){
     CONFIG += reverse_libs

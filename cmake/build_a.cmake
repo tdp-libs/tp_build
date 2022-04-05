@@ -40,6 +40,16 @@ function(tp_parse_vars)
                   OUTPUT_VARIABLE TP_INCLUDEPATHS_
                   OUTPUT_STRIP_TRAILING_WHITESPACE)
 
+  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" SYSTEM_INCLUDEPATHS
+                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
+                  OUTPUT_VARIABLE TP_SYSTEM_INCLUDEPATHS_
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" RELATIVE_SYSTEM_INCLUDEPATHS
+                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
+                  OUTPUT_VARIABLE TP_RELATIVE_SYSTEM_INCLUDEPATHS_
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+
   execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" LIBRARIES
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
                   OUTPUT_VARIABLE TP_LIBRARIES_
@@ -85,6 +95,7 @@ function(tp_parse_vars)
                   OUTPUT_VARIABLE TP_QTPLUGIN
                   OUTPUT_STRIP_TRAILING_WHITESPACE)
 
+
   #== INCLUDEPATHS =================================================================================
   string(REPLACE " " ";" TP_INCLUDEPATHS "${TP_INCLUDEPATHS} ${TP_INCLUDEPATHS_}")
   string(STRIP "${TP_INCLUDEPATHS}" TP_INCLUDEPATHS)
@@ -97,6 +108,34 @@ function(tp_parse_vars)
     endif()
   endforeach(f)
   set(TP_INCLUDEPATHS "${TP_TMP_LIST}")
+
+
+  #== SYSTEM_INCLUDEPATHS ==========================================================================
+  string(REPLACE " " ";" TP_SYSTEM_INCLUDEPATHS "${TP_SYSTEM_INCLUDEPATHS} ${TP_SYSTEM_INCLUDEPATHS_}")
+  string(STRIP "${TP_SYSTEM_INCLUDEPATHS}" TP_SYSTEM_INCLUDEPATHS)
+  set(TP_TMP_LIST "")
+  foreach(f ${TP_SYSTEM_INCLUDEPATHS})
+    if(IS_ABSOLUTE "${f}")
+      list(APPEND TP_TMP_LIST "${f}")
+    else()
+      list(APPEND TP_TMP_LIST "../${f}")
+    endif()
+  endforeach(f)
+  set(TP_SYSTEM_INCLUDEPATHS "${TP_TMP_LIST}")
+
+
+  #== RELATIVE_SYSTEM_INCLUDEPATHS =================================================================
+  string(REPLACE " " ";" TP_RELATIVE_SYSTEM_INCLUDEPATHS "${TP_RELATIVE_SYSTEM_INCLUDEPATHS} ${TP_RELATIVE_SYSTEM_INCLUDEPATHS_}")
+  string(STRIP "${TP_RELATIVE_SYSTEM_INCLUDEPATHS}" TP_RELATIVE_SYSTEM_INCLUDEPATHS)
+  set(TP_TMP_LIST "")
+  foreach(f ${TP_RELATIVE_SYSTEM_INCLUDEPATHS})
+    if(IS_ABSOLUTE "${f}")
+      list(APPEND TP_TMP_LIST "${f}")
+    else()
+      list(APPEND TP_TMP_LIST "../${f}")
+    endif()
+  endforeach(f)
+  set(TP_RELATIVE_SYSTEM_INCLUDEPATHS "${TP_TMP_LIST}")
 
 
   #== LIBRARYPATHS =================================================================================
@@ -276,7 +315,7 @@ function(tp_parse_vars)
       get_filename_component(QRC_NAME "${f}" NAME_WE)
       add_custom_command(
         OUTPUT  "${QRC_NAME}.cpp"
-        COMMAND "${TP_RC_CMD}" "${CMAKE_CURRENT_LIST_DIR}/${f}" "${CMAKE_CURRENT_BINARY_DIR}/${QRC_NAME}.cpp" ${QRC_NAME}
+        COMMAND "${TP_RC_CMD}" --compile "${CMAKE_CURRENT_LIST_DIR}/${f}" "${CMAKE_CURRENT_BINARY_DIR}/${QRC_NAME}.cpp" ${QRC_NAME}
         DEPENDS "${CMAKE_CURRENT_LIST_DIR}/${f}" "${TP_RC_CMD}"
       )
       list(APPEND TP_SOURCES "${QRC_NAME}.cpp")
@@ -398,7 +437,7 @@ function(tp_parse_vars)
 
   #== Build Lib ====================================================================================
   if(TP_TEMPLATE STREQUAL "lib")
-    include_directories(${TP_INCLUDEPATHS})
+    include_directories(${TP_INCLUDEPATHS} ${TP_SYSTEM_INCLUDEPATHS} ${TP_RELATIVE_SYSTEM_INCLUDEPATHS})
     link_directories(${TP_LIBRARYPATHS})
     add_definitions(${TP_DEFINES})
     if(WIN32)
@@ -410,7 +449,7 @@ function(tp_parse_vars)
 
   #== Build App ====================================================================================
   if(TP_TEMPLATE STREQUAL "app" OR TP_TEMPLATE STREQUAL "test")
-    include_directories(${TP_INCLUDEPATHS})
+    include_directories(${TP_INCLUDEPATHS} ${TP_SYSTEM_INCLUDEPATHS} ${TP_RELATIVE_SYSTEM_INCLUDEPATHS})
     link_directories(${TP_LIBRARYPATHS})
     add_definitions(${TP_DEFINES})
     

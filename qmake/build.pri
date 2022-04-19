@@ -22,6 +22,7 @@ include(x_parse_modules_dependencies.pri)
 include(parse_dependencies.pri)
 
 # Hack to make Qt Creator parse the emscripten code model correctly.
+SYSTEM_INCLUDEPATHS_QT_CREATOR = $$unique(SYSTEM_INCLUDEPATHS_QT_CREATOR)
 for(INCLUDE, SYSTEM_INCLUDEPATHS_QT_CREATOR) {
   unix{
     QMAKE_CFLAGS   += -isystem $${INCLUDE}
@@ -31,6 +32,7 @@ for(INCLUDE, SYSTEM_INCLUDEPATHS_QT_CREATOR) {
   }
 }
 
+SYSTEM_INCLUDEPATHS = $$unique(SYSTEM_INCLUDEPATHS)
 for(INCLUDE, SYSTEM_INCLUDEPATHS) {
   unix{
     QMAKE_CFLAGS   += -isystem $${INCLUDE}
@@ -40,6 +42,7 @@ for(INCLUDE, SYSTEM_INCLUDEPATHS) {
   }
 }
 
+RELATIVE_SYSTEM_INCLUDEPATHS = $$unique(RELATIVE_SYSTEM_INCLUDEPATHS)
 for(INCLUDE, RELATIVE_SYSTEM_INCLUDEPATHS) {
   unix{
     QMAKE_CFLAGS   += -isystem $$absolute_path($${INCLUDE}, "$$PWD/../../")
@@ -49,6 +52,7 @@ for(INCLUDE, RELATIVE_SYSTEM_INCLUDEPATHS) {
   }
 }
 
+INCLUDEPATHS = $$unique(INCLUDEPATHS)
 for(INCLUDE, INCLUDEPATHS) {
   INCLUDEPATH += $$absolute_path($${INCLUDE}, "$$PWD/../../")
 }

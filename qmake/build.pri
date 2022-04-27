@@ -21,6 +21,11 @@ include(x_parse_modules_dependencies.pri)
 # Bring in the dependencies tree
 include(parse_dependencies.pri)
 
+INCLUDEPATHS = $$unique(INCLUDEPATHS)
+for(INCLUDE, INCLUDEPATHS) {
+  INCLUDEPATH += $$absolute_path($${INCLUDE}, "$$PWD/../../")
+}
+
 # Hack to make Qt Creator parse the emscripten code model correctly.
 SYSTEM_INCLUDEPATHS_QT_CREATOR = $$unique(SYSTEM_INCLUDEPATHS_QT_CREATOR)
 for(INCLUDE, SYSTEM_INCLUDEPATHS_QT_CREATOR) {
@@ -28,7 +33,7 @@ for(INCLUDE, SYSTEM_INCLUDEPATHS_QT_CREATOR) {
     QMAKE_CFLAGS   += -isystem $${INCLUDE}
     QMAKE_CXXFLAGS += -isystem $${INCLUDE}
   }else{
-    INCLUDEPATHS += $${INCLUDE}
+    INCLUDEPATH += $${INCLUDE}
   }
 }
 
@@ -38,13 +43,8 @@ for(INCLUDE, RELATIVE_SYSTEM_INCLUDEPATHS) {
     QMAKE_CFLAGS   += -isystem $$absolute_path($${INCLUDE}, "$$PWD/../../")
     QMAKE_CXXFLAGS += -isystem $$absolute_path($${INCLUDE}, "$$PWD/../../")
   }else{
-    INCLUDEPATHS += $${INCLUDE}
+    INCLUDEPATH += $$absolute_path($${INCLUDE}, "$$PWD/../../")
   }
-}
-
-INCLUDEPATHS = $$unique(INCLUDEPATHS)
-for(INCLUDE, INCLUDEPATHS) {
-  INCLUDEPATH += $$absolute_path($${INCLUDE}, "$$PWD/../../")
 }
 
 SYSTEM_INCLUDEPATHS = $$unique(SYSTEM_INCLUDEPATHS)
@@ -53,7 +53,7 @@ for(INCLUDE, SYSTEM_INCLUDEPATHS) {
     QMAKE_CFLAGS   += -isystem $${INCLUDE}
     QMAKE_CXXFLAGS += -isystem $${INCLUDE}
   }else{
-    INCLUDEPATHS += $${INCLUDE}
+    INCLUDEPATH += $${INCLUDE}
   }
 }
 

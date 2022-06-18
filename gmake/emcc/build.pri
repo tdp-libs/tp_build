@@ -9,6 +9,8 @@ WASM_ONLY = $(ROOT)$(BUILD_DIR)$(TARGET).wasm_only.wasm
 
 all: $(JS_ONLY) $(WASM_ONLY)
 
+js_only: $(JS_ONLY)
+
 wasm_only: $(WASM_ONLY)
 
 $(HTML): $(BUILD_DIR) $(SUBDIRS) force_look

@@ -21,36 +21,40 @@ include(x_parse_modules_dependencies.pri)
 # Bring in the dependencies tree
 include(parse_dependencies.pri)
 
+INCLUDEPATHS = $$unique(INCLUDEPATHS)
+for(INCLUDE, INCLUDEPATHS) {
+  INCLUDEPATH += $$absolute_path($${INCLUDE}, "$$PWD/../../")
+}
+
 # Hack to make Qt Creator parse the emscripten code model correctly.
+SYSTEM_INCLUDEPATHS_QT_CREATOR = $$unique(SYSTEM_INCLUDEPATHS_QT_CREATOR)
 for(INCLUDE, SYSTEM_INCLUDEPATHS_QT_CREATOR) {
   unix{
     QMAKE_CFLAGS   += -isystem $${INCLUDE}
     QMAKE_CXXFLAGS += -isystem $${INCLUDE}
   }else{
-    INCLUDEPATHS += $${INCLUDE}
+    INCLUDEPATH += $${INCLUDE}
   }
 }
 
-for(INCLUDE, SYSTEM_INCLUDEPATHS) {
-  unix{
-    QMAKE_CFLAGS   += -isystem $${INCLUDE}
-    QMAKE_CXXFLAGS += -isystem $${INCLUDE}
-  }else{
-    INCLUDEPATHS += $${INCLUDE}
-  }
-}
-
+RELATIVE_SYSTEM_INCLUDEPATHS = $$unique(RELATIVE_SYSTEM_INCLUDEPATHS)
 for(INCLUDE, RELATIVE_SYSTEM_INCLUDEPATHS) {
   unix{
     QMAKE_CFLAGS   += -isystem $$absolute_path($${INCLUDE}, "$$PWD/../../")
     QMAKE_CXXFLAGS += -isystem $$absolute_path($${INCLUDE}, "$$PWD/../../")
   }else{
-    INCLUDEPATHS += $${INCLUDE}
+    INCLUDEPATH += $$absolute_path($${INCLUDE}, "$$PWD/../../")
   }
 }
 
-for(INCLUDE, INCLUDEPATHS) {
-  INCLUDEPATH += $$absolute_path($${INCLUDE}, "$$PWD/../../")
+SYSTEM_INCLUDEPATHS = $$unique(SYSTEM_INCLUDEPATHS)
+for(INCLUDE, SYSTEM_INCLUDEPATHS) {
+  unix{
+    QMAKE_CFLAGS   += -isystem $${INCLUDE}
+    QMAKE_CXXFLAGS += -isystem $${INCLUDE}
+  }else{
+    INCLUDEPATH += $${INCLUDE}
+  }
 }
 
 INCLUDEPATH = $$unique(INCLUDEPATH)
@@ -133,6 +137,19 @@ android{
 else:win32{
   DEFINES += TP_WIN32
 
+  CONFIG += win32_static
+
+  win32_static{
+    DEFINES+=TP_WIN32_STATIC
+
+    # Fix the issue where static libs don't trigger a re-link of dependent libs.
+    QMAKE_POST_LINK = "copy /Y NUL $$shell_path($${OUT_PWD}/$${TARGET}.txt) > NUL"
+    system("copy /Y NUL $$shell_path($${OUT_PWD}/$${TARGET}.txt) > NUL")
+    for(DEPENDENCY, ALL_DEPENDENCIES) {
+      TARGETDEPS += $${OUT_PWD}/../$${DEPENDENCY}/$${DEPENDENCY}.txt
+    }
+  }
+
   contains(TEMPLATE, app){
     DESTDIR = ../bin/
   }
@@ -143,7 +160,9 @@ else:win32{
   winrt:INCLUDEPATH += $$_PRO_FILE_PWD_/moc/
 
   contains(TEMPLATE, lib){
-    CONFIG += staticlib
+    win32_static{
+      CONFIG += staticlib
+    }
   }
   else:contains(TEMPLATE, app){
     CONFIG += reverse_libs
@@ -159,6 +178,7 @@ else:win32{
     DEFINES += TP_WIN32_MINGW
     QMAKE_CXXFLAGS *= -std=c++1z
     QMAKE_CXXFLAGS *= -Wa,-mbig-obj
+    #QMAKE_LFLAGS *= -fuse-ld=bfd
   }
 
   DEFINES += TP_CPP_VERSION=17
@@ -244,9 +264,7 @@ else{
   }
 }
 
-osx          {TP_HOST_CXX=env -i g++}
-else:iphoneos{TP_HOST_CXX=env -i g++}
-else         {TP_HOST_CXX=g++       }
+include(host_cxx.pri)
 
 #Correct the order of libs
 LIBS = $$unique(LIBS)

@@ -24,7 +24,7 @@ $(ROOT)$(BUILD_DIR)$(TARGET)/%.cpp.bc: %.cpp
 	"$(CXX)" -c $(CFLAGS) $(CXXFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
 $(ROOT)$(BUILD_DIR)$(TARGET)/%.qrc.cpp.bc: %.qrc $(TP_RC_CMD)
-	"$(TP_RC_CMD)" "$<" "$(basename $@)" $(basename $(basename $(notdir $<)))
+	"$(TP_RC_CMD)" --compile "$<" "$(basename $@)" $(basename $(basename $(notdir $<)))
 	"$(CXX)" -c $(CFLAGS) $(CXXFLAGS) $(INCLUDES) $(DEFINES) "$(basename $@)" -o $@
 
 $(BUILD_DIRS):

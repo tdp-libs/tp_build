@@ -43,25 +43,30 @@ bool writeBinaryFile(const std::string& fileName, const std::string& textOutput)
 //##################################################################################################
 int main(int argc, const char * argv[])
 {
-  if(argc!=4)
+  if(argc!=5)
   {
     std::cerr << "error: Incorrect number of arguments passed to tpRc!" << std::endl;
     return 1;
   }
 
+  bool printDepends = (std::string(argv[1]) == "--depend");
+  bool printDebug = false;
+
   std::string slash="/";
 
-  std::string qrcDirectory(argv[1]);
+  std::string qrcDirectory(argv[2]);
   qrcDirectory = qrcDirectory.substr(0, qrcDirectory.find_last_of("\\/")) + slash;
 
   std::string inputData;
-  if(!readBinaryFile(argv[1], inputData))
+  if(!readBinaryFile(argv[2], inputData))
   {
     std::cerr << "error: Failed to read input qrc!" << std::endl;
     return 1;
   }
 
-  std::cout << inputData << std::endl;
+  if(printDebug)
+    std::cout << inputData << std::endl;
+
   rapidxml::xml_document<> doc;
   doc.parse<0>(inputData.data());
 
@@ -85,7 +90,11 @@ int main(int argc, const char * argv[])
 
   prefix += slash;
 
-  std::cout << "prefix: " << prefix << std::endl;
+  if(printDebug)
+    std::cout << "prefix: " << prefix << std::endl;
+
+  if(printDepends)
+    std::cout << argv[2] << std::endl;
 
   std::string cppText = "#include \"tp_utils/Resources.h\"\n\nnamespace\n{\n\n";
   std::string initText;
@@ -94,14 +103,20 @@ int main(int argc, const char * argv[])
   for(auto fileNode = qresourceNode->first_node("file"); fileNode; fileNode=fileNode->next_sibling("file"))
   {
     std::string inputFile = fileNode->value();
-    std::string alias = inputFile;
-
     std::string inputFilePath = qrcDirectory + inputFile;
 
+    if(printDepends)
+    {
+      std::cout << inputFilePath << std::endl;
+      continue;
+    }
+
+    std::string alias = inputFile;
     if(auto aliasAttribute = fileNode->first_attribute("alias"); aliasAttribute)
       alias = aliasAttribute->value();
 
-    std::cout << "alias: " << alias << " file: " << inputFilePath << std::endl;
+    if(printDebug)
+      std::cout << "alias: " << alias << " file: " << inputFilePath << std::endl;
 
     std::string fileData;
     if(!readBinaryFile(inputFilePath, fileData))
@@ -138,20 +153,22 @@ int main(int argc, const char * argv[])
     initText += "  tp_utils::addResource(\"" + prefix + alias + "\",reinterpret_cast<const char*>(data" + std::to_string(c) + "),size" + std::to_string(c) + ");\n";
     c++;
   }
+
+  if(printDepends)
+    return 0;
+
   //cppText += "extern int initialized;\n";
   cppText += "int initialize()\n{\n" + initText + "return 0;\n}\n";
   cppText += "int initialized=initialize();\n";
 
   cppText += "}\n";
 
-  cppText += "namespace " + std::string(argv[3]) + "\n";
+  cppText += "namespace " + std::string(argv[4]) + "\n";
   cppText += "{\n";
   cppText += "  int tp_rc(){return initialized;}\n";
   cppText += "}\n";
 
-
-
-  writeBinaryFile(argv[2], cppText);
+  writeBinaryFile(argv[3], cppText);
 
   return 0;
 }

@@ -7,7 +7,7 @@ QRCSOURCES = $(addprefix $(ROOT)$(BUILD_DIR)$(TARGET)/,$(filter %.cpp,$(TP_RC:.q
 QRCOBJECTS = $(filter %.bc,$(QRCSOURCES:.cpp=.cpp.bc))
 
 DEFINES  := $(foreach DEFINE,$(DEFINES),-D$(DEFINE))
-INCLUDES += $(foreach INCLUDE,$(INCLUDEPATHS),-I../$(INCLUDE))
+INCLUDES += $(sort $(foreach INCLUDE,$(INCLUDEPATHS),-I../$(INCLUDE)))
 
 TP_RC_CMD = $(ROOT)$(BUILD_DIR)tp_rc
 TP_RC_SRC = $(ROOT)tp_build/tp_rc/tp_rc.cpp

@@ -85,10 +85,15 @@ equals(TEMPLATE, test) {
 }
 
 # Win32 also needs static libs in libraries
-equals(TEMPLATE, app)|win32 {
+equals(TEMPLATE, app)|equals(TEMPLATE, pylib)|win32 {
   for(LIB, SLIBS) {
     LIBS += -l$${LIB}
   }
+}
+
+equals(TEMPLATE, pylib) {
+  TEMPLATE = lib
+  CONFIG += no_plugin_name_prefix
 }
 
 OBJECTS_DIR = ./obj/

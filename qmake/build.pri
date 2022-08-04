@@ -94,6 +94,7 @@ equals(TEMPLATE, app)|equals(TEMPLATE, pylib)|win32 {
 equals(TEMPLATE, pylib) {
   TEMPLATE = lib
   CONFIG += no_plugin_name_prefix
+  CONFIG += pylib
 }
 
 OBJECTS_DIR = ./obj/
@@ -165,7 +166,9 @@ else:win32{
   winrt:INCLUDEPATH += $$_PRO_FILE_PWD_/moc/
 
   contains(TEMPLATE, lib){
-    win32_static{
+    pylib{
+
+    }else:win32_static{
       CONFIG += staticlib
     }
   }

@@ -1,5 +1,6 @@
 TARGET = tp_build
 TEMPLATE = lib
+QT -= core gui widgets
 
 include(qmake/host_cxx.pri)
 

@@ -1,5 +1,5 @@
 #Sort to remove duplicates
-BUILD_DIRS = $(sort $(addprefix $(ROOT)$(BUILD_DIR)$(TARGET)/,$(dir $(SOURCES))))
+BUILD_DIRS = $(sort $(addprefix $(TARGET_BUILD_DIR)/,$(dir $(SOURCES))))
 
 CCOBJECTS = $(filter %.o,$(SOURCES:.c=.c.o))
 CXXOBJECTS = $(filter %.o,$(SOURCES:.cpp=.cpp.o))
@@ -19,9 +19,9 @@ LIBS += $(foreach LIB,$(LIBRARIES),$(ROOT)$(BUILD_DIR)$(LIB).a)
 
 ifeq ($(TEMPLATE), app)
 
-all_a: $(BUILD_DIRS) $(ROOT)$(BUILD_DIR)$(TARGET)/$(TARGET)
+all_a: $(BUILD_DIRS) $(RTARGET_BUILD_DIR)/$(TARGET)
 
-$(ROOT)$(BUILD_DIR)$(TARGET)/$(TARGET): $(addprefix $(ROOT)$(BUILD_DIR)$(TARGET)/,$(CCOBJECTS)) $(addprefix $(ROOT)$(BUILD_DIR)$(TARGET)/,$(CXXOBJECTS))
+$(TARGET_BUILD_DIR)/$(TARGET): $(addprefix $(TARGET_BUILD_DIR)/,$(CCOBJECTS)) $(addprefix $(TARGET_BUILD_DIR)/,$(CXXOBJECTS))
 	pwd
 	"$(CXX)" $^ $(LIBS) $(LFLAGS) -o $@ 
 
@@ -29,17 +29,17 @@ endif
 
 ifeq ($(TEMPLATE), lib)
 
-all_a: $(BUILD_DIRS) $(ROOT)$(BUILD_DIR)$(TARGET).a
+all_a: $(BUILD_DIRS) $(TARGET_BUILD_DIR).a
 
-$(ROOT)$(BUILD_DIR)$(TARGET).a: $(addprefix $(ROOT)$(BUILD_DIR)$(TARGET)/,$(CCOBJECTS)) $(addprefix $(ROOT)$(BUILD_DIR)$(TARGET)/,$(CXXOBJECTS))
+$(TARGET_BUILD_DIR).a: $(addprefix $(TARGET_BUILD_DIR)/,$(CCOBJECTS)) $(addprefix $(TARGET_BUILD_DIR)/,$(CXXOBJECTS))
 	"$(AR)" rcs $@ $^
 
 endif
 
-$(ROOT)$(BUILD_DIR)$(TARGET)/%.c.o: %.c
+$(TARGET_BUILD_DIR)/%.c.o: %.c
 	"$(CC)" -c $(CFLAGS) $(CCFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
-$(ROOT)$(BUILD_DIR)$(TARGET)/%.cpp.o: %.cpp
+$(TARGET_BUILD_DIR)/%.cpp.o: %.cpp
 	"$(CXX)" -c $(CFLAGS) $(CXXFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
 $(BUILD_DIRS):

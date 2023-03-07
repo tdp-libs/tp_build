@@ -1,5 +1,4 @@
 ROOT = ./
-
 TP_BUILD_TYPE = static
 -include $(ROOT)toolchain.pri
 
@@ -13,4 +12,7 @@ export PROJECT_DIR
 
 include $(ROOT)$(PROJECT_DIR)/submodules.pri
 include $(ROOT)tp_build/gmake/$(TP_BUILD_TYPE)/common.pri
+
+TARGET_BUILD_DIR := $(shell realpath --relative-to . $(ROOT)$(BUILD_DIR)$(TARGET))
+
 include $(ROOT)tp_build/gmake/$(TP_BUILD_TYPE)/build.pri

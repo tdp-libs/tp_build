@@ -1,7 +1,7 @@
 ARCHIVES = $(addsuffix .a,$(addprefix $(ROOT)$(BUILD_DIR),$(SUBDIRS)))
-ELF = $(ROOT)$(BUILD_DIR)$(TARGET).elf
-HEX = $(ROOT)$(BUILD_DIR)$(TARGET).hex
-BIN = $(ROOT)$(BUILD_DIR)$(TARGET).bin
+ELF = $(TARGET_BUILD_DIR).elf
+HEX = $(TARGET_BUILD_DIR).hex
+BIN = $(TARGET_BUILD_DIR).bin
 
 all: $(BIN) $(HEX)
 

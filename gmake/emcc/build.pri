@@ -3,9 +3,9 @@ include $(ROOT)$(PROJECT_DIR)/dependencies.pri
 include $(ROOT)tp_build/gmake/parse_dependencies.pri
 
 BC = $(addsuffix .bc,$(addprefix $(ROOT)$(BUILD_DIR),$(UNIQUE_LIBRARIES)))
-HTML = $(ROOT)$(BUILD_DIR)$(TARGET).html
-JS_ONLY = $(ROOT)$(BUILD_DIR)$(TARGET).js_only.js
-WASM_ONLY = $(ROOT)$(BUILD_DIR)$(TARGET).wasm_only.wasm
+HTML = $(TARGET_BUILD_DIR).html
+JS_ONLY = $(TARGET_BUILD_DIR).js_only.js
+WASM_ONLY = $(TARGET_BUILD_DIR).wasm_only.wasm
 
 all: $(JS_ONLY) $(WASM_ONLY)
 

@@ -20,6 +20,8 @@ include vars.pri
 .PHONY: all
 all: pages tp_copy all_a
 
+TARGET_BUILD_DIR := $(shell realpath --relative-to . $(ROOT)$(BUILD_DIR)$(TARGET))
+
 include $(ROOT)tp_build/gmake/common/pages.pri
 include $(ROOT)tp_build/gmake/common/tp_copy.pri
 

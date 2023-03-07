@@ -1,4 +1,4 @@
-PAGES_BUILD_DIRS = $(addprefix $(ROOT)$(BUILD_DIR)$(TARGET)/, $(PAGES))
+PAGES_BUILD_DIRS = $(addprefix $(TARGET_BUILD_DIR)/, $(PAGES))
 PAGES_MAKEFILES = $(addsuffix /Makefile, $(PAGES_BUILD_DIRS))
 PAGES_MAKETARGETS = $(addsuffix /make, $(PAGES_BUILD_DIRS))
 
@@ -14,7 +14,7 @@ pages: $(PAGES_BUILD_DIRS) $(PAGES_MAKEFILES) $(PAGES_MAKETARGETS)
 $(PAGES_MAKETARGETS):
 	cd `dirname $@` && $(MAKE)
 
-$(ROOT)$(BUILD_DIR)$(TARGET)/%/Makefile: % $(ROOT)tp_build/gmake/common/template_page_Makefile
+$(TARGET_BUILD_DIR)/%/Makefile: % $(ROOT)tp_build/gmake/common/template_page_Makefile
 	echo "SOURCE_DIR=`realpath $<`/" > $@
 	echo "ROOT_DIR=`realpath $(ROOT)`/" >> $@
 	echo "BUILD_DIR=`realpath $(ROOT)$(BUILD_DIR)`/" >> $@

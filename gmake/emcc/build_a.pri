@@ -1,9 +1,9 @@
 #Sort to remove duplicates
-BUILD_DIRS = $(sort $(addprefix $(ROOT)$(BUILD_DIR)$(TARGET)/,$(dir $(SOURCES))))
+BUILD_DIRS = $(sort $(addprefix $(TARGET_BUILD_DIR)/,$(dir $(SOURCES))))
 
-CCOBJECTS = $(addprefix $(ROOT)$(BUILD_DIR)$(TARGET)/,$(filter %.bc,$(SOURCES:.c=.c.bc)))
-CXXOBJECTS = $(addprefix $(ROOT)$(BUILD_DIR)$(TARGET)/,$(filter %.bc,$(SOURCES:.cpp=.cpp.bc)))
-QRCSOURCES = $(addprefix $(ROOT)$(BUILD_DIR)$(TARGET)/,$(filter %.cpp,$(TP_RC:.qrc=.qrc.cpp)))
+CCOBJECTS = $(addprefix $(TARGET_BUILD_DIR)/,$(filter %.bc,$(SOURCES:.c=.c.bc)))
+CXXOBJECTS = $(addprefix $(TARGET_BUILD_DIR)/,$(filter %.bc,$(SOURCES:.cpp=.cpp.bc)))
+QRCSOURCES = $(addprefix $(TARGET_BUILD_DIR)/,$(filter %.cpp,$(TP_RC:.qrc=.qrc.cpp)))
 QRCOBJECTS = $(filter %.bc,$(QRCSOURCES:.cpp=.cpp.bc))
 
 DEFINES  := $(foreach DEFINE,$(DEFINES),-D$(DEFINE))
@@ -12,18 +12,18 @@ INCLUDES += $(sort $(foreach INCLUDE,$(INCLUDEPATHS),-I../$(INCLUDE)))
 TP_RC_CMD = $(ROOT)$(BUILD_DIR)tp_rc
 TP_RC_SRC = $(ROOT)tp_build/tp_rc/tp_rc.cpp
 
-all_a: $(BUILD_DIRS) $(ROOT)$(BUILD_DIR)$(TARGET).bc
+all_a: $(BUILD_DIRS) $(TARGET_BUILD_DIR).bc
 
-$(ROOT)$(BUILD_DIR)$(TARGET).bc: $(CCOBJECTS) $(CXXOBJECTS) $(QRCOBJECTS)
+$(TARGET_BUILD_DIR).bc: $(CCOBJECTS) $(CXXOBJECTS) $(QRCOBJECTS)
 	"$(AR)" -r $^ -o $@
 
-$(ROOT)$(BUILD_DIR)$(TARGET)/%.c.bc: %.c
+$(TARGET_BUILD_DIR)/%.c.bc: %.c
 	"$(CC)" -c $(CFLAGS) $(CCFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
-$(ROOT)$(BUILD_DIR)$(TARGET)/%.cpp.bc: %.cpp
+$(TARGET_BUILD_DIR)/%.cpp.bc: %.cpp
 	"$(CXX)" -c $(CFLAGS) $(CXXFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
-$(ROOT)$(BUILD_DIR)$(TARGET)/%.qrc.cpp.bc: %.qrc $(TP_RC_CMD)
+$(TARGET_BUILD_DIR)/%.qrc.cpp.bc: %.qrc $(TP_RC_CMD)
 	"$(TP_RC_CMD)" --compile "$<" "$(basename $@)" $(basename $(basename $(notdir $<)))
 	"$(CXX)" -c $(CFLAGS) $(CXXFLAGS) $(INCLUDES) $(DEFINES) "$(basename $@)" -o $@
 

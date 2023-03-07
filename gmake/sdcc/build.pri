@@ -8,8 +8,8 @@ INCLUDES += $(foreach INCLUDE,$(INCLUDEPATHS),-I./$(INCLUDE))
 DEFINES += -DTP_SDCC
 
 ARCHIVES = $(addsuffix .lib,$(addprefix $(ROOT)$(BUILD_DIR),$(SUBDIRS)))
-HEX = $(ROOT)$(BUILD_DIR)$(TARGET).hex
-BIN = $(ROOT)$(BUILD_DIR)$(TARGET).bin
+HEX = $(TARGET_BUILD_DIR).hex
+BIN = $(TARGET_BUILD_DIR).bin
 
 all: $(BIN) $(HEX)
 

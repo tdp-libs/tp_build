@@ -1,5 +1,5 @@
 #Sort to remove duplicates
-BUILD_DIRS = $(sort $(addprefix $(ROOT)$(BUILD_DIR)$(TARGET)/,$(dir $(SOURCES))))
+BUILD_DIRS = $(sort $(addprefix $(TARGET_BUILD_DIR)/,$(dir $(SOURCES))))
 
 DEFINES  := $(foreach DEFINE,$(DEFINES),-D$(DEFINE))
 INCLUDES += $(foreach INCLUDE,$(INCLUDEPATHS),-I../$(INCLUDE))
@@ -9,15 +9,15 @@ DEFINES += -DTP_SDCC
 SOBJECTS = $(filter %.rel,$(SOURCES:.S=.rel))
 CCOBJECTS = $(filter %.rel,$(SOURCES:.c=.rel))
 
-all_a: $(BUILD_DIRS) $(ROOT)$(BUILD_DIR)$(TARGET).lib
+all_a: $(BUILD_DIRS) $(TARGET_BUILD_DIR).lib
 
-$(ROOT)$(BUILD_DIR)$(TARGET).lib: $(addprefix $(ROOT)$(BUILD_DIR)$(TARGET)/,$(SOBJECTS)) $(addprefix $(ROOT)$(BUILD_DIR)$(TARGET)/,$(CCOBJECTS)) $(addprefix $(ROOT)$(BUILD_DIR)$(TARGET)/,$(CXXOBJECTS))
+$(TARGET_BUILD_DIR).lib: $(addprefix $(TARGET_BUILD_DIR)/,$(SOBJECTS)) $(addprefix $(TARGET_BUILD_DIR)/,$(CCOBJECTS)) $(addprefix $(TARGET_BUILD_DIR)/,$(CXXOBJECTS))
 	"$(AR)" -rc $@ $^
 
-$(ROOT)$(BUILD_DIR)$(TARGET)/%.rel: %.S $(ASM_PART)
+$(TARGET_BUILD_DIR)/%.rel: %.S $(ASM_PART)
 	"$(AS)" -c $(CFLAGS) $(CCFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
-$(ROOT)$(BUILD_DIR)$(TARGET)/%.rel: %.c
+$(TARGET_BUILD_DIR)/%.rel: %.c
 	"$(CC)" -c $(CFLAGS) $(CCFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
 $(BUILD_DIRS):

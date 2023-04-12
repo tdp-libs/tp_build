@@ -65,6 +65,11 @@ function(tp_parse_vars)
                   OUTPUT_VARIABLE TP_LIBS_
                   OUTPUT_STRIP_TRAILING_WHITESPACE)
 
+  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" SLIBS
+                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
+                  OUTPUT_VARIABLE TP_SLIBS
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+
   execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" LIBRARYPATHS
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
                   OUTPUT_VARIABLE TP_LIBRARYPATHS_
@@ -192,6 +197,7 @@ function(tp_parse_vars)
   clean_and_add_libraries("${TP_LIBRARIES_}")
   clean_and_add_libraries("${TP_LIBS}")
   clean_and_add_libraries("${TP_LIBS_}")
+  clean_and_add_libraries("${TP_SLIBS}")
   set(TP_LIBRARIES "${TP_TMP_LIST}")
 
   string(STRIP "${TP_DEPENDENCIES}" TP_DEPENDENCIES)

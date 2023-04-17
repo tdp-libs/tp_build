@@ -7,6 +7,8 @@ HTML = $(TARGET_BUILD_DIR).html
 JS_ONLY = $(TARGET_BUILD_DIR).js_only.js
 WASM_ONLY = $(TARGET_BUILD_DIR).wasm_only.wasm
 
+LDFLAGS += $(sort $(foreach LIBRARYPATH,$(LIBRARYPATHS),-L$(LIBRARYPATH)))
+
 all: $(JS_ONLY) $(WASM_ONLY)
 
 js_only: $(JS_ONLY)

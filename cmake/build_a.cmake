@@ -465,7 +465,7 @@ function(tp_parse_vars)
     endif()
   endif()
 
-  #== Build Lib ====================================================================================
+  #== Build PyLib ====================================================================================
   if(TP_TEMPLATE STREQUAL "pylib")
     include_directories(${TP_INCLUDEPATHS} ${TP_SYSTEM_INCLUDEPATHS} ${TP_RELATIVE_SYSTEM_INCLUDEPATHS})
     link_directories(${TP_LIBRARYPATHS})
@@ -474,9 +474,18 @@ function(tp_parse_vars)
 
     if(WIN32)
       add_library("${TP_TARGET}" SHARED ${TP_SOURCES} ${TP_HEADERS} ${TP_RESOURCES})
-    else()
+    elseif(UNIX)
       add_library("${TP_TARGET}" SHARED ${TP_SOURCES} ${TP_HEADERS} ${TP_RESOURCES})
+      set_target_properties( "${TP_TARGET}"
+        PROPERTIES          
+          LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+          RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+          PREFIX ""
+      )
     endif()
+    
+    target_link_libraries("${TP_TARGET}" ${TP_LIBRARIES})    
+
   endif()
 
 

@@ -4,6 +4,10 @@
 # This makes Qt Creator add ../lib to the library path so that we dont need to add it manually.
 LIBRARYPATHS+=../lib
 
+exists($${OUT_PWD}/../PROJECT_DIR.pri) {
+include($${OUT_PWD}/../PROJECT_DIR.pri)
+}
+
 exists(../../project.inc) {
 include(../../project.inc)
 }

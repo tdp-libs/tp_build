@@ -110,6 +110,16 @@ function(tp_parse_vars)
                   OUTPUT_VARIABLE TP_CXXFLAGS
                   OUTPUT_STRIP_TRAILING_WHITESPACE)
 
+  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_git/extract_git_branch.sh" 
+                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
+                  OUTPUT_VARIABLE TP_GIT_BRANCH
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_git/extract_git_commit.sh" 
+                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
+                  OUTPUT_VARIABLE TP_GIT_COMMIT
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+
 
   #== INCLUDEPATHS =================================================================================
   string(REPLACE " " ";" TP_INCLUDEPATHS "${TP_INCLUDEPATHS} ${TP_INCLUDEPATHS_}")
@@ -239,6 +249,8 @@ function(tp_parse_vars)
 
   #== DEFINES ======================================================================================
   set(TP_TMP_LIST "")
+  list(APPEND TP_TMP_LIST "-DTP_GIT_BRANCH=${TP_GIT_BRANCH}")
+  list(APPEND TP_TMP_LIST "-DTP_GIT_COMMIT=${TP_GIT_COMMIT}")
   macro(clean_and_add_defines PARTS_ARG)
     if(NOT "${PARTS_ARG}" STREQUAL "")
       string(STRIP "${PARTS_ARG}" PARTS)

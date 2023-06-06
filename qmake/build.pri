@@ -25,6 +25,9 @@ include(x_parse_modules_dependencies.pri)
 # Bring in the dependencies tree
 include(parse_dependencies.pri)
 
+TP_GIT_BRANCH = $$system("cd .. ; bash ../tp_build/tp_git/extract_git_branch.sh")
+TP_GIT_COMMIT = $$system("cd .. ; bash ../tp_build/tp_git/extract_git_commit.sh")
+
 INCLUDEPATHS = $$unique(INCLUDEPATHS)
 for(INCLUDE, INCLUDEPATHS) {
   INCLUDEPATH += $$absolute_path($${INCLUDE}, "$$PWD/../../")
@@ -60,6 +63,9 @@ for(INCLUDE, SYSTEM_INCLUDEPATHS) {
     INCLUDEPATH += $${INCLUDE}
   }
 }
+
+DEFINES += TP_GIT_BRANCH=$$TP_GIT_BRANCH
+DEFINES += TP_GIT_COMMIT=$$TP_GIT_COMMIT
 
 INCLUDEPATH = $$unique(INCLUDEPATH)
 DEFINES = $$unique(DEFINES)

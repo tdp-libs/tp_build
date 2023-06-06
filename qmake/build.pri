@@ -8,8 +8,15 @@ exists($${OUT_PWD}/../PROJECT_DIR.pri) {
 include($${OUT_PWD}/../PROJECT_DIR.pri)
 }
 
-exists(../../project.inc) {
-include(../../project.inc)
+TP_CONFIG=$$system("bash -c \"echo $TP_CONFIG\"")
+isEmpty(TP_CONFIG) {
+  exists(../../project.inc) {
+    include(../../project.inc)
+  }
+}else{
+  exists(../../$${TP_CONFIG}) {
+    include(../../$${TP_CONFIG})
+  }
 }
 
 exists(../../$${PROJECT_DIR}/project.conf) {

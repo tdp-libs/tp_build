@@ -3,7 +3,16 @@ TEMPLATE = subdirs
 PROJECT_DIR_STR = "PROJECT_DIR = $${PROJECT_DIR}"
 write_file($${OUT_PWD}/PROJECT_DIR.pri, PROJECT_DIR_STR)
 
-include(../../project.inc)
+TP_CONFIG=$$system("bash -c \"echo $TP_CONFIG\"")
+isEmpty(TP_CONFIG) {
+  exists(../../project.inc) {
+    include(../../project.inc)
+  }
+}else{
+  exists(../../$${TP_CONFIG}) {
+    include(../../$${TP_CONFIG})
+  }
+}
 
 exists(../../$${PROJECT_DIR}/project.conf) {
 include(../../$${PROJECT_DIR}/project.conf)

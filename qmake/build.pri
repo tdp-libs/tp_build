@@ -32,8 +32,8 @@ include(x_parse_modules_dependencies.pri)
 # Bring in the dependencies tree
 include(parse_dependencies.pri)
 
-TP_GIT_BRANCH = $$system("cd .. ; bash ../tp_build/tp_git/extract_git_branch.sh")
-TP_GIT_COMMIT = $$system("cd .. ; bash ../tp_build/tp_git/extract_git_commit.sh")
+TP_GIT_BRANCH = $$system("bash -c \"cd .. ; ../tp_build/tp_git/extract_git_branch.sh\"")
+TP_GIT_COMMIT = $$system("bash -c \"cd .. ; ../tp_build/tp_git/extract_git_commit.sh\"")
 
 INCLUDEPATHS = $$unique(INCLUDEPATHS)
 for(INCLUDE, INCLUDEPATHS) {
@@ -61,11 +61,20 @@ for(INCLUDE, RELATIVE_SYSTEM_INCLUDEPATHS) {
   }
 }
 
+win32{
+  QMAKE_CFLAGS   += /experimental:external /external:anglebrackets
+  QMAKE_CXXFLAGS += /experimental:external /external:anglebrackets
+}
+
+
 SYSTEM_INCLUDEPATHS = $$unique(SYSTEM_INCLUDEPATHS)
 for(INCLUDE, SYSTEM_INCLUDEPATHS) {
   unix{
     QMAKE_CFLAGS   += -isystem $${INCLUDE}
     QMAKE_CXXFLAGS += -isystem $${INCLUDE}
+  }win32{
+    QMAKE_CFLAGS   += /external:I\"$${INCLUDE}\"
+    QMAKE_CXXFLAGS += /external:I\"$${INCLUDE}\"
   }else{
     INCLUDEPATH += $${INCLUDE}
   }

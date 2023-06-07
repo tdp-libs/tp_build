@@ -61,10 +61,10 @@ for(INCLUDE, RELATIVE_SYSTEM_INCLUDEPATHS) {
   }
 }
 
-win32{
-  QMAKE_CFLAGS   += /experimental:external /external:anglebrackets
-  QMAKE_CXXFLAGS += /experimental:external /external:anglebrackets
-}
+# win32{
+#   QMAKE_CFLAGS   += /experimental:external /external:anglebrackets
+#   QMAKE_CXXFLAGS += /experimental:external /external:anglebrackets
+# }
 
 
 SYSTEM_INCLUDEPATHS = $$unique(SYSTEM_INCLUDEPATHS)
@@ -72,9 +72,9 @@ for(INCLUDE, SYSTEM_INCLUDEPATHS) {
   unix{
     QMAKE_CFLAGS   += -isystem $${INCLUDE}
     QMAKE_CXXFLAGS += -isystem $${INCLUDE}
-  }win32{
-    QMAKE_CFLAGS   += /external:I\"$${INCLUDE}\"
-    QMAKE_CXXFLAGS += /external:I\"$${INCLUDE}\"
+  # }win32{
+  #   QMAKE_CFLAGS   += /external:I\"$${INCLUDE}\"
+  #   QMAKE_CXXFLAGS += /external:I\"$${INCLUDE}\"
   }else{
     INCLUDEPATH += $${INCLUDE}
   }

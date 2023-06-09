@@ -1,4 +1,5 @@
-#!bash
+#!/bin/bash
+
 TMP_DB_FILE="/tmp/$$_make.db.txt"
 RESULT=""
 

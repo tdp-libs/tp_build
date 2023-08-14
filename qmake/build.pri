@@ -35,8 +35,8 @@ include(parse_dependencies.pri)
 PROJECT_ROOT = $$absolute_path("$$PWD/../../")
 TP_GIT = $$absolute_path("$$PWD/../../tp_build/tp_git/")
 
-TP_GIT_BRANCH = $$system("bash -c \"cd $${PROJECT_ROOT} ; $${TP_GIT}/extract_git_branch.sh\"")
-TP_GIT_COMMIT = $$system("bash -c \"cd $${PROJECT_ROOT} ; $${TP_GIT}/extract_git_commit.sh\"")
+TP_GIT_BRANCH = $$system("bash -c \"cd $${PROJECT_ROOT}/tp_build ; $${TP_GIT}/extract_git_branch.sh\"")
+TP_GIT_COMMIT = $$system("bash -c \"cd $${PROJECT_ROOT}/tp_build ; $${TP_GIT}/extract_git_commit.sh\"")
 
 INCLUDEPATHS = $$unique(INCLUDEPATHS)
 for(INCLUDE, INCLUDEPATHS) {

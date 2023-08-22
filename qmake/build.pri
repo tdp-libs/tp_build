@@ -232,6 +232,7 @@ else:osx{
   }
   CONFIG += c++1z
   DEFINES += TP_CPP_VERSION=17
+  QMAKE_MACOSX_DEPLOYMENT_TARGET = 13.0
 
   #Silence SDK version warning on Mac.
   CONFIG+=sdk_no_version_check

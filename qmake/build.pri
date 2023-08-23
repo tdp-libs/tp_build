@@ -236,6 +236,24 @@ else:osx{
 
   #Silence SDK version warning on Mac.
   CONFIG+=sdk_no_version_check
+
+  CONFIG(debug, debug|release) {
+    tp_sanitize {
+      #dnf install libasan
+      QMAKE_CXXFLAGS += -fsanitize=address
+      QMAKE_LFLAGS   += -fsanitize=address
+
+      #dnf install libubsan
+      QMAKE_CXXFLAGS += -fsanitize=undefined
+      QMAKE_LFLAGS   += -fsanitize=undefined
+
+      QMAKE_CXXFLAGS += -fsanitize-address-use-after-scope
+      QMAKE_LFLAGS   += -fsanitize-address-use-after-scope
+
+      QMAKE_CXXFLAGS += -fstack-protector-all
+      QMAKE_LFLAGS   += -fstack-protector-all
+    }
+  }
 }
 
 #== Special handling for iOS =======================================================================

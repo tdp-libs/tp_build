@@ -37,6 +37,7 @@ TP_GIT = $$absolute_path("$$PWD/../../tp_build/tp_git/")
 
 TP_GIT_BRANCH = $$system("bash -c \"cd $${PROJECT_ROOT}/tp_build ; $${TP_GIT}/extract_git_branch.sh\"")
 TP_GIT_COMMIT = $$system("bash -c \"cd $${PROJECT_ROOT}/tp_build ; $${TP_GIT}/extract_git_commit.sh\"")
+TP_GIT_COMMIT_NUMBER = $$system("bash -c \"cd $${PROJECT_ROOT}/tp_build ; $${TP_GIT}/extract_git_commit_number.sh\"")
 
 INCLUDEPATHS = $$unique(INCLUDEPATHS)
 for(INCLUDE, INCLUDEPATHS) {
@@ -85,6 +86,7 @@ for(INCLUDE, SYSTEM_INCLUDEPATHS) {
 
 DEFINES += TP_GIT_BRANCH=$$TP_GIT_BRANCH
 DEFINES += TP_GIT_COMMIT=$$TP_GIT_COMMIT
+DEFINES += TP_GIT_COMMIT_NUMBER=$$TP_GIT_COMMIT_NUMBER
 
 INCLUDEPATH = $$unique(INCLUDEPATH)
 DEFINES = $$unique(DEFINES)

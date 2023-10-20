@@ -16,6 +16,7 @@ function(tp_parse_submodules)
     string(REPLACE " " ";" TP_SUBPROJECTS ${TP_SUBPROJECTS})
     string(STRIP "${TP_SUBPROJECTS}" TP_SUBPROJECTS)
 
+    message(STATUS "Subprojects: ${TP_SUBPROJECTS}")
     foreach(subproject ${TP_SUBPROJECTS})
       set(TP_SUBDIRS_TMP "")
       execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/tp_build/cmake/extract_submodules.sh" SUBDIRS
@@ -41,6 +42,7 @@ function(tp_parse_submodules)
                   OUTPUT_VARIABLE TP_SUBDIRS_TMP
                   OUTPUT_STRIP_TRAILING_WHITESPACE)
 
+message(STATUS "Subdirs_tmp: ${TP_SUBDIRS_TMP}")
   if(NOT "${TP_SUBDIRS_TMP}" STREQUAL "")
     string(REPLACE " " ";" TP_SUBDIRS_TMP ${TP_SUBDIRS_TMP})
     string(STRIP "${TP_SUBDIRS_TMP}" TP_SUBDIRS_TMP)
@@ -52,6 +54,7 @@ function(tp_parse_submodules)
 
   list(REMOVE_DUPLICATES TP_SUBDIRS)
 
+message(STATUS "Subdirs: ${TP_SUBDIRS}")
   foreach(subdir ${TP_SUBDIRS})
     add_subdirectory(${subdir})
   endforeach()

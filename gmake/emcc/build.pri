@@ -2,7 +2,7 @@
 include $(ROOT)$(PROJECT_DIR)/dependencies.pri
 include $(ROOT)tp_build/gmake/parse_dependencies.pri
 
-BC = $(addsuffix .bc,$(addprefix $(ROOT)$(BUILD_DIR),$(UNIQUE_LIBRARIES)))
+BC = $(addsuffix .o,$(addprefix $(ROOT)$(BUILD_DIR),$(UNIQUE_LIBRARIES)))
 HTML = $(TARGET_BUILD_DIR).html
 JS_ONLY = $(TARGET_BUILD_DIR).js_only.js
 WASM_ONLY = $(TARGET_BUILD_DIR).wasm_only.wasm

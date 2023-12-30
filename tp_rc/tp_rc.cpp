@@ -3,6 +3,7 @@
 #include <string>
 
 #include "rapidxml-1.13/rapidxml.hpp"
+#include "scc/scc.hpp"
 
 //##################################################################################################
 bool readBinaryFile(const std::string& fileName, std::string& results)
@@ -38,6 +39,30 @@ bool writeBinaryFile(const std::string& fileName, const std::string& textOutput)
   {
     return false;
   }
+}
+
+//##################################################################################################
+void replaceOverlapping(std::string& result, const std::string& key, const std::string& value)
+{
+  size_t pos = result.find(key);
+  while(pos != std::string::npos)
+  {
+    result.replace(pos, key.size(), value);
+    pos = result.find(key, pos);
+  }
+}
+
+//##################################################################################################
+bool preprocessShader(std::string& fileData)
+{
+  SCC scc(fileData, SCC::Standard::C18);
+  fileData = scc.result();
+
+  replaceOverlapping(fileData, "  ", " ");
+  replaceOverlapping(fileData, " \n", "\n");
+  replaceOverlapping(fileData, "\n\n", "\n");
+
+  return scc.ok();
 }
 
 //##################################################################################################
@@ -115,6 +140,10 @@ int main(int argc, const char * argv[])
     if(auto aliasAttribute = fileNode->first_attribute("alias"); aliasAttribute)
       alias = aliasAttribute->value();
 
+    std::string preprocess;
+    if(auto preprocessAttribute = fileNode->first_attribute("preprocess"); preprocessAttribute)
+      preprocess = preprocessAttribute->value();
+
     if(printDebug)
       std::cout << "alias: " << alias << " file: " << inputFilePath << std::endl;
 
@@ -124,6 +153,16 @@ int main(int argc, const char * argv[])
       std::cerr << "error: Failed to read input file!" << std::endl;
       return 1;
     }
+
+    if(preprocess == "shader")
+    {
+      if(!preprocessShader(fileData))
+      {
+        std::cerr << "error: Failed to preprocess shader!" << std::endl;
+        return 1;
+      }
+    }
+
 
 #if 0
     cppText += "const char* data" + std::to_string(c) + " = \"";

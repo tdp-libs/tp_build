@@ -1,6 +1,8 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
+#include <algorithm>
 
 #include "rapidxml-1.13/rapidxml.hpp"
 #include "scc/scc.hpp"
@@ -53,6 +55,31 @@ void replaceOverlapping(std::string& result, const std::string& key, const std::
 }
 
 //##################################################################################################
+void split(std::vector<std::string>& result,
+           const std::string& input,
+           const std::string& del)
+{
+  auto addPart = [&](std::vector<std::string>& result, const std::string& input, size_t pos, size_t n)
+  {
+    if(n==0)
+      return;
+
+    result.push_back(input.substr(pos, n));
+  };
+
+  std::string::size_type start = 0;
+  auto end = input.find(del);
+  while (end != std::string::npos)
+  {
+    addPart(result, input, start, end - start);
+    start = end + del.length();
+    end = input.find(del, start);
+  }
+
+  addPart(result, input, start, input.size()-start);
+}
+
+//##################################################################################################
 bool preprocessShader(std::string& fileData)
 {
   SCC scc(fileData, SCC::Standard::C18);
@@ -68,7 +95,7 @@ bool preprocessShader(std::string& fileData)
 //##################################################################################################
 int main(int argc, const char * argv[])
 {
-  if(argc!=5)
+  if(argc!=5 && argc!=6)
   {
     std::cerr << "error: Incorrect number of arguments passed to tpRc!" << std::endl;
     return 1;
@@ -81,6 +108,23 @@ int main(int argc, const char * argv[])
 
   std::string qrcDirectory(argv[2]);
   qrcDirectory = qrcDirectory.substr(0, qrcDirectory.find_last_of("\\/")) + slash;
+
+  std::vector<std::string> excludes;
+  if(argc==6)
+  {
+    if(printDepends)
+      std::cout << argv[5] << std::endl;
+
+    std::cerr << "Parse excludes: " << argv[5] << std::endl;
+
+    std::string rcExclude;
+    readBinaryFile(argv[5], rcExclude);
+    replaceOverlapping(rcExclude, "\r\n", "\n");
+    split(excludes, rcExclude, "\n");
+
+    for(const auto& e : excludes)
+      std::cerr << "   " << e << std::endl;
+  }
 
   std::string inputData;
   if(!readBinaryFile(argv[2], inputData))
@@ -123,6 +167,12 @@ int main(int argc, const char * argv[])
 
   std::string cppText = "#include \"tp_utils/Resources.h\"\n\nnamespace\n{\n\n";
   std::string initText;
+  std::string excludesText =
+      "# \n"
+      "# Each line is a resource identifier to exclude, adding a # will keep that resource.\n"
+      "# Run this in the build dir to compile the list:\n"
+      "# rm -f a.txt ; cat */*.rc_excludes >> a.txt ; awk '!x[$0]++' a.txt > rc_excludes.txt ; rm -f a.txt\n"
+      "# \n";
 
   int c=0;
   for(auto fileNode = qresourceNode->first_node("file"); fileNode; fileNode=fileNode->next_sibling("file"))
@@ -146,6 +196,15 @@ int main(int argc, const char * argv[])
 
     if(printDebug)
       std::cout << "alias: " << alias << " file: " << inputFilePath << std::endl;
+
+    std::string resourceIdentifier = prefix + alias;
+    if(std::find(excludes.begin(), excludes.end(), resourceIdentifier) != excludes.end())
+    {
+      excludesText += resourceIdentifier + '\n';
+      continue;
+    }
+
+    excludesText += "# " + resourceIdentifier + '\n';
 
     std::string fileData;
     if(!readBinaryFile(inputFilePath, fileData))
@@ -189,14 +248,13 @@ int main(int argc, const char * argv[])
 #endif
 
     cppText += "size_t size" + std::to_string(c) + "=" + std::to_string(fileData.size()) + ";\n\n";
-    initText += "  tp_utils::addResource(\"" + prefix + alias + "\",reinterpret_cast<const char*>(data" + std::to_string(c) + "),size" + std::to_string(c) + ");\n";
+    initText += "  tp_utils::addResource(\"" + resourceIdentifier + "\",reinterpret_cast<const char*>(data" + std::to_string(c) + "),size" + std::to_string(c) + ");\n";
     c++;
   }
 
   if(printDepends)
     return 0;
 
-  //cppText += "extern int initialized;\n";
   cppText += "int initialize()\n{\n" + initText + "return 0;\n}\n";
   cppText += "int initialized=initialize();\n";
 
@@ -208,6 +266,12 @@ int main(int argc, const char * argv[])
   cppText += "}\n";
 
   writeBinaryFile(argv[3], cppText);
+
+  {
+    std::string excludesOutputFile = argv[3];
+    replaceOverlapping(excludesOutputFile, ".cpp", ".rc_excludes");
+    writeBinaryFile(excludesOutputFile, excludesText);
+  }
 
   return 0;
 }

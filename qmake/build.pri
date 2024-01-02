@@ -32,6 +32,11 @@ include(x_parse_modules_dependencies.pri)
 # Bring in the dependencies tree
 include(parse_dependencies.pri)
 
+TP_RC_EXCLUDE_FILE=
+exists(../../$${PROJECT_DIR}/rc_excludes.txt) {
+TP_RC_EXCLUDE_FILE=$$absolute_path(../../$${PROJECT_DIR}/rc_excludes.txt)
+}
+
 PROJECT_ROOT = $$absolute_path("$$PWD/../../")
 TP_GIT = $$absolute_path("$$PWD/../../tp_build/tp_git/")
 

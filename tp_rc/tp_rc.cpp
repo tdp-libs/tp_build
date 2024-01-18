@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <cstdint>
 
 #include "rapidxml-1.13/rapidxml.hpp"
 #include "scc/scc.hpp"

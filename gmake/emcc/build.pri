@@ -15,7 +15,7 @@ all: $(JS_ONLY) $(WASM_ONLY)
 
 js_only: $(JS_ONLY)
 
-js_w_dts: $(JS_W_DTS)
+#js_w_dts: $(JS_W_DTS)
 
 wasm_only: $(WASM_ONLY)
 

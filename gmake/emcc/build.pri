@@ -25,8 +25,8 @@ $(HTML): $(BUILD_DIR) $(SUBDIRS) force_look
 $(JS_ONLY): $(BUILD_DIR) $(SUBDIRS) force_look
 	$(CXX) $(LDFLAGS) $(BC) $(LIBS) -o $@
 
-$(JS_W_DTS): $(BUILD_DIR) $(SUBDIRS)
-	$(CXX) $(LDFLAGS) $(BC) $(LIBS) -o $@ --embind-emit-tsd $(DTS)
+#$(JS_W_DTS): $(BUILD_DIR) $(SUBDIRS)
+	#$(CXX) $(LDFLAGS) $(BC) $(LIBS) -o $@ --embind-emit-tsd $(DTS)
 
 $(WASM_ONLY): $(BUILD_DIR) $(SUBDIRS) force_look
 	$(CXX) $(LDFLAGS) $(BC) $(LIBS) -o $@

@@ -16,6 +16,11 @@ include $(ROOT)tp_build/gmake/$(TP_BUILD_TYPE)/common.pri
 include $(ROOT)project.inc
 include $(ROOT)$(PROJECT_DIR)/project.conf
 
+ifeq ($(BUILD_DIR),)
+BUILD_DIR = $(DEFAULT_BUILD_DIR)
+export BUILD_DIR
+endif
+
 export PROJECT_DIR
 
 include $(ROOT)$(PROJECT_DIR)/submodules.pri

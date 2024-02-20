@@ -9,6 +9,11 @@ include $(ROOT)tp_build/gmake/$(TP_BUILD_TYPE)/common.pri
 include $(ROOT)project.inc
 include $(ROOT)$(PROJECT_DIR)/project.conf
 
+ifeq ($(BUILD_DIR),)
+BUILD_DIR = $(DEFAULT_BUILD_DIR)
+export BUILD_DIR
+endif
+
 # Bring in the dependencies tree 
 include dependencies.pri
 include $(ROOT)tp_build/gmake/parse_dependencies.pri

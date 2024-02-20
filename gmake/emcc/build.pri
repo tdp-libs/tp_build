@@ -10,7 +10,7 @@ JS_W_DTS = $(TARGET_BUILD_DIR).js_only.js
 
 LDFLAGS += $(sort $(foreach LIBRARYPATH,$(LIBRARYPATHS),-L$(LIBRARYPATH)))
 
-all: $(JS_W_DTS) $(WASM_ONLY)
+all: $(JS_ONLY) $(WASM_ONLY)
 
 js_only: $(JS_ONLY)
 

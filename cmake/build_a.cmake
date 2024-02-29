@@ -110,6 +110,11 @@ function(tp_parse_vars)
                   OUTPUT_VARIABLE TP_CXXFLAGS
                   OUTPUT_STRIP_TRAILING_WHITESPACE)
 
+  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" LFLAGS
+                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
+                  OUTPUT_VARIABLE TP_LFLAGS
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+
   execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_git/extract_git_branch.sh" 
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
                   OUTPUT_VARIABLE TP_GIT_BRANCH
@@ -506,6 +511,7 @@ function(tp_parse_vars)
     include_directories(${TP_INCLUDEPATHS} ${TP_SYSTEM_INCLUDEPATHS} ${TP_RELATIVE_SYSTEM_INCLUDEPATHS})
     link_directories(${TP_LIBRARYPATHS})
     add_definitions(${TP_DEFINES})
+    add_definitions("${TP_CFLAGS} ${TP_CXXFLAGS} ${TP_LFLAGS}")
     
     if(ANDROID)
       # For Android we build a shared library then call it from Java.

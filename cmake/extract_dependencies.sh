@@ -11,13 +11,11 @@ while read var assign value; do
   fi
 done < $TMP_DB_FILE
 
-
 if [[ -z "${TP_CONFIG}" ]]; then
   PROJECT_INC="../project.inc"
 else
   PROJECT_INC="../${TP_CONFIG}"
 fi
-
 
 env -i `which make` -pn -f ${PROJECT_INC} > $TMP_DB_FILE 2>/dev/null
 while read var assign value; do

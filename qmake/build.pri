@@ -296,6 +296,13 @@ else{
   QMAKE_CXXFLAGS += -Wold-style-cast
   #QMAKE_CXXFLAGS += -Wconversion # very noisy in Qt headers
 
+  isEmpty(QT){
+
+  }else{
+    QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
+    QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]/QtGui
+  }
+
   CONFIG(debug, debug|release) {
     tp_sanitize {
       #dnf install libasan
@@ -317,6 +324,7 @@ else{
       #dnf install libtsan
       QMAKE_CXXFLAGS += -fsanitize=thread
       QMAKE_LFLAGS   += -fsanitize=thread
+      DEFINES += TP_SANITIZE_THREAD=1
     }
 
     tp_prof {

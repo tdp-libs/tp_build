@@ -259,6 +259,8 @@ else:osx{
 
       QMAKE_CXXFLAGS += -fstack-protector-all
       QMAKE_LFLAGS   += -fstack-protector-all
+
+      DEFINES += TP_SANITIZE
     }
   }
 }
@@ -318,6 +320,8 @@ else{
 
       QMAKE_CXXFLAGS += -fstack-protector-all
       QMAKE_LFLAGS   += -fstack-protector-all
+
+      DEFINES += TP_SANITIZE
     }
 
     tp_sanitize_thread {

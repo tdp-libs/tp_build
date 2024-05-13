@@ -482,18 +482,13 @@ function(tp_parse_vars)
     endif()
   endif()
 
-<<<<<<< Updated upstream
-  #== Build PyLib ====================================================================================
-=======
   #== Build Lib ====================================================================================
->>>>>>> Stashed changes
   if(TP_TEMPLATE STREQUAL "pylib")
     include_directories(${TP_INCLUDEPATHS} ${TP_SYSTEM_INCLUDEPATHS} ${TP_RELATIVE_SYSTEM_INCLUDEPATHS})
     link_directories(${TP_LIBRARYPATHS})
     add_definitions(${TP_DEFINES})
     add_definitions("${TP_CFLAGS} ${TP_CXXFLAGS} ${TP_LFLAGS}")
 
-<<<<<<< Updated upstream
     if(WIN32)
       add_library("${TP_TARGET}" SHARED ${TP_SOURCES} ${TP_HEADERS} ${TP_RESOURCES})
     elseif(UNIX)
@@ -511,11 +506,6 @@ function(tp_parse_vars)
   endif()
 
 
-=======
-    add_library("${TP_TARGET}" SHARED ${TP_SOURCES} ${TP_HEADERS} ${TP_RESOURCES})
-  endif()
-
->>>>>>> Stashed changes
   #== Build App ====================================================================================
   if(TP_TEMPLATE STREQUAL "app" OR TP_TEMPLATE STREQUAL "test")
     include_directories(${TP_INCLUDEPATHS} ${TP_SYSTEM_INCLUDEPATHS} ${TP_RELATIVE_SYSTEM_INCLUDEPATHS})

@@ -482,7 +482,7 @@ function(tp_parse_vars)
     endif()
   endif()
 
-  #== Build Lib ====================================================================================
+  #== Build PyLib ==================================================================================
   if(TP_TEMPLATE STREQUAL "pylib")
     include_directories(${TP_INCLUDEPATHS} ${TP_SYSTEM_INCLUDEPATHS} ${TP_RELATIVE_SYSTEM_INCLUDEPATHS})
     link_directories(${TP_LIBRARYPATHS})

@@ -4,19 +4,8 @@
 # This makes Qt Creator add ../lib to the library path so that we dont need to add it manually.
 LIBRARYPATHS+=../lib
 
-exists($${OUT_PWD}/../PROJECT_DIR.pri) {
-include($${OUT_PWD}/../PROJECT_DIR.pri)
-}
-
-TP_CONFIG=$$system("bash -c \"echo $TP_CONFIG\"")
-isEmpty(TP_CONFIG) {
-  exists(../../project.inc) {
-    include(../../project.inc)
-  }
-}else{
-  exists(../../$${TP_CONFIG}) {
-    include(../../$${TP_CONFIG})
-  }
+exists($${OUT_PWD}/../GLOBALS.pri) {
+include($${OUT_PWD}/../GLOBALS.pri)
 }
 
 exists(../../$${PROJECT_DIR}/project.conf) {
@@ -36,13 +25,6 @@ TP_RC_EXCLUDE_FILE=
 exists(../../$${PROJECT_DIR}/rc_excludes.txt) {
 TP_RC_EXCLUDE_FILE=$$absolute_path(../../$${PROJECT_DIR}/rc_excludes.txt)
 }
-
-PROJECT_ROOT = $$absolute_path("$$PWD/../../")
-TP_GIT = $$absolute_path("$$PWD/../../tp_build/tp_git/")
-
-TP_GIT_BRANCH = $$system("bash -c \"cd $${PROJECT_ROOT}/tp_build ; $${TP_GIT}/extract_git_branch.sh\"")
-TP_GIT_COMMIT = $$system("bash -c \"cd $${PROJECT_ROOT}/tp_build ; $${TP_GIT}/extract_git_commit.sh\"")
-TP_GIT_COMMIT_NUMBER = $$system("bash -c \"cd $${PROJECT_ROOT}/tp_build ; $${TP_GIT}/extract_git_commit_number.sh\"")
 
 INCLUDEPATHS = $$unique(INCLUDEPATHS)
 for(INCLUDE, INCLUDEPATHS) {

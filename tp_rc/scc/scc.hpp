@@ -76,7 +76,11 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef _MSVC_LANG
+#include <io.h>
+#else
 #include <unistd.h>
+#endif
 #include <cstdio>
 #include <string>
 #include <stdexcept>

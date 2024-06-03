@@ -1,137 +1,115 @@
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+# Function to read a file and set name=value pairs as CMake variables
+# it receives two lists arguments of the same size:
+#    filename_list - list of file names to extract paramters
+#    prefix_list - list of prefixes for each file which will be added to any variable found in the file
+# If your prefix for given file defined as "MY_PREFIX_" then pair NAME[+]=VALUE in the file
+# will be translated to cmake variable MY_PREFIX_NAME=VALUE
+# i.e.: records in file
+#   RELATIVE_SYSTEM_INCLUDEPATHS += omi/some/add_subdirectory
+#   RELATIVE_SYSTEM_INCLUDEPATHS += omi/some/add_subdirectory2
+# will results to MY_PREFIX_RELATIVE_SYSTEM_INCLUDEPATHS = "omi/some/add_subdirectory;omi/some/add_subdirectory2"
+# variable.
+
+function(extract_var_value_pair filename_list prefix_list)
+
+  # For documentation of the supported variabls see:
+  # https://github.com/tdp-libs/tp_build/blob/master/documentation/variables.md
+
+  set(varname_list
+    INCLUDEPATHS SYSTEM_INCLUDEPATHS RELATIVE_SYSTEM_INCLUDEPATHS
+    LIBRARIES TP_FRAMEWORKS LIBS SLIBS LIBRARYPATHS DEFINES
+    TP_DEPENDENCIES DEPENDENCIES TP_STATIC_INIT QT QTPLUGIN
+    CFLAGS CXXFLAGS LFLAGS
+
+    HEADERS SOURCES TP_RC RESOURCES TARGET TEMPLATE
+
+    PROJECT_DIR SUBPROJECTS SUBDIRS
+  )
+
+    foreach(filename_arg vpref IN ZIP_LISTS filename_list prefix_list)
+
+      # Read the file content
+      file(READ "${filename_arg}" FILE_CONTENT)
+
+      string(REGEX REPLACE "[\r\n]+" ";" PAIRS "${FILE_CONTENT}")
+
+      # Iterate over the pairs and set variables
+      foreach(PAIR ${PAIRS})
+
+        string(REGEX MATCH "^[\t ]*([^#\+ \t]+)[\t ]*(\\+?=)[\t ]*\"?([^\"]*)\"?[\t ]*$" _ ${PAIR})
+
+        if(CMAKE_MATCH_COUNT EQUAL 3 )
+
+          set(VARNAME "${CMAKE_MATCH_1}")
+          set(VARVALUE "${CMAKE_MATCH_3}")
+          string(STRIP ${VARNAME} VARNAME)
+          string(STRIP ${VARVALUE} VARVALUE)
+
+          if (VARNAME IN_LIST varname_list)
+            list(APPEND ${vpref}${VARNAME} ${VARVALUE})
+          endif()
+
+        endif()
+      endforeach()
+
+      foreach(varname ${varname_list})
+        if( ${vpref}${varname} )
+          set(${vpref}${varname}  "${${vpref}${varname}}" PARENT_SCOPE)
+        endif()
+      endforeach()
+
+    endforeach()
+
+endfunction()
+
 
 # For documentation of the supported variabls see:
 # https://github.com/tdp-libs/tp_build/blob/master/documentation/variables.md
-function(tp_parse_vars)  
-  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_vars.sh" HEADERS
-                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-                  OUTPUT_VARIABLE TP_HEADERS
-                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+function(tp_parse_vars)
 
-  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_vars.sh" SOURCES
-                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-                  OUTPUT_VARIABLE TP_SOURCES
-                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+  if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/vars.pri")    
+    list(APPEND files_to_scan "${CMAKE_CURRENT_LIST_DIR}/vars.pri")
+    list(APPEND vpref_list "VAR_TP_")
+  endif()
 
-  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_vars.sh" TP_RC
-                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-                  OUTPUT_VARIABLE TP_RC
-                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+  # add global settings file
+  string(REPLACE "\\" "/" TP_CONFIG_PATH "$ENV{TP_CONFIG}")
+  if(NOT IS_ABSOLUTE ${TP_CONFIG_PATH})
+    set(TP_CONFIG_PATH "${CMAKE_SOURCE_DIR}/${TP_CONFIG_PATH}")
+  endif()
+  if(NOT EXISTS "${TP_CONFIG_PATH}")
+    message(FATAL_ERROR "Config file was not found. Please set TP_CONFIG environmental variable!")
+  endif()
+  list(APPEND files_to_scan "${TP_CONFIG_PATH}")
+  list(APPEND vpref_list "TP_")
 
-  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_vars.sh" RESOURCES
-                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-                  OUTPUT_VARIABLE TP_RESOURCES
-                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+  if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/dependencies.pri")
+    list(APPEND files_to_scan "${CMAKE_CURRENT_LIST_DIR}/dependencies.pri")
+    list(APPEND vpref_list "TP_")
+  endif()
+  extract_var_value_pair("${files_to_scan}" "${vpref_list}")
 
-  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_vars.sh" TARGET
-                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-                  OUTPUT_VARIABLE TP_TARGET
-                  OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_vars.sh" TEMPLATE
-                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-                  OUTPUT_VARIABLE TP_TEMPLATE
-                  OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" INCLUDEPATHS
-                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-                  OUTPUT_VARIABLE TP_INCLUDEPATHS_
-                  OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" SYSTEM_INCLUDEPATHS
-                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-                  OUTPUT_VARIABLE TP_SYSTEM_INCLUDEPATHS_
-                  OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" RELATIVE_SYSTEM_INCLUDEPATHS
-                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-                  OUTPUT_VARIABLE TP_RELATIVE_SYSTEM_INCLUDEPATHS_
-                  OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" LIBRARIES
-                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-                  OUTPUT_VARIABLE TP_LIBRARIES_
-                  OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" TP_FRAMEWORKS
-                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-                  OUTPUT_VARIABLE TP_FRAMEWORKS_
-                  OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" LIBS
-                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-                  OUTPUT_VARIABLE TP_LIBS_
-                  OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" SLIBS
-                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-                  OUTPUT_VARIABLE TP_SLIBS
-                  OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" LIBRARYPATHS
-                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-                  OUTPUT_VARIABLE TP_LIBRARYPATHS_
-                  OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" DEFINES
-                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-                  OUTPUT_VARIABLE TP_DEFINES_
-                  OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" TP_DEPENDENCIES
-                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-                  OUTPUT_VARIABLE TP_DEPENDENCIES
-                  OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" TP_STATIC_INIT
-                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-                  OUTPUT_VARIABLE TP_STATIC_INIT
-                  OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" QT
-                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-                  OUTPUT_VARIABLE TP_QT
-                  OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" QTPLUGIN
-                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-                  OUTPUT_VARIABLE TP_QTPLUGIN
-                  OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" CFLAGS
-                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-                  OUTPUT_VARIABLE TP_CFLAGS
-                  OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" CXXFLAGS
-                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-                  OUTPUT_VARIABLE TP_CXXFLAGS
-                  OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/extract_dependencies.sh" LFLAGS
-                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-                  OUTPUT_VARIABLE TP_LFLAGS
-                  OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_git/extract_git_branch.sh" 
+  execute_process(COMMAND "C:/Program Files/Git/bin/bash.exe" "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_git/extract_git_branch.sh"
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
                   OUTPUT_VARIABLE TP_GIT_BRANCH
                   OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-  execute_process(COMMAND bash "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_git/extract_git_commit.sh" 
+  execute_process(COMMAND "C:/Program Files/Git/bin/bash.exe" "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_git/extract_git_commit.sh"
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
                   OUTPUT_VARIABLE TP_GIT_COMMIT
                   OUTPUT_STRIP_TRAILING_WHITESPACE)
 
+  execute_process(COMMAND "C:/Program Files/Git/bin/bash.exe" "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_git/extract_git_commit_number.sh"
+                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
+                  OUTPUT_VARIABLE TP_GIT_COMMIT_NUMBER
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+
 
   #== INCLUDEPATHS =================================================================================
-  string(REPLACE " " ";" TP_INCLUDEPATHS "${TP_INCLUDEPATHS} ${TP_INCLUDEPATHS_}")
-  string(STRIP "${TP_INCLUDEPATHS}" TP_INCLUDEPATHS)
   set(TP_TMP_LIST "")
   foreach(f ${TP_INCLUDEPATHS})
     if(IS_ABSOLUTE "${f}")
+      string(STRIP "${f}" f)
       list(APPEND TP_TMP_LIST "${f}")
     else()
       list(APPEND TP_TMP_LIST "../${f}")
@@ -139,26 +117,23 @@ function(tp_parse_vars)
   endforeach(f)
   set(TP_INCLUDEPATHS "${TP_TMP_LIST}")
 
-
   #== SYSTEM_INCLUDEPATHS ==========================================================================
-  string(REPLACE " " ";" TP_SYSTEM_INCLUDEPATHS "${TP_SYSTEM_INCLUDEPATHS} ${TP_SYSTEM_INCLUDEPATHS_}")
-  string(STRIP "${TP_SYSTEM_INCLUDEPATHS}" TP_SYSTEM_INCLUDEPATHS)
   set(TP_TMP_LIST "")
   foreach(f ${TP_SYSTEM_INCLUDEPATHS})
-    if(IS_ABSOLUTE "${f}")
-      list(APPEND TP_TMP_LIST "${f}")
-    else()
-      list(APPEND TP_TMP_LIST "../${f}")
-    endif()
+   string(STRIP "${f}" f)
+   if(IS_ABSOLUTE "${f}")
+     list(APPEND TP_TMP_LIST "${f}")
+   else()
+     list(APPEND TP_TMP_LIST "../${f}")
+   endif()
   endforeach(f)
   set(TP_SYSTEM_INCLUDEPATHS "${TP_TMP_LIST}")
 
 
   #== RELATIVE_SYSTEM_INCLUDEPATHS =================================================================
-  string(REPLACE " " ";" TP_RELATIVE_SYSTEM_INCLUDEPATHS "${TP_RELATIVE_SYSTEM_INCLUDEPATHS} ${TP_RELATIVE_SYSTEM_INCLUDEPATHS_}")
-  string(STRIP "${TP_RELATIVE_SYSTEM_INCLUDEPATHS}" TP_RELATIVE_SYSTEM_INCLUDEPATHS)
   set(TP_TMP_LIST "")
   foreach(f ${TP_RELATIVE_SYSTEM_INCLUDEPATHS})
+    string(STRIP "${f}" f)
     if(IS_ABSOLUTE "${f}")
       list(APPEND TP_TMP_LIST "${f}")
     else()
@@ -169,19 +144,8 @@ function(tp_parse_vars)
 
 
   #== LIBRARYPATHS =================================================================================
-  string(STRIP "${TP_LIBRARYPATHS}" TP_LIBRARYPATHS)
-  string(STRIP "${TP_LIBRARYPATHS_}" TP_LIBRARYPATHS_)
-  string(REPLACE " " ";" TP_LIBRARYPATHS "${TP_LIBRARYPATHS}")
-  string(REPLACE " " ";" TP_LIBRARYPATHS_ "${TP_LIBRARYPATHS_}")
   set(TP_TMP_LIST "")
   foreach(f ${TP_LIBRARYPATHS})
-    if(IS_ABSOLUTE "${f}")
-      list(APPEND TP_TMP_LIST "${f}")
-    else()
-      list(APPEND TP_TMP_LIST "../${f}")
-    endif()
-  endforeach(f)
-  foreach(f ${TP_LIBRARYPATHS_})
     if(IS_ABSOLUTE "${f}")
       list(APPEND TP_TMP_LIST "${f}")
     else()
@@ -192,34 +156,29 @@ function(tp_parse_vars)
 
 
   #== LIBRARIES ====================================================================================
-  set(TP_TMP_LIST "")
   macro(clean_and_add_libraries PARTS_ARG)
     if(NOT "${PARTS_ARG}" STREQUAL "")
       string(STRIP "${PARTS_ARG}" PARTS)
       if(NOT "${PARTS}" STREQUAL "")
-        string(REPLACE " " ";" PARTS "${PARTS}")
-        string(REGEX REPLACE "\n$" "" PARTS "${PARTS}")
-        string(REGEX REPLACE "\r$" "" PARTS "${PARTS}")
-        foreach(f ${PARTS})          
+        foreach(f ${PARTS})
           string(STRIP "${f}" f)
+          string(REGEX REPLACE "^\-l" ""  f ${f})
           list(APPEND TP_TMP_LIST "${f}")
         endforeach(f)
       endif()
     endif()
   endmacro()
 
+  set(TP_TMP_LIST "")
   clean_and_add_libraries("${TP_LIBRARIES}")
-  clean_and_add_libraries("${TP_LIBRARIES_}")
   clean_and_add_libraries("${TP_LIBS}")
-  clean_and_add_libraries("${TP_LIBS_}")
   clean_and_add_libraries("${TP_SLIBS}")
   set(TP_LIBRARIES "${TP_TMP_LIST}")
 
-  string(STRIP "${TP_DEPENDENCIES}" TP_DEPENDENCIES)
-  if(NOT "${TP_DEPENDENCIES}" STREQUAL "")
-    string(REPLACE " " ";" TP_DEPENDENCIES "${TP_DEPENDENCIES}")
-    list(REMOVE_DUPLICATES TP_DEPENDENCIES)
-    foreach(f ${TP_DEPENDENCIES})
+  string(STRIP "${TP_TP_DEPENDENCIES}" TP_TP_DEPENDENCIES)
+  if(NOT TP_TP_DEPENDENCIES STREQUAL "")
+    list(REMOVE_DUPLICATES TP_TP_DEPENDENCIES)
+    foreach(f ${TP_TP_DEPENDENCIES})
       if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/../${f}/cmake.cmake")
         include("${CMAKE_CURRENT_LIST_DIR}/../${f}/cmake.cmake")
       else()
@@ -228,9 +187,9 @@ function(tp_parse_vars)
     endforeach(f)
   endif()
 
-  list(REVERSE TP_LIBRARIES)
+  # list(REVERSE TP_LIBRARIES)
   list(REMOVE_DUPLICATES TP_LIBRARIES)
-  list(REVERSE TP_LIBRARIES)
+  # list(REVERSE TP_LIBRARIES)
 
   #== FRAMEWORKS ===================================================================================
   if(APPLE)
@@ -238,7 +197,6 @@ function(tp_parse_vars)
       if(NOT "${PARTS_ARG}" STREQUAL "")
         string(STRIP "${PARTS_ARG}" PARTS)
         if(NOT "${PARTS}" STREQUAL "")
-          string(REPLACE " " ";" PARTS "${PARTS}")
           string(REGEX REPLACE "\n$" "" PARTS "${PARTS}")
           string(REGEX REPLACE "\r$" "" PARTS "${PARTS}")
           foreach(f ${PARTS})
@@ -249,35 +207,30 @@ function(tp_parse_vars)
     endmacro()
 
     clean_and_add_frameworks("${TP_FRAMEWORKS}")
-    clean_and_add_frameworks("${TP_FRAMEWORKS_}")
   endif()
 
   #== DEFINES ======================================================================================
+  macro(clean_and_add_defines PARTS_ARG)
+    set(PARTS ${PARTS_ARG})
+    foreach(f ${PARTS})
+      string(FIND "${f}" "-" out)
+      if("${out}" EQUAL 0)
+        list(APPEND TP_TMP_LIST "${f}")
+      else()
+        list(APPEND TP_TMP_LIST "-D${f}")
+      endif()
+    endforeach(f)
+  endmacro()
+
   set(TP_TMP_LIST "")
   list(APPEND TP_TMP_LIST "-DTP_GIT_BRANCH=${TP_GIT_BRANCH}")
   list(APPEND TP_TMP_LIST "-DTP_GIT_COMMIT=${TP_GIT_COMMIT}")
-  macro(clean_and_add_defines PARTS_ARG)
-    if(NOT "${PARTS_ARG}" STREQUAL "")
-      string(STRIP "${PARTS_ARG}" PARTS)
-      if(NOT "${PARTS}" STREQUAL "")
-        string(REPLACE " " ";" PARTS "${PARTS}")
-        string(REGEX REPLACE "\n$" "" PARTS "${PARTS}")
-        string(REGEX REPLACE "\r$" "" PARTS "${PARTS}")
-        foreach(f ${PARTS})          
-          string(FIND "${f}" "-" out)
-          if("${out}" EQUAL 0)
-            list(APPEND TP_TMP_LIST "${f}")
-          else()
-            list(APPEND TP_TMP_LIST "-D${f}")
-          endif()
-        endforeach(f)
-      endif()
-    endif()
-  endmacro()
+  list(APPEND TP_TMP_LIST "-DTP_GIT_COMMIT_NUMBER=${TP_GIT_COMMIT_NUMBER}")
+  clean_and_add_defines("${VAR_TP_DEFINES}")
+  set(VAR_TP_DEFINES "${TP_TMP_LIST}")
 
-  clean_and_add_defines("${DEFINES}")
+  set(TP_TMP_LIST "")
   clean_and_add_defines("${TP_DEFINES}")
-  clean_and_add_defines("${TP_DEFINES_}")
   set(TP_DEFINES "${TP_TMP_LIST}")
 
   if(IOS)
@@ -289,34 +242,35 @@ function(tp_parse_vars)
   elseif(UNIX)
     list(APPEND TP_DEFINES -DTP_LINUX)
     set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-pthread")
-      list(APPEND TP_LIBRARIES "pthread")
+    list(APPEND TP_LIBRARIES "pthread")
   elseif(WIN32)
-    list(APPEND TP_DEFINES -DTP_WIN32)
+    list(APPEND TP_DEFINES
+      -DTP_WIN32
+      -DTP_WIN32_STATIC
+      -DTP_CPP_VERSION=17
+    )
+    if(MSVC)
+      list(APPEND TP_DEFINES
+        -DTP_WIN32_MSVC
+        -D_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS # suppress warning on templates
+        -DTP_WIN32_STATIC
+      )
+      add_compile_options("/std:c++17"  "/bigobj")    # Win32 issue in exprtk.hpp
+
+      #suppress warnings on missing _WIN32_WINNT=...
+      macro(get_win_hex outvar)
+        string(REGEX MATCH "^([0-9]+)\\.([0-9]+)" ${outvar} ${CMAKE_SYSTEM_VERSION})
+        math(EXPR ${outvar} "(${CMAKE_MATCH_1} << 8) + ${CMAKE_MATCH_2}" OUTPUT_FORMAT HEXADECIMAL)
+      endmacro()
+
+      if(WIN32)
+        get_win_hex(winver)
+        add_compile_definitions(_WIN32_WINNT=${winver})
+      endif()
+
+    endif()
   endif()
 
-  #== TP_TEMPLATE ==================================================================================
-  string(STRIP "${TP_TEMPLATE}" TP_TEMPLATE)
-
-  #== TP_TARGET ====================================================================================
-  string(STRIP "${TP_TARGET}" TP_TARGET)
-
-  #== SOURCES ======================================================================================
-  if(NOT "${TP_SOURCES}" STREQUAL "")
-    string(REPLACE " " ";" TP_SOURCES ${TP_SOURCES})
-    string(STRIP "${TP_SOURCES}" TP_SOURCES)
-  endif()
-
-  #== HEADERS ======================================================================================
-  if(NOT "${TP_HEADERS}" STREQUAL "")
-    string(REPLACE " " ";" TP_HEADERS ${TP_HEADERS})
-    string(STRIP "${TP_HEADERS}" TP_HEADERS)
-  endif()
-
-  #== Qt RESOURCES =================================================================================
-  if(NOT "${TP_RESOURCES}" STREQUAL "")
-    string(REPLACE " " ";" TP_RESOURCES ${TP_RESOURCES})
-    string(STRIP "${TP_RESOURCES}" TP_RESOURCES)
-  endif()
 
   #== TP RESOURCES =================================================================================
   if(WIN32)
@@ -341,45 +295,42 @@ function(tp_parse_vars)
     )
   endif()
 
-  if(NOT "${TP_RC}" STREQUAL "")
-    string(REPLACE " " ";" TP_RC ${TP_RC})
-    string(STRIP "${TP_RC}" TP_RC)
-    foreach(f ${TP_RC})
+  if(NOT "${VAR_TP_TP_RC}" STREQUAL "")
+    string(STRIP "${VAR_TP_TP_RC}" VAR_TP_TP_RC)
+    foreach(f ${VAR_TP_TP_RC})
       get_filename_component(QRC_NAME "${f}" NAME_WE)
       add_custom_command(
         OUTPUT  "${QRC_NAME}.cpp"
         COMMAND "${TP_RC_CMD}" --compile "${CMAKE_CURRENT_LIST_DIR}/${f}" "${CMAKE_CURRENT_BINARY_DIR}/${QRC_NAME}.cpp" ${QRC_NAME}
         DEPENDS "${CMAKE_CURRENT_LIST_DIR}/${f}" "${TP_RC_CMD}"
       )
-      list(APPEND TP_SOURCES "${QRC_NAME}.cpp")
+      list(APPEND VAR_TP_SOURCES "${QRC_NAME}.cpp")
     endforeach(f)
   endif()
 
   #== STATIC_INIT ==================================================================================
-  if(TP_TEMPLATE STREQUAL "app" OR TP_TEMPLATE STREQUAL "test")
-    if(NOT "${TP_STATIC_INIT}" STREQUAL "")
-      string(REPLACE " " ";" TP_STATIC_INIT ${TP_STATIC_INIT})
-      string(STRIP "${TP_STATIC_INIT}" TP_STATIC_INIT)
-      foreach(f ${TP_STATIC_INIT})
+  if(VAR_TP_TEMPLATE STREQUAL "app" OR VAR_TP_TEMPLATE STREQUAL "test")
+    if(NOT "${TP_TP_STATIC_INIT}" STREQUAL "")
+      string(STRIP "${TP_TP_STATIC_INIT}" TP_TP_STATIC_INIT)
+      foreach(f ${TP_TP_STATIC_INIT})
         add_custom_command(
           OUTPUT  "${f}.cpp"
           COMMAND "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_static_init/generate_static_init.sh" "${f}.cpp" ${f}
           DEPENDS "${CMAKE_CURRENT_LIST_DIR}/../${f}/inc/${f}/Globals.h" "${CMAKE_CURRENT_LIST_DIR}/../${f}/src/Globals.cpp" "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_static_init/generate_static_init.sh"
         )
-  
-        list(APPEND TP_SOURCES "${f}.cpp")
+        list(APPEND VAR_TP_SOURCES "${f}.cpp")
       endforeach(f)
     endif()
   endif()
 
   #== QT ===========================================================================================
-  if(NOT "${TP_QT}" STREQUAL "")
-    string(REPLACE " " ";" TP_QT ${TP_QT})
-    string(STRIP "${TP_QT}" TP_QT)  
+  if(TP_QT)
     list(REMOVE_DUPLICATES TP_QT)  
     if(TP_QT)
-      message("${TP_TARGET} uses Qt modules: (${TP_QT})")
-  
+
+      find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
+      set(QtVer Qt${QT_VERSION_MAJOR})
+
       if(QT_STATIC)
         list(APPEND TP_DEFINES -DTP_QT_STATIC)
       endif()
@@ -389,65 +340,63 @@ function(tp_parse_vars)
       # As moc files are generated in the binary dir, tell CMake
       # to always look for includes there:
       set(CMAKE_INCLUDE_CURRENT_DIR ON)
-  
+
       foreach(f ${TP_QT})
         if(f STREQUAL "core")
-          find_package(Qt5Core REQUIRED)
-          list(APPEND TP_QT_MODULES "Core")
+          find_package(${QtVer} REQUIRED COMPONENTS Core)
+          list(APPEND TP_QT_MODULES "${QtVer}::Core")
   
         elseif(f STREQUAL "gui")
-          find_package(Qt5Gui REQUIRED)
-          list(APPEND TP_QT_MODULES "Gui")
+          find_package(${QtVer} REQUIRED COMPONENTS Gui)
+          find_package(${QtVer} REQUIRED COMPONENTS OpenGLWidgets)
+          list(APPEND TP_QT_MODULES "${QtVer}::Gui")
+          list(APPEND TP_QT_MODULES "${QtVer}::OpenGLWidgets")
   
         elseif(f STREQUAL "widgets")
-          find_package(Qt5Widgets REQUIRED)
-          list(APPEND TP_QT_MODULES "Widgets")
+          find_package(${QtVer} REQUIRED COMPONENTS Widgets)
+          list(APPEND TP_QT_MODULES "${QtVer}::Widgets")
   
           if(UNIX AND QT_STATIC)
             #Remember that you need this somewhere in your application.
             # Q_IMPORT_PLUGIN(QXcbIntegrationPlugin)
             # Q_IMPORT_PLUGIN(QXcbGlxIntegrationPlugin)
 
-            get_target_property(tmp_loc Qt5::QXcbGlxIntegrationPlugin LOCATION)
+            get_target_property(tmp_loc ${QT_VERSION_MAJOR}::QXcbGlxIntegrationPlugin LOCATION)
             list(APPEND TP_LIBRARIES "${tmp_loc}")
-            list(APPEND TP_LIBRARIES "${Qt5Gui_PLUGINS}")
+            list(APPEND TP_LIBRARIES "${QT_VERSION_MAJOR}${Gui_PLUGINS}")
           endif()
   
           if(WIN32 AND QT_STATIC)
             #Remember that you need this somewhere in your application.
             # Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)
 
-            get_target_property(tmp_loc Qt5::QWindowsIntegrationPlugin LOCATION)
+            get_target_property(tmp_loc ${QtVer}::QWindowsIntegrationPlugin LOCATION)
             list(APPEND TP_LIBRARIES "${tmp_loc}")
-            list(APPEND TP_LIBRARIES "${Qt5Gui_PLUGINS}")
+            list(APPEND TP_LIBRARIES "${QtVer}${Gui_PLUGINS}")
           endif()
   
         elseif(f STREQUAL "opengl")
-          find_package(Qt5OpenGL REQUIRED)
-          list(APPEND TP_QT_MODULES "OpenGL")
+          find_package(${QtVer} REQUIRED COMPONENTS OpenGL)
+          list(APPEND TP_QT_MODULES "${QtVer}::OpenGL")
         endif()
       endforeach(f)
   
-      find_package(Qt5 COMPONENTS Core)
-  
       if(NOT "${TP_QTPLUGIN}" STREQUAL "")
-        string(REPLACE " " ";" TP_QTPLUGIN ${TP_QTPLUGIN})
         string(STRIP "${TP_QTPLUGIN}" TP_QTPLUGIN)
         list(REMOVE_DUPLICATES TP_QTPLUGIN)
         if(TP_QTPLUGIN AND QT_STATIC)
-          message("${TP_TARGET} uses Qt plugins: (${TP_QTPLUGIN})")
           foreach(f ${TP_QTPLUGIN})
-            if(f STREQUAL "qpng" AND TARGET Qt5::QPngPlugin)
-              get_target_property(tmp_loc Qt5::QPngPlugin LOCATION_Debug)
+            if(f STREQUAL "qpng" AND TARGET "${QtVer}::QPngPlugin")
+              get_target_property(tmp_loc ${QtVer}::QPngPlugin LOCATION_Debug)
               list(APPEND TP_LIBRARIES "${tmp_loc}")
-            elseif(f STREQUAL "qjpeg" AND TARGET Qt5::QJpegPlugin)
-              get_target_property(tmp_loc Qt5::QJpegPlugin LOCATION_Debug)
+            elseif(f STREQUAL "qjpeg" AND TARGET "${QtVer}::QJpegPlugin")
+              get_target_property(tmp_loc "${QtVer}::QJpegPlugin" LOCATION_Debug)
               list(APPEND TP_LIBRARIES "${tmp_loc}")
-            elseif(f STREQUAL "qbmp" AND TARGET Qt5::QBmpPlugin)
-              get_target_property(tmp_loc Qt5::QBmpPlugin LOCATION_Debug)
+            elseif(f STREQUAL "qbmp" AND TARGET "${QtVer}::QBmpPlugin")
+              get_target_property(tmp_loc ${QtVer}::QBmpPlugin LOCATION_Debug)
               list(APPEND TP_LIBRARIES "${tmp_loc}")
-            elseif(f STREQUAL "qgif" AND TARGET Qt5::QGifPlugin)
-              get_target_property(tmp_loc Qt5::QGifPlugin LOCATION_Debug)
+            elseif(f STREQUAL "qgif" AND TARGET "${QtVer}::QGifPlugin")
+              get_target_property(tmp_loc ${QtVer}::QGifPlugin LOCATION_Debug)
               list(APPEND TP_LIBRARIES "${tmp_loc}")
             endif()
           endforeach(f)
@@ -468,62 +417,115 @@ function(tp_parse_vars)
     endif()
   endif()
 
-  #== Build Lib ====================================================================================
-  if(TP_TEMPLATE STREQUAL "lib")
-    include_directories(${TP_INCLUDEPATHS} ${TP_SYSTEM_INCLUDEPATHS} ${TP_RELATIVE_SYSTEM_INCLUDEPATHS})
-    link_directories(${TP_LIBRARYPATHS})
-    add_definitions(${TP_DEFINES})
-    add_definitions("${TP_CFLAGS} ${TP_CXXFLAGS} ${TP_LFLAGS}")
+  # to see debug messages about specific target set the proper target name (normally is off)
+  if(VAR_TP_TARGET STREQUAL "off_lib_glm")
 
+    message(STATUS  "QT_VERSION_MAJOR ${VAR_TP_TARGET} ${QT_VERSION_MAJOR}")
+    message(STATUS  "-----------------------------------------")
+
+    message(STATUS "TP_QT_MODULES ${VAR_TP_TARGET} ${TP_QT_MODULES}")
+    message(STATUS  "-----------------------------------------")
+    message(STATUS "TP_QT ${VAR_TP_TARGET} ${TP_QT}")
+    message(STATUS  "-----------------------------------------")
+    message(STATUS "TP_DEPENDENCIES ${VAR_TP_TARGET} ${TP_DEPENDENCIES}")
+    message(STATUS  "-----------------------------------------")
+
+    message(STATUS "VAR_TP_TEMPLATE ${VAR_TP_TARGET} ${VAR_TP_TEMPLATE}")
+    message(STATUS  "-----------------------------------------")
+    message(STATUS "TP_LIBRARIES ${VAR_TP_TARGET} ${TP_LIBRARIES}")
+    message(STATUS  "-----------------------------------------")
+    message(STATUS "TP_LIBRARYPATHS ${VAR_TP_TARGET} ${TP_LIBRARYPATHS}")
+    message(STATUS  "-----------------------------------------")
+
+    message(STATUS "TP_INCLUDEPATHS ${VAR_TP_TARGET} ${TP_INCLUDEPATHS}")
+    message(STATUS  "-----------------------------------------")
+    message(STATUS "TP_SYSTEM_INCLUDEPATHS ${VAR_TP_TARGET} ${TP_SYSTEM_INCLUDEPATHS}")
+    message(STATUS  "-----------------------------------------")
+    message(STATUS "TP_RELATIVE_SYSTEM_INCLUDEPATHS ${VAR_TP_TARGET} ${TP_RELATIVE_SYSTEM_INCLUDEPATHS}")
+    message(STATUS  "-----------------------------------------")
+
+    message(STATUS "VAR_TP_SOURCES ${VAR_TP_TARGET} ${VAR_TP_SOURCES}")
+    message(STATUS  "-----------------------------------------")
+    message(STATUS "VAR_TP_HEADERS ${VAR_TP_TARGET} ${VAR_TP_HEADERS}")
+    message(STATUS  "-----------------------------------------")
+    message(STATUS "VAR_TP_RESOURCES ${VAR_TP_TARGET} ${VAR_TP_RESOURCES}")
+    message(STATUS  "-----------------------------------------")
+
+    message(STATUS "TP_DEFINES ${TP_DEFINES} ${TP_DEFINES}")
+    message(STATUS  "-----------------------------------------")
+    message(STATUS "VAR_TP_DEFINES ${VAR_TP_DEFINES}")
+    message(STATUS  "-----------------------------------------")
+
+  endif()
+
+  list(REMOVE_ITEM TP_LIBRARIES ${VAR_TP_TARGET} )
+
+  #== Build Lib ====================================================================================
+  if(VAR_TP_TEMPLATE STREQUAL "lib")
     if(WIN32)
-      add_library("${TP_TARGET}" STATIC ${TP_SOURCES} ${TP_HEADERS} ${TP_RESOURCES})
+      add_library("${VAR_TP_TARGET}" STATIC ${VAR_TP_SOURCES} ${VAR_TP_HEADERS} ${VAR_TP_RESOURCES})
     else()
-      add_library("${TP_TARGET}" ${TP_SOURCES} ${TP_HEADERS} ${TP_RESOURCES})
+      add_library("${VAR_TP_TARGET}" ${VAR_TP_SOURCES} ${VAR_TP_HEADERS} ${VAR_TP_RESOURCES})
     endif()
+
+    target_include_directories(${VAR_TP_TARGET} PUBLIC ${TP_INCLUDEPATHS} ${TP_SYSTEM_INCLUDEPATHS} ${TP_RELATIVE_SYSTEM_INCLUDEPATHS})
+    target_compile_definitions(${VAR_TP_TARGET} PRIVATE ${VAR_TP_DEFINES} PUBLIC ${TP_DEFINES})
+    target_compile_options(${VAR_TP_TARGET} PRIVATE ${TP_CFLAGS} ${TP_CXXFLAGS} ${TP_LFLAGS})
+    target_link_directories(${VAR_TP_TARGET} PUBLIC ${TP_LIBRARYPATHS})
+
+    list(REMOVE_ITEM TP_LIBRARIES ${VAR_TP_TARGET} )
+
+    target_link_libraries("${VAR_TP_TARGET}" PUBLIC ${TP_LIBRARIES} PUBLIC ${TP_DEPENDENCIES} PUBLIC ${TP_QT_MODULES})
+
   endif()
 
   #== Build PyLib ==================================================================================
-  if(TP_TEMPLATE STREQUAL "pylib")
-    include_directories(${TP_INCLUDEPATHS} ${TP_SYSTEM_INCLUDEPATHS} ${TP_RELATIVE_SYSTEM_INCLUDEPATHS})
-    link_directories(${TP_LIBRARYPATHS})
-    add_definitions(${TP_DEFINES})
-    add_definitions("${TP_CFLAGS} ${TP_CXXFLAGS} ${TP_LFLAGS}")
+  if(VAR_TP_TEMPLATE STREQUAL "pylib")
 
     if(WIN32)
-      add_library("${TP_TARGET}" SHARED ${TP_SOURCES} ${TP_HEADERS} ${TP_RESOURCES})
+      add_library("${VAR_TP_TARGET}" SHARED ${VAR_TP_SOURCES} ${VAR_TP_HEADERS} ${VAR_TP_RESOURCES})
     elseif(UNIX)
-      add_library("${TP_TARGET}" SHARED ${TP_SOURCES} ${TP_HEADERS} ${TP_RESOURCES})
-      set_target_properties( "${TP_TARGET}"
+      add_library("${VAR_TP_TARGET}" SHARED ${VAR_TP_SOURCES} ${VAR_TP_HEADERS} ${VAR_TP_RESOURCES})
+      set_target_properties( "${VAR_TP_TARGET}"
         PROPERTIES          
           LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
           RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
           PREFIX ""
       )
     endif()
-    
-    target_link_libraries("${TP_TARGET}" ${TP_LIBRARIES})    
+    target_include_directories(${VAR_TP_TARGET} PUBLIC ${TP_INCLUDEPATHS} ${TP_SYSTEM_INCLUDEPATHS} ${TP_RELATIVE_SYSTEM_INCLUDEPATHS})
+    link_directories(${TP_LIBRARYPATHS})
+    add_definitions(${TP_DEFINES})
+    add_definitions("${TP_CFLAGS} ${TP_CXXFLAGS} ${TP_LFLAGS}")
+
+    target_link_libraries("${VAR_TP_TARGET}" PUBLIC ${TP_LIBRARIES} ${TP_DEPENDENCIES} ${TP_QT_MODULES})
 
   endif()
 
 
   #== Build App ====================================================================================
-  if(TP_TEMPLATE STREQUAL "app" OR TP_TEMPLATE STREQUAL "test")
-    include_directories(${TP_INCLUDEPATHS} ${TP_SYSTEM_INCLUDEPATHS} ${TP_RELATIVE_SYSTEM_INCLUDEPATHS})
-    link_directories(${TP_LIBRARYPATHS})
-    add_definitions(${TP_DEFINES})
-    add_definitions("${TP_CFLAGS} ${TP_CXXFLAGS} ${TP_LFLAGS}")
+  if(VAR_TP_TEMPLATE STREQUAL "app" OR VAR_TP_TEMPLATE STREQUAL "test")
     
     if(ANDROID)
       # For Android we build a shared library then call it from Java.
-      add_library("${TP_TARGET}" SHARED ${TP_SOURCES} ${TP_HEADERS} ${TP_RESOURCES})
+      add_library("${VAR_TP_TARGET}" SHARED ${VAR_TP_SOURCES} ${VAR_TP_HEADERS} ${VAR_TP_RESOURCES})
     else()
-      add_executable("${TP_TARGET}" ${TP_SOURCES} ${TP_HEADERS} ${TP_RESOURCES})
+      add_executable("${VAR_TP_TARGET}" ${VAR_TP_SOURCES} ${VAR_TP_HEADERS} ${VAR_TP_RESOURCES})
     endif()
 
-    target_link_libraries("${TP_TARGET}" ${TP_LIBRARIES})
-    if(TP_TEMPLATE STREQUAL "app")
+    set_target_properties("${VAR_TP_TARGET}" PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/")
+
+    target_include_directories(${VAR_TP_TARGET} PRIVATE ${TP_INCLUDEPATHS} ${TP_SYSTEM_INCLUDEPATHS} ${TP_RELATIVE_SYSTEM_INCLUDEPATHS})
+    target_link_directories(${VAR_TP_TARGET} PRIVATE ${TP_LIBRARYPATHS})
+    target_compile_options(${VAR_TP_TARGET} PRIVATE ${TP_CFLAGS} ${TP_CXXFLAGS} ${TP_LFLAGS})
+    target_compile_definitions(${VAR_TP_TARGET} PRIVATE ${VAR_TP_DEFINES} PUBLIC ${TP_DEFINES})
+
+    list(REMOVE_ITEM TP_LIBRARIES ${VAR_TP_TARGET} )
+    target_link_libraries(${VAR_TP_TARGET} PUBLIC ${TP_LIBRARIES} ${TP_DEPENDENCIES} ${TP_QT_MODULES})
+
+    if(VAR_TP_TEMPLATE STREQUAL "app")
       if(APPLE)
-        install(TARGETS "${TP_TARGET}" 
+        install(TARGETS "${VAR_TP_TARGET}"
                 RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
                 BUNDLE  DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
@@ -538,12 +540,12 @@ function(tp_parse_vars)
                           OUTPUT_VARIABLE DEVELOPMENT_TEAM)
           string(STRIP "${DEVELOPMENT_TEAM}" DEVELOPMENT_TEAM)
 
-          set_xcode_property("${TP_TARGET}" PRODUCT_BUNDLE_IDENTIFIER "${PRODUCT_BUNDLE_IDENTIFIER}" "All")
-          set_xcode_property(${TP_TARGET} DEVELOPMENT_TEAM "${DEVELOPMENT_TEAM}" "All")
+          set_xcode_property("${VAR_TP_TARGET}" PRODUCT_BUNDLE_IDENTIFIER "${PRODUCT_BUNDLE_IDENTIFIER}" "All")
+          set_xcode_property(${VAR_TP_TARGET} DEVELOPMENT_TEAM "${DEVELOPMENT_TEAM}" "All")
         endif()
 
       else( UNIX )
-        install(TARGETS "${TP_TARGET}" 
+        install(TARGETS "${VAR_TP_TARGET}"
                 RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
                 LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
       endif()
@@ -551,10 +553,10 @@ function(tp_parse_vars)
   endif()
 
   #== Build Subdirs ================================================================================
-  if(NOT TP_TEMPLATE STREQUAL "subdirs")
-    if(TP_QT_MODULES)
-      qt5_use_modules("${TP_TARGET}" ${TP_QT_MODULES})
-    endif()
+  if(VAR_TP_TEMPLATE STREQUAL "subdirs")
+    add_library(${VAR_TP_TARGET} INTERFACE)
+    target_include_directories(${VAR_TP_TARGET} INTERFACE ${TP_INCLUDEPATHS} ${TP_SYSTEM_INCLUDEPATHS} ${TP_RELATIVE_SYSTEM_INCLUDEPATHS})
+    target_compile_definitions(${VAR_TP_TARGET} INTERFACE ${TP_DEFINES})
   endif()
 
 endfunction() 

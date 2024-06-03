@@ -6,15 +6,12 @@ BC = $(addsuffix .o,$(addprefix $(ROOT)$(BUILD_DIR),$(UNIQUE_LIBRARIES)))
 HTML = $(TARGET_BUILD_DIR).html
 JS_ONLY = $(TARGET_BUILD_DIR).js_only.js
 WASM_ONLY = $(TARGET_BUILD_DIR).wasm_only.wasm
-JS_W_DTS = $(TARGET_BUILD_DIR).js_only.js
 
 LDFLAGS += $(sort $(foreach LIBRARYPATH,$(LIBRARYPATHS),-L$(LIBRARYPATH)))
 
 all: $(JS_ONLY) $(WASM_ONLY)
 
 js_only: $(JS_ONLY)
-
-js_w_dts: $(JS_W_DTS)
 
 wasm_only: $(WASM_ONLY)
 
@@ -23,9 +20,6 @@ $(HTML): $(BUILD_DIR) $(SUBDIRS) force_look
 
 $(JS_ONLY): $(BUILD_DIR) $(SUBDIRS) force_look
 	$(CXX) $(LDFLAGS) $(BC) $(LIBS) -o $@
-
-# $(JS_W_DTS): $(BUILD_DIR) $(SUBDIRS)
-# 	$(CXX) $(LDFLAGS) $(BC) $(LIBS) -o $@ --embind-emit-tsd interface.d.ts
 
 $(WASM_ONLY): $(BUILD_DIR) $(SUBDIRS) force_look
 	$(CXX) $(LDFLAGS) $(BC) $(LIBS) -o $@

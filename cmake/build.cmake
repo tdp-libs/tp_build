@@ -7,13 +7,19 @@ function(tp_parse_submodules)
   set(CMAKE_CXX_EXTENSIONS OFF)
 
   # extract top project dir from global settings file
+
+  # searching config file
   string(REPLACE "\\" "/" TP_CONFIG_PATH "$ENV{TP_CONFIG}")
-  if(NOT IS_ABSOLUTE ${TP_CONFIG_PATH})
-    set(TP_CONFIG_PATH "${CMAKE_SOURCE_DIR}/${TP_CONFIG_PATH}")
+  if(NOT TP_CONFIG_PATH)
+      message(FATAL_ERROR "TP_CONFIG environmental variable not found!")
   endif()
-  if(NOT EXISTS "${TP_CONFIG_PATH}")
-    message(FATAL_ERROR "Config file was not found. Please set TP_CONFIG environmental variable!")
+
+  file(GLOB TP_CONFIG_PATH "${TP_CONFIG_PATH}")
+  if(NOT TP_CONFIG_PATH)
+      message(FATAL_ERROR "Config file was not found. Please, check or set TP_CONFIG=$ENV{TP_CONFIG} environmental variable!")
   endif()
+  message(STATUS "Reading config file from: ${TP_CONFIG_PATH}")
+  list(GET TP_CONFIG_PATH 0 TP_CONFIG_PATH)
   extract_var_value_pair("${TP_CONFIG_PATH}" "TP_TMP_")
 
   # extract subprojects from top project

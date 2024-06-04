@@ -26,7 +26,14 @@ function(extract_var_value_pair filename_list prefix_list)
     PROJECT_DIR SUBPROJECTS SUBDIRS
   )
 
-    foreach(filename_arg vpref IN ZIP_LISTS filename_list prefix_list)
+    #foreach(filename_arg vpref IN ZIP_LISTS filename_list prefix_list)
+
+    # here old style for iterating over two lists
+    list(LENGTH filename_list num_items)
+    math(EXPR num_items "${num_items}-1")
+    foreach(index RANGE ${num_items})
+      list(GET filename_list ${index} filename_arg)
+      list(GET prefix_list ${index} vpref)
 
       # Read the file content
       file(READ "${filename_arg}" FILE_CONTENT)
@@ -322,6 +329,10 @@ function(tp_parse_vars)
       endforeach(f)
     endif()
   endif()
+
+  # adding extra files to see them in qt creator
+  file(GLOB PRI_FILES RELATIVE "${CMAKE_CURRENT_LIST_DIR}" vars.pri dependencies.pri dependencies/cmake.cmake)
+  list(APPEND VAR_TP_SOURCES "${PRI_FILES}")
 
   #== QT ===========================================================================================
   if(TP_QT)

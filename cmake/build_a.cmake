@@ -331,7 +331,7 @@ function(tp_parse_vars)
   endif()
 
   # adding extra files to see them in qt creator
-  file(GLOB PRI_FILES RELATIVE "${CMAKE_CURRENT_LIST_DIR}" vars.pri dependencies.pri dependencies/cmake.cmake)
+  file(GLOB PRI_FILES RELATIVE "${CMAKE_CURRENT_LIST_DIR}" vars.pri dependencies.pri dependencies/cmake.cmake CMakeLists.top)
   list(APPEND VAR_TP_SOURCES "${PRI_FILES}")
 
   #== QT ===========================================================================================

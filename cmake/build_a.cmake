@@ -358,7 +358,15 @@ function(tp_parse_vars)
         if(f STREQUAL "core")
           find_package(${QtVer} REQUIRED COMPONENTS Core)
           list(APPEND TP_QT_MODULES "${QtVer}::Core")
-  
+
+        elseif(f STREQUAL "multimedia")
+            find_package(${QtVer} REQUIRED COMPONENTS Multimedia)
+            list(APPEND TP_QT_MODULES "${QtVer}::Multimedia")
+
+        elseif(f STREQUAL "multimediawidgets")
+            find_package(${QtVer} REQUIRED COMPONENTS MultimediaWidgets)
+            list(APPEND TP_QT_MODULES "${QtVer}::MultimediaWidgets" )
+
         elseif(f STREQUAL "gui")
           find_package(${QtVer} REQUIRED COMPONENTS Gui)
           find_package(${QtVer} REQUIRED COMPONENTS OpenGLWidgets)

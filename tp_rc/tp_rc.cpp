@@ -103,7 +103,7 @@ int main(int argc, const char * argv[])
   }
 
   bool printDepends = (std::string(argv[1]) == "--depend");
-  bool printDebug = false;
+  bool printDebug = (!printDepends) && true;
 
   std::string slash="/";
 
@@ -135,7 +135,7 @@ int main(int argc, const char * argv[])
   }
 
   if(printDebug)
-    std::cout << inputData << std::endl;
+    std::cerr << inputData << std::endl;
 
   rapidxml::xml_document<> doc;
   doc.parse<0>(inputData.data());
@@ -161,7 +161,7 @@ int main(int argc, const char * argv[])
   prefix += slash;
 
   if(printDebug)
-    std::cout << "prefix: " << prefix << std::endl;
+    std::cerr << "prefix: " << prefix << std::endl;
 
   if(printDepends)
     std::cout << argv[2] << std::endl;

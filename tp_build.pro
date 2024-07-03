@@ -16,6 +16,7 @@ TP_RC_TOOL = $$absolute_path($$OUT_PWD/../tpRc)
 # QMAKE_EXTRA_TARGETS += buildtprc
 
 # The new way builds inside QMake so that we can use it later on in QMake to find deps.
-system($$TP_HOST_CXX -std=gnu++1z -O2 $$TP_RC_TOOL_SOURCE -o $$TP_RC_TOOL)
+# system($$TP_HOST_CXX -std=gnu++1z -O2 $$TP_RC_TOOL_SOURCE -o $$TP_RC_TOOL)
+system($$TP_HOST_CXX -std=gnu++1z -O2 -g -fsanitize=address -fsanitize=undefined -fsanitize-address-use-after-scope -fstack-protector-all $$TP_RC_TOOL_SOURCE -o $$TP_RC_TOOL)
 
 SOURCES += qmake/tp_build.cpp

@@ -299,7 +299,7 @@ function(tp_parse_vars)
     set(TP_RC_CMD "${CMAKE_CURRENT_BINARY_DIR}/tpRc")
     add_custom_command(
       OUTPUT  "${TP_RC_CMD}"
-      COMMAND ${HOST_CXX} -std=gnu++1z -O2 "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_rc/tp_rc.cpp" -o "${TP_RC_CMD}"
+      COMMAND ${HOST_CXX} -std=gnu++1z -O2 -g -fsanitize=address -fsanitize=undefined -fsanitize-address-use-after-scope -fstack-protector-all "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_rc/tp_rc.cpp" -o "${TP_RC_CMD}"
       DEPENDS "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_rc/tp_rc.cpp"
     )
   endif()

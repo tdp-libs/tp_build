@@ -196,7 +196,7 @@ int main(int argc, const char * argv[])
       preprocess = preprocessAttribute->value();
 
     if(printDebug)
-      std::cout << "alias: " << alias << " file: " << inputFilePath << std::endl;
+      std::cerr << "alias: " << alias << " file: " << inputFilePath << std::endl;
 
     std::string resourceIdentifier = prefix + alias;
     if(std::find(excludes.begin(), excludes.end(), resourceIdentifier) != excludes.end())

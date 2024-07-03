@@ -32,4 +32,4 @@ $(BUILD_DIRS):
 	$(MKDIR) $@
 
 $(TP_RC_CMD): $(TP_RC_SRC)
-	$(HOST_CXX) -std=gnu++1z -O2 $(TP_RC_SRC) -o $(TP_RC_CMD)
+	$(HOST_CXX) -std=gnu++1z -O2 -g -fsanitize=address -fsanitize=undefined -fsanitize-address-use-after-scope -fstack-protector-all $(TP_RC_SRC) -o $(TP_RC_CMD)

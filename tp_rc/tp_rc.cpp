@@ -96,7 +96,7 @@ bool preprocessShader(std::string& fileData)
 //##################################################################################################
 int main(int argc, const char * argv[])
 {
-  std::cerr << "A";
+  std::cerr << "A" << std::endl;
   if(argc!=5 && argc!=6)
   {
     std::cerr << "error: Incorrect number of arguments passed to tpRc!" << std::endl;
@@ -106,18 +106,18 @@ int main(int argc, const char * argv[])
   bool printDepends = (std::string(argv[1]) == "--depend");
   bool printDebug = (!printDepends) && true;
 
-  std::cerr << "B";
+  std::cerr << "B" << std::endl;
 
   std::string slash="/";
 
   std::string qrcDirectory(argv[2]);
   qrcDirectory = qrcDirectory.substr(0, qrcDirectory.find_last_of("\\/")) + slash;
 
-  std::cerr << "C";
+  std::cerr << "C" << std::endl;
   std::vector<std::string> excludes;
   if(argc==6)
   {
-  std::cerr << "D";
+  std::cerr << "D" << std::endl;
     if(printDepends)
       std::cout << argv[5] << std::endl;
 
@@ -132,14 +132,14 @@ int main(int argc, const char * argv[])
       std::cerr << "   " << e << std::endl;
   }
 
-  std::cerr << "E";
+  std::cerr << "E" << std::endl;
   std::string inputData;
   if(!readBinaryFile(argv[2], inputData))
   {
     std::cerr << "error: Failed to read input qrc!" << std::endl;
     return 1;
   }
-  std::cerr << "F";
+  std::cerr << "F" << std::endl;
 
   if(printDebug)
     std::cerr << inputData << std::endl;
@@ -147,14 +147,14 @@ int main(int argc, const char * argv[])
   rapidxml::xml_document<> doc;
   doc.parse<0>(inputData.data());
 
-  std::cerr << "G";
+  std::cerr << "G" << std::endl;
   auto rccNode = doc.first_node("RCC");
   if(!rccNode)
   {
     std::cerr << "error: Failed to parse RCC node!" << std::endl;
     return 1;
   }
-  std::cerr << "H";
+  std::cerr << "H" << std::endl;
 
   auto qresourceNode = rccNode->first_node("qresource");
   if(!qresourceNode)
@@ -184,11 +184,11 @@ int main(int argc, const char * argv[])
       "# rm -f a.txt ; cat */*.rc_excludes >> a.txt ; awk '!x[$0]++' a.txt > rc_excludes.txt ; rm -f a.txt\n"
       "# \n";
 
-  std::cerr << "I";
+  std::cerr << "I" << std::endl;
   int c=0;
   for(auto fileNode = qresourceNode->first_node("file"); fileNode; fileNode=fileNode->next_sibling("file"))
   {
-  std::cerr << "J";
+  std::cerr << "J" << std::endl;
     std::string inputFile = fileNode->value();
     std::string inputFilePath = qrcDirectory + inputFile;
 
@@ -197,22 +197,22 @@ int main(int argc, const char * argv[])
       std::cout << inputFilePath << std::endl;
       continue;
     }
-  std::cerr << "K";
+  std::cerr << "K" << std::endl;
 
     std::string alias = inputFile;
     if(auto aliasAttribute = fileNode->first_attribute("alias"); aliasAttribute)
       alias = aliasAttribute->value();
 
-  std::cerr << "L";
+  std::cerr << "L" << std::endl;
     std::string preprocess;
     if(auto preprocessAttribute = fileNode->first_attribute("preprocess"); preprocessAttribute)
       preprocess = preprocessAttribute->value();
 
-  std::cerr << "M";
+  std::cerr << "M" << std::endl;
     if(printDebug)
       std::cerr << "alias: " << alias << " file: " << inputFilePath << std::endl;
 
-  std::cerr << "N";
+  std::cerr << "N" << std::endl;
     std::string resourceIdentifier = prefix + alias;
     if(std::find(excludes.begin(), excludes.end(), resourceIdentifier) != excludes.end())
     {
@@ -220,7 +220,7 @@ int main(int argc, const char * argv[])
       continue;
     }
 
-  std::cerr << "O";
+  std::cerr << "O" << std::endl;
     excludesText += "# " + resourceIdentifier + '\n';
 
     std::string fileData;
@@ -230,7 +230,7 @@ int main(int argc, const char * argv[])
       return 1;
     }
 
-  std::cerr << "P";
+  std::cerr << "P" << std::endl;
     if(preprocess == "shader")
     {
       if(!preprocessShader(fileData))
@@ -241,7 +241,7 @@ int main(int argc, const char * argv[])
     }
 
 
-  std::cerr << "Q";
+  std::cerr << "Q" << std::endl;
 #if 0
     cppText += "const char* data" + std::to_string(c) + " = \"";
 
@@ -254,7 +254,7 @@ int main(int argc, const char * argv[])
 
     cppText += "\";\n";
 #else
-  std::cerr << "R";
+  std::cerr << "R" << std::endl;
     cppText += "const uint8_t data" + std::to_string(c) + "[] = {";
 
     for(size_t i=0; i<fileData.size(); i++)
@@ -267,18 +267,18 @@ int main(int argc, const char * argv[])
     cppText += "0};\n";
 #endif
 
-  std::cerr << "S";
+  std::cerr << "S" << std::endl;
     cppText += "size_t size" + std::to_string(c) + "=" + std::to_string(fileData.size()) + ";\n\n";
     initText += "  tp_utils::addResource(\"" + resourceIdentifier + "\",reinterpret_cast<const char*>(data" + std::to_string(c) + "),size" + std::to_string(c) + ");\n";
     c++;
-  std::cerr << "T";
+  std::cerr << "T" << std::endl;
   }
 
-  std::cerr << "U";
+  std::cerr << "U" << std::endl;
   if(printDepends)
     return 0;
 
-  std::cerr << "V";
+  std::cerr << "V" << std::endl;
   cppText += "int initialize()\n{\n" + initText + "return 0;\n}\n";
   cppText += "int initialized=initialize();\n";
 
@@ -289,7 +289,7 @@ int main(int argc, const char * argv[])
   cppText += "  int tp_rc(){return initialized;}\n";
   cppText += "}\n";
 
-  std::cerr << "W";
+  std::cerr << "W" << std::endl;
   writeBinaryFile(argv[3], cppText);
 
   {
@@ -297,7 +297,7 @@ int main(int argc, const char * argv[])
     replaceOverlapping(excludesOutputFile, ".cpp", ".rc_excludes");
     writeBinaryFile(excludesOutputFile, excludesText);
   }
-  std::cerr << "X";
+  std::cerr << "X" << std::endl;
 
   return 0;
 }

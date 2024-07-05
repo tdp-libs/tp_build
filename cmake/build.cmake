@@ -69,26 +69,26 @@ function(tp_parse_submodules)
 
 
   # execute_process(COMMAND "C:/Program Files/Git/bin/bash.exe" "${CMAKE_CURRENT_LIST_DIR}/tp_build/tp_git/extract_git_branch.sh"
-  execute_process(COMMAND git rev-list --count HEAD
-                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/${PROJECT_DIR}"
+  execute_process(COMMAND git rev-parse --symbolic-full-name --abbrev-ref HEAD
+                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
                   OUTPUT_VARIABLE TP_GIT_BRANCH
                   OUTPUT_STRIP_TRAILING_WHITESPACE)
 
   # execute_process(COMMAND "C:/Program Files/Git/bin/bash.exe" "${CMAKE_CURRENT_LIST_DIR}/tp_build/tp_git/extract_git_commit.sh"
   execute_process(COMMAND git rev-parse HEAD
-                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/${PROJECT_DIR}"
+                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
                   OUTPUT_VARIABLE TP_GIT_COMMIT
                   OUTPUT_STRIP_TRAILING_WHITESPACE)
 
   # execute_process(COMMAND "C:/Program Files/Git/bin/bash.exe" "${CMAKE_CURRENT_LIST_DIR}/tp_build/tp_git/extract_git_commit_number.sh"
-  execute_process(COMMAND git rev-parse --symbolic-full-name --abbrev-ref HEAD
-                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/${PROJECT_DIR}"
+  execute_process(COMMAND git rev-list --count HEAD
+                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
                   OUTPUT_VARIABLE TP_GIT_COMMIT_NUMBER
                   OUTPUT_STRIP_TRAILING_WHITESPACE)
 
   message(STATUS "BUILDING:
     BRANCH: ${TP_GIT_BRANCH}
-    COMMIT: ${TP_GIT_COMMIT};
+    COMMIT: ${TP_GIT_COMMIT}
     COMMIT_NUMBER: ${TP_GIT_COMMIT_NUMBER}")
 
   foreach(subdir ${TP_SUBDIRS})

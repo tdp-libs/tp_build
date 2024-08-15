@@ -319,17 +319,14 @@ function(tp_parse_vars)
 
   #== STATIC_INIT ==================================================================================
   if(VAR_TP_TEMPLATE STREQUAL "app" OR VAR_TP_TEMPLATE STREQUAL "test")
-    if(NOT "${TP_TP_STATIC_INIT}" STREQUAL "")
-      string(STRIP "${TP_TP_STATIC_INIT}" TP_TP_STATIC_INIT)
-      foreach(f ${TP_TP_STATIC_INIT})
-        add_custom_command(
-          OUTPUT  "${f}.cpp"
-          COMMAND "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_static_init/generate_static_init.sh" "${f}.cpp" ${f}
-          DEPENDS "${CMAKE_CURRENT_LIST_DIR}/../${f}/inc/${f}/Globals.h" "${CMAKE_CURRENT_LIST_DIR}/../${f}/src/Globals.cpp" "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_static_init/generate_static_init.sh"
-        )
-        list(APPEND VAR_TP_SOURCES "${f}.cpp")
-      endforeach(f)
-    endif()
+
+    add_custom_command(
+      OUTPUT  "tp_static_init.cpp"
+      COMMAND ${CMAKE_COMMAND} -DTP_STATIC_INIT="$<FILTER:$<TARGET_PROPERTY:${VAR_TP_TARGET},COMPILE_DEFINITIONS>,INCLUDE,TMP123>" -P "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/static_init_generator.cmake"
+      DEPENDS "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/static_init_generator.cmake"
+    )
+    list(APPEND VAR_TP_SOURCES "tp_static_init.cpp")
+
   endif()
 
   # adding extra files to see them in qt creator
@@ -526,7 +523,7 @@ function(tp_parse_vars)
 
   #== Build App ====================================================================================
   if(VAR_TP_TEMPLATE STREQUAL "app" OR VAR_TP_TEMPLATE STREQUAL "test")
-    
+
     if(ANDROID)
       # For Android we build a shared library then call it from Java.
       add_library("${VAR_TP_TARGET}" SHARED ${VAR_TP_SOURCES} ${VAR_TP_HEADERS} ${VAR_TP_RESOURCES})
@@ -579,6 +576,15 @@ function(tp_parse_vars)
     target_include_directories(${VAR_TP_TARGET} INTERFACE ${TP_INCLUDEPATHS} ${TP_SYSTEM_INCLUDEPATHS} ${TP_RELATIVE_SYSTEM_INCLUDEPATHS})
     target_compile_definitions(${VAR_TP_TARGET} INTERFACE ${TP_DEFINES})
   endif()
+
+  if( TARGET ${VAR_TP_TARGET} AND TP_TP_STATIC_INIT )
+      target_compile_definitions(${VAR_TP_TARGET} INTERFACE "TMP123_${TP_TP_STATIC_INIT}")
+  endif()
+
+  define_property(TARGET PROPERTY  INTERFACE_TP_STATIC_INIT INHERITED
+    BRIEF_DOCS "Static Initialization Flag"
+  )
+
 
 endfunction() 
 

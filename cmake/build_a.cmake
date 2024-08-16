@@ -320,9 +320,14 @@ function(tp_parse_vars)
   #== STATIC_INIT ==================================================================================
   if(VAR_TP_TEMPLATE STREQUAL "app" OR VAR_TP_TEMPLATE STREQUAL "test")
 
+    set(static_init_modules_generator
+      "$<FILTER:$<TARGET_PROPERTY:${VAR_TP_TARGET},COMPILE_DEFINITIONS>,INCLUDE,TMP123_>")
+
     add_custom_command(
       OUTPUT  "tp_static_init.cpp"
-      COMMAND ${CMAKE_COMMAND} -DTP_STATIC_INIT="$<FILTER:$<TARGET_PROPERTY:${VAR_TP_TARGET},COMPILE_DEFINITIONS>,INCLUDE,TMP123>" -P "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/static_init_generator.cmake"
+      COMMAND ${CMAKE_COMMAND}
+              -DTP_STATIC_INIT="${static_init_modules_generator}"
+              -P "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/static_init_generator.cmake"
       DEPENDS "${CMAKE_CURRENT_LIST_DIR}/../tp_build/cmake/static_init_generator.cmake"
     )
     list(APPEND VAR_TP_SOURCES "tp_static_init.cpp")
@@ -577,14 +582,13 @@ function(tp_parse_vars)
     target_compile_definitions(${VAR_TP_TARGET} INTERFACE ${TP_DEFINES})
   endif()
 
+  #== Collecting custom definition TMP123_... for static library intialization =====================
+  # this will be used later in application target to collect transitively all such defines
+  # from dependencies and generate .cpp file with initialisation code. See reference
+  # to TMP123_ prefix usage in this file)
   if( TARGET ${VAR_TP_TARGET} AND TP_TP_STATIC_INIT )
-      target_compile_definitions(${VAR_TP_TARGET} INTERFACE "TMP123_${TP_TP_STATIC_INIT}")
+    target_compile_definitions(${VAR_TP_TARGET} INTERFACE "TMP123_${TP_TP_STATIC_INIT}")
   endif()
-
-  define_property(TARGET PROPERTY  INTERFACE_TP_STATIC_INIT INHERITED
-    BRIEF_DOCS "Static Initialization Flag"
-  )
-
 
 endfunction() 
 

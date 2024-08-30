@@ -586,9 +586,12 @@ function(tp_parse_vars)
   # this will be used later in application target to collect transitively all such defines
   # from dependencies and generate .cpp file with initialisation code. See reference
   # to TMP123_ prefix usage in this file)
-  if( TARGET ${VAR_TP_TARGET} AND TP_TP_STATIC_INIT )
-    target_compile_definitions(${VAR_TP_TARGET} INTERFACE "TMP123_${TP_TP_STATIC_INIT}")
+  if( TARGET ${VAR_TP_TARGET})
+    if( DEFINED TP_TP_STATIC_INIT )
+      message(STATUS "Applying STATIC_INIT for project ${VAR_TP_TAREGET}")
+      target_compile_definitions(${VAR_TP_TARGET} INTERFACE "TMP123_${TP_TP_STATIC_INIT}")
+    endif()
   endif()
 
-endfunction() 
+  endfunction()
 

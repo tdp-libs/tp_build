@@ -6,8 +6,15 @@ function(tp_parse_submodules)
   set(CMAKE_CXX_STANDARD_REQUIRED ON)
   set(CMAKE_CXX_EXTENSIONS OFF)
 
-  # extract top project dir from global settings file
+  # to ease debug in release for MSVC removing optimisation for RelWithDebInfo
+  if(MSVC)
+    string(REPLACE "/Ob1" "" CMAKE_CXX_FLAGS_RELWITHDEBINFO ${CMAKE_CXX_FLAGS_RELWITHDEBINFO})
+    string(REPLACE "/O2" "" CMAKE_CXX_FLAGS_RELWITHDEBINFO ${CMAKE_CXX_FLAGS_RELWITHDEBINFO})
+    string(REPLACE "/Ob1" "" CMAKE_C_FLAGS_RELWITHDEBINFO ${CMAKE_C_FLAGS_RELWITHDEBINFO})
+    string(REPLACE "/O2" "" CMAKE_C_FLAGS_RELWITHDEBINFO ${CMAKE_C_FLAGS_RELWITHDEBINFO})
+  endif()
 
+  # extract top project dir from global settings file
   # searching config file
   string(REPLACE "\\" "/" TP_CONFIG_PATH "$ENV{TP_CONFIG}")
   if(NOT TP_CONFIG_PATH)

@@ -280,7 +280,6 @@ function(tp_parse_vars)
     endif()
   endif()
 
-
   #== TP RESOURCES =================================================================================
   if(WIN32)
     set(TP_RC_CMD "${CMAKE_CURRENT_BINARY_DIR}/tpRc.exe")
@@ -575,11 +574,22 @@ function(tp_parse_vars)
     endif()
   endif()
 
+
   #== Build Subdirs ================================================================================
   if(VAR_TP_TEMPLATE STREQUAL "subdirs")
     add_library(${VAR_TP_TARGET} INTERFACE)
     target_include_directories(${VAR_TP_TARGET} INTERFACE ${TP_INCLUDEPATHS} ${TP_SYSTEM_INCLUDEPATHS} ${TP_RELATIVE_SYSTEM_INCLUDEPATHS})
     target_compile_definitions(${VAR_TP_TARGET} INTERFACE ${TP_DEFINES})
+  endif()
+
+  # visual studio off optimisation in RelWithDebInfo (for easy debugging)
+  if(MSVC AND NOT VAR_TP_TEMPLATE STREQUAL "subdirs" AND CMAKE_BUILD_TYPE STREQUAL RelWithDebInfo)
+      # line below add /JMC - just my code for debugging
+      # set(RELEASE_FOR_DEBUG_CXX_OPTIONS /JMC /Zi /Od /MD)
+      set(RELEASE_FOR_DEBUG_CXX_OPTIONS /Zi /Od /MD)
+      set(RELEASE_FOR_DEBUG_LINKER_OPTIONS /DEBUG:FULL /OPT:REF /OPT:ICF /RTC /INCREMENTAL:NO /IGNORE:4099)
+      target_compile_options(${VAR_TP_TARGET} PRIVATE ${RELEASE_FOR_DEBUG_CXX_OPTIONS})
+      target_link_options(${VAR_TP_TARGET} PRIVATE ${RELEASE_FOR_DEBUG_LINKER_OPTIONS})
   endif()
 
   #== Collecting custom definition TMP123_... for static library intialization =====================

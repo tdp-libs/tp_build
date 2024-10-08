@@ -88,14 +88,13 @@ function(tp_parse_vars)
     message(FATAL_ERROR "Config file was not found. Please set TP_CONFIG environmental variable!")
   endif()
   list(APPEND files_to_scan "${TP_CONFIG_PATH}")
+  list(APPEND vpref_list "TP_")
 
   set(TP_CONFIG_CONF_PATH "${CMAKE_SOURCE_DIR}/${PROJECT_DIR}/project.conf")
   if(EXISTS "${TP_CONFIG_CONF_PATH}")
     list(APPEND files_to_scan "${TP_CONFIG_CONF_PATH}")
+    list(APPEND vpref_list "TP_")
   endif()
-
-  
-  list(APPEND vpref_list "TP_")
 
   if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/dependencies.pri")
     list(APPEND files_to_scan "${CMAKE_CURRENT_LIST_DIR}/dependencies.pri")

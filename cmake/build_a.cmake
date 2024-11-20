@@ -270,7 +270,7 @@ function(tp_parse_vars)
         -D_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS # suppress warning on templates
         -DTP_WIN32_STATIC
       )
-      add_compile_options("/std:c++17"  "/bigobj")    # Win32 issue in exprtk.hpp
+      add_compile_options("/bigobj")    # Win32 issue in exprtk.hpp
 
       #suppress warnings on missing _WIN32_WINNT=...
       macro(get_win_hex outvar)
@@ -607,6 +607,11 @@ function(tp_parse_vars)
       message(STATUS "Applying STATIC_INIT for project ${VAR_TP_TAREGET}")
       target_compile_definitions(${VAR_TP_TARGET} INTERFACE "TMP123_${TP_TP_STATIC_INIT}")
     endif()
+  endif()
+
+  # setting standard for MSVC
+  if(MSVC)
+    set_property(TARGET ${VAR_TP_TARGET} PROPERTY CXX_STANDARD 17)
   endif()
 
   endfunction()

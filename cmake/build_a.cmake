@@ -379,6 +379,9 @@ function(tp_parse_vars)
           find_package(${QtVer} REQUIRED COMPONENTS OpenGLWidgets)
           list(APPEND TP_QT_MODULES "${QtVer}::Gui")
           list(APPEND TP_QT_MODULES "${QtVer}::OpenGLWidgets")
+
+        elseif(f STREQUAL "gui-private")
+          list(APPEND TP_QT_MODULES "${QtVer}::WidgetsPrivate")
   
         elseif(f STREQUAL "widgets")
           find_package(${QtVer} REQUIRED COMPONENTS Widgets)

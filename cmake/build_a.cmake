@@ -313,10 +313,19 @@ function(tp_parse_vars)
     string(STRIP "${VAR_TP_TP_RC}" VAR_TP_TP_RC)
     foreach(f ${VAR_TP_TP_RC})
       get_filename_component(QRC_NAME "${f}" NAME_WE)
+      # gather dependencies for resource files
+      execute_process(
+          COMMAND "${TP_RC_CMD}" --depend "${CMAKE_CURRENT_LIST_DIR}/${f}" "${CMAKE_CURRENT_BINARY_DIR}/${QRC_NAME}.cpp" ${QRC_NAME}
+          OUTPUT_VARIABLE RESOURCE_DEPENDENCIES
+          OUTPUT_STRIP_TRAILING_WHITESPACE
+      )
+      # Parse the dependencies into a list
+      string(REPLACE "\n" ";" RESOURCE_DEPENDENCIES "${RESOURCE_DEPENDENCIES}")
+      # message(STATUS "${RESOURCE_DEPENDENCIES} ${RESOURCE_DEPENDENCIES}")
       add_custom_command(
         OUTPUT  "${QRC_NAME}.cpp"
         COMMAND "${TP_RC_CMD}" --compile "${CMAKE_CURRENT_LIST_DIR}/${f}" "${CMAKE_CURRENT_BINARY_DIR}/${QRC_NAME}.cpp" ${QRC_NAME}
-        DEPENDS "${CMAKE_CURRENT_LIST_DIR}/${f}" "${TP_RC_CMD}"
+        DEPENDS "${CMAKE_CURRENT_LIST_DIR}/${f}" "${TP_RC_CMD}" ${RESOURCE_DEPENDENCIES}
       )
       list(APPEND VAR_TP_SOURCES "${QRC_NAME}.cpp")
     endforeach(f)

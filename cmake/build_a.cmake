@@ -19,7 +19,7 @@ function(extract_var_value_pair filename_list prefix_list)
     INCLUDEPATHS SYSTEM_INCLUDEPATHS RELATIVE_SYSTEM_INCLUDEPATHS
     LIBRARIES TP_FRAMEWORKS LIBS SLIBS LIBRARYPATHS DEFINES
     TP_DEPENDENCIES DEPENDENCIES TP_STATIC_INIT QT QTPLUGIN
-    CFLAGS CXXFLAGS LFLAGS
+    CFLAGS CXXFLAGS LFLAGS LDFLAGS
 
     HEADERS SOURCES TP_RC RESOURCES TARGET TEMPLATE
 
@@ -248,7 +248,10 @@ function(tp_parse_vars)
   clean_and_add_defines("${TP_DEFINES}")
   set(TP_DEFINES "${TP_TMP_LIST}")
 
-  if(IOS)
+  if(EMSCRIPTEN) # NOTE: emscripten platform defined together with UNIX
+                 # thus it should be first to overwrite UNIX
+    list(APPEND TP_DEFINES -DTP_EMSCRIPTEN)
+  elseif(IOS)
     list(APPEND TP_DEFINES -DTP_IOS)
   elseif(APPLE)
     list(APPEND TP_DEFINES -DTP_OSX)
@@ -557,7 +560,8 @@ function(tp_parse_vars)
 
     target_include_directories(${VAR_TP_TARGET} PRIVATE ${TP_INCLUDEPATHS} ${TP_SYSTEM_INCLUDEPATHS} ${TP_RELATIVE_SYSTEM_INCLUDEPATHS})
     target_link_directories(${VAR_TP_TARGET} PRIVATE ${TP_LIBRARYPATHS})
-    target_compile_options(${VAR_TP_TARGET} PRIVATE ${TP_CFLAGS} ${TP_CXXFLAGS} ${TP_LFLAGS})
+    target_link_options(${VAR_TP_TARGET} PRIVATE ${TP_LFLAGS}  ${TP_LDFLAGS})
+    target_compile_options(${VAR_TP_TARGET} PRIVATE ${TP_CFLAGS} ${TP_CXXFLAGS})
     target_compile_definitions(${VAR_TP_TARGET} PRIVATE ${VAR_TP_DEFINES} PUBLIC ${TP_DEFINES})
 
     list(REMOVE_ITEM TP_LIBRARIES ${VAR_TP_TARGET} )
@@ -626,5 +630,5 @@ function(tp_parse_vars)
     set_property(TARGET ${VAR_TP_TARGET} PROPERTY CXX_STANDARD 17)
   endif()
 
-  endfunction()
+endfunction()
 

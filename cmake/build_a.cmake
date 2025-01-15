@@ -525,17 +525,13 @@ function(tp_parse_vars)
   #== Build PyLib ==================================================================================
   if(VAR_TP_TEMPLATE STREQUAL "pylib")
 
-    if(WIN32)
-      add_library("${VAR_TP_TARGET}" SHARED ${VAR_TP_SOURCES} ${VAR_TP_HEADERS} ${VAR_TP_RESOURCES})
-    elseif(UNIX)
-      add_library("${VAR_TP_TARGET}" SHARED ${VAR_TP_SOURCES} ${VAR_TP_HEADERS} ${VAR_TP_RESOURCES})
-      set_target_properties( "${VAR_TP_TARGET}"
-        PROPERTIES          
-          LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-          RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-          PREFIX ""
-      )
-    endif()
+    add_library("${VAR_TP_TARGET}" SHARED ${VAR_TP_SOURCES} ${VAR_TP_HEADERS} ${VAR_TP_RESOURCES})
+    set_target_properties( "${VAR_TP_TARGET}"
+      PROPERTIES
+        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+        PREFIX ""
+    )
     target_include_directories(${VAR_TP_TARGET} PUBLIC ${TP_INCLUDEPATHS} ${TP_SYSTEM_INCLUDEPATHS} ${TP_RELATIVE_SYSTEM_INCLUDEPATHS})
     link_directories(${TP_LIBRARYPATHS})
     add_definitions(${TP_DEFINES})

@@ -564,7 +564,12 @@ function(tp_parse_vars)
     target_link_libraries(${VAR_TP_TARGET} PUBLIC ${TP_LIBRARIES} ${TP_DEPENDENCIES} ${TP_QT_MODULES})
 
     if(VAR_TP_TEMPLATE STREQUAL "app")
-      if(APPLE)
+      if(MSVC)
+        if(CMAKE_BUILD_TYPE STREQUAL Release)
+          # we do not do console for release
+          target_link_options(${VAR_TP_TARGET} PRIVATE /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup)
+        endif()
+      elseif(APPLE)
         install(TARGETS "${VAR_TP_TARGET}"
                 RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
                 BUNDLE  DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
@@ -584,7 +589,7 @@ function(tp_parse_vars)
           set_xcode_property(${VAR_TP_TARGET} DEVELOPMENT_TEAM "${DEVELOPMENT_TEAM}" "All")
         endif()
 
-      else( UNIX )
+      elseif( UNIX )
         install(TARGETS "${VAR_TP_TARGET}"
                 RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
                 LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)

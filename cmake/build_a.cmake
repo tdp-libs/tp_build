@@ -589,7 +589,7 @@ function(tp_parse_vars)
           set_xcode_property(${VAR_TP_TARGET} DEVELOPMENT_TEAM "${DEVELOPMENT_TEAM}" "All")
         endif()
 
-      elseif( EMSCRIPTEN)
+      elseif( EMSCRIPTEN )
         set_target_properties(${VAR_TP_TARGET} PROPERTIES OUTPUT_NAME "${VAR_TP_TARGET}.js_only")
       elseif( UNIX )
         install(TARGETS "${VAR_TP_TARGET}"

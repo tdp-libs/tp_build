@@ -153,8 +153,7 @@ android{
   #If we are building a lib just do the usual
   !contains(TEMPLATE, app): DESTDIR = ../lib/
 
-  CONFIG += c++1z
-  DEFINES += TP_CPP_VERSION=17
+  CONFIG += c++1z  
 }
 
 
@@ -208,7 +207,6 @@ else:win32{
     #QMAKE_LFLAGS *= -fuse-ld=bfd
   }
 
-  DEFINES += TP_CPP_VERSION=17
 }
 
 
@@ -221,7 +219,6 @@ else:osx{
     CONFIG += staticlib
   }
   CONFIG += c++1z
-  DEFINES += TP_CPP_VERSION=17
   QMAKE_MACOSX_DEPLOYMENT_TARGET = 13.0
 
   #Silence SDK version warning on Mac.
@@ -255,7 +252,6 @@ else:iphoneos{
   contains(TEMPLATE, lib): DESTDIR = ../lib/
 
   CONFIG += c++1z
-  DEFINES += TP_CPP_VERSION=17
 
   #Silence SDK version warning on iOS.
   CONFIG+=sdk_no_version_check
@@ -272,7 +268,6 @@ else{
   contains(TEMPLATE, lib): DESTDIR = ../lib/
 
   CONFIG += c++1z
-  DEFINES += TP_CPP_VERSION=17
 
   QMAKE_CXXFLAGS += -Wpedantic
   QMAKE_CXXFLAGS += -Wall

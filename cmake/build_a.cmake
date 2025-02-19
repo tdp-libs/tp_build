@@ -265,7 +265,6 @@ function(tp_parse_vars)
     list(APPEND TP_DEFINES
       -DTP_WIN32
       -DTP_WIN32_STATIC
-      -DTP_CPP_VERSION=17
     )
     if(MSVC)
       list(APPEND TP_DEFINES
@@ -629,9 +628,16 @@ function(tp_parse_vars)
   endif()
 
   # setting standard for MSVC
-  if(MSVC)
-    set_property(TARGET ${VAR_TP_TARGET} PROPERTY CXX_STANDARD 17)
+  if(MSVC AND NOT VAR_TP_TEMPLATE STREQUAL "subdirs" )
+    set_property(TARGET ${VAR_TP_TARGET} PROPERTY CXX_STANDARD ${CMAKE_CXX_STANDARD})
+    target_compile_options(${VAR_TP_TARGET} PRIVATE "/Zc:__cplusplus")
+  elseif(EMSCRIPTEN AND NOT VAR_TP_TEMPLATE STREQUAL "subdirs" )
+    # nesseary for C++20
+    if(CMAKE_CXX_STANDARD GREATER 17)
+      target_compile_options(${VAR_TP_TARGET} PUBLIC -fexperimental-library)
+    endif()
   endif()
+
 
 endfunction()
 

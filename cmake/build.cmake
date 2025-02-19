@@ -2,9 +2,24 @@ include(tp_build/cmake/build_a.cmake)
 
 function(tp_parse_submodules)
 
-  set(CMAKE_CXX_STANDARD 17)
+  # default standard
+  set(CMAKE_CXX_STANDARD 20)
+
+  # overwrite default
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    set(CMAKE_CXX_STANDARD 23)
+  elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set(CMAKE_CXX_STANDARD 20)
+  elseif(EMSCRIPTEN)
+    set(CMAKE_CXX_STANDARD 20)
+  elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    set(CMAKE_CXX_STANDARD 20)
+  endif()
+
   set(CMAKE_CXX_STANDARD_REQUIRED ON)
   set(CMAKE_CXX_EXTENSIONS OFF)
+
+  message(STATUS "Setting compiler to C++${CMAKE_CXX_STANDARD} standard")
 
   # to ease debug in release for MSVC removing optimisation for RelWithDebInfo
   if(MSVC)

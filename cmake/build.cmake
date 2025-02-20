@@ -76,11 +76,6 @@ function(tp_parse_submodules)
     endforeach()
   endif()
 
-  # execute_process(COMMAND "C:/Program Files/Git/bin/bash.exe" "${CMAKE_CURRENT_LIST_DIR}/tp_build/cmake/extract_submodules.sh" SUBDIRS
-  #                 WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/${PROJECT_DIR}"
-  #                 OUTPUT_VARIABLE TP_SUBDIRS_TMP
-  #                 OUTPUT_STRIP_TRAILING_WHITESPACE)
-
   set(TP_SUBDIRS_TMP "")
   if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/${PROJECT_DIR}/submodules.pri")
     extract_var_value_pair("${CMAKE_CURRENT_LIST_DIR}/${PROJECT_DIR}/submodules.pri" "TP_TMP_")
@@ -89,20 +84,16 @@ function(tp_parse_submodules)
 
   list(REMOVE_DUPLICATES TP_SUBDIRS)
 
-
-  # execute_process(COMMAND "C:/Program Files/Git/bin/bash.exe" "${CMAKE_CURRENT_LIST_DIR}/tp_build/tp_git/extract_git_branch.sh"
   execute_process(COMMAND git rev-parse --symbolic-full-name --abbrev-ref HEAD
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
                   OUTPUT_VARIABLE TP_GIT_BRANCH
                   OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-  # execute_process(COMMAND "C:/Program Files/Git/bin/bash.exe" "${CMAKE_CURRENT_LIST_DIR}/tp_build/tp_git/extract_git_commit.sh"
   execute_process(COMMAND git rev-parse HEAD
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
                   OUTPUT_VARIABLE TP_GIT_COMMIT
                   OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-  # execute_process(COMMAND "C:/Program Files/Git/bin/bash.exe" "${CMAKE_CURRENT_LIST_DIR}/tp_build/tp_git/extract_git_commit_number.sh"
   execute_process(COMMAND git rev-list --count HEAD
                   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
                   OUTPUT_VARIABLE TP_GIT_COMMIT_NUMBER

@@ -102,22 +102,6 @@ function(tp_parse_vars)
   endif()
   extract_var_value_pair("${files_to_scan}" "${vpref_list}")
 
-  # this was moved to the top directory cmake script
-  # execute_process(COMMAND "C:/Program Files/Git/bin/bash.exe" "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_git/extract_git_branch.sh"
-  #                 WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-  #                 OUTPUT_VARIABLE TP_GIT_BRANCH
-  #                 OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-  # execute_process(COMMAND "C:/Program Files/Git/bin/bash.exe" "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_git/extract_git_commit.sh"
-  #                 WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-  #                 OUTPUT_VARIABLE TP_GIT_COMMIT
-  #                 OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-  # execute_process(COMMAND "C:/Program Files/Git/bin/bash.exe" "${CMAKE_CURRENT_LIST_DIR}/../tp_build/tp_git/extract_git_commit_number.sh"
-  #                 WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-  #                 OUTPUT_VARIABLE TP_GIT_COMMIT_NUMBER
-  #                 OUTPUT_STRIP_TRAILING_WHITESPACE)
-
 
   #== INCLUDEPATHS =================================================================================
   set(TP_TMP_LIST "")

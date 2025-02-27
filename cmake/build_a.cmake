@@ -70,7 +70,7 @@ function(extract_var_value_pair filename_list prefix_list)
 endfunction()
 
 
-# For documentation of the supported variabls see:
+# For documentation of the supported variables see:
 # https://github.com/tdp-libs/tp_build/blob/master/documentation/variables.md
 function(tp_parse_vars)
 
@@ -337,6 +337,8 @@ function(tp_parse_vars)
   # adding extra files to see them in qt creator
   file(GLOB PRI_FILES RELATIVE "${CMAKE_CURRENT_LIST_DIR}" vars.pri dependencies.pri dependencies/cmake.cmake CMakeLists.top)
   list(APPEND VAR_TP_SOURCES "${PRI_FILES}")
+  file(GLOB_RECURSE SHADERS_FILES "${CMAKE_CURRENT_LIST_DIR}" "*.vert" "*.frag")
+  list(APPEND VAR_TP_SOURCES "${SHADERS_FILES}")
 
   #== QT ===========================================================================================
   if(TP_QT)

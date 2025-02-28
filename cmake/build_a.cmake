@@ -337,7 +337,10 @@ function(tp_parse_vars)
   # adding extra files to see them in qt creator
   file(GLOB PRI_FILES RELATIVE "${CMAKE_CURRENT_LIST_DIR}" vars.pri dependencies.pri dependencies/cmake.cmake CMakeLists.top)
   list(APPEND VAR_TP_SOURCES "${PRI_FILES}")
-  file(GLOB_RECURSE SHADERS_FILES "${CMAKE_CURRENT_LIST_DIR}" "*.vert" "*.frag")
+  file(GLOB_RECURSE SHADERS_FILES
+    "${CMAKE_CURRENT_LIST_DIR}/src/resources/*.vert"
+    "${CMAKE_CURRENT_LIST_DIR}/src/resources/*.frag"
+  )
   list(APPEND VAR_TP_SOURCES "${SHADERS_FILES}")
 
   #== QT ===========================================================================================

@@ -194,15 +194,16 @@ else:win32{
     CONFIG += reverse_libs
   }
 
-  CONFIG += c++1z
+  CONFIG += c++2a
   win32-msvc* {
-    QMAKE_CXXFLAGS *= /std:c++17
+    QMAKE_CXXFLAGS *= /std:c++20
     QMAKE_CXXFLAGS *= /bigobj    # Win32 issue in exprtk.hpp
     DEFINES += TP_WIN32_MSVC
+    DEFINES += _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
   }
   else {
     DEFINES += TP_WIN32_MINGW
-    QMAKE_CXXFLAGS *= -std=c++1z
+    QMAKE_CXXFLAGS *= -std=c++20
     QMAKE_CXXFLAGS *= -Wa,-mbig-obj
     #QMAKE_LFLAGS *= -fuse-ld=bfd
   }
@@ -267,7 +268,7 @@ else{
   contains(TEMPLATE, app): DESTDIR = ../bin/
   contains(TEMPLATE, lib): DESTDIR = ../lib/
 
-  CONFIG += c++1z
+  CONFIG += c++20
 
   QMAKE_CXXFLAGS += -Wpedantic
   QMAKE_CXXFLAGS += -Wall

@@ -10,6 +10,16 @@
 # will results to MY_PREFIX_RELATIVE_SYSTEM_INCLUDEPATHS = "omi/some/add_subdirectory;omi/some/add_subdirectory2"
 # variable.
 
+if (APPLE)
+set(CMAKE_MACOSX_RPATH YES)
+set(CMAKE_SHARED_LINKER_FLAGS "-rpath @executable_path/Frameworks -rpath @loader_path/Frameworks")
+set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED "NO")
+set(CMAKE_SHARED_LIBRARY_PREFIX "lib")
+set(CMAKE_SHARED_LIBRARY_SUFFIX ".dylib")
+set(CMAKE_SHARED_MODULE_PREFIX "lib")
+set(CMAKE_SHARED_MODULE_SUFFIX ".so")
+endif()
+
 function(extract_var_value_pair filename_list prefix_list)
 
   # For documentation of the supported variabls see:
@@ -191,6 +201,7 @@ function(tp_parse_vars)
 
   #== FRAMEWORKS ===================================================================================
   if(APPLE)
+
     macro(clean_and_add_frameworks PARTS_ARG)
       if(NOT "${PARTS_ARG}" STREQUAL "")
         string(STRIP "${PARTS_ARG}" PARTS)
@@ -337,11 +348,12 @@ function(tp_parse_vars)
   # adding extra files to see them in qt creator
   file(GLOB PRI_FILES RELATIVE "${CMAKE_CURRENT_LIST_DIR}" vars.pri dependencies.pri dependencies/cmake.cmake CMakeLists.top)
   list(APPEND VAR_TP_SOURCES "${PRI_FILES}")
-  file(GLOB_RECURSE SHADERS_FILES
+  file(GLOB_RECURSE SHADERS_FILES_AND_ETC
     "${CMAKE_CURRENT_LIST_DIR}/src/resources/*.vert"
     "${CMAKE_CURRENT_LIST_DIR}/src/resources/*.frag"
+    "${CMAKE_CURRENT_LIST_DIR}/*.py"
   )
-  list(APPEND VAR_TP_SOURCES "${SHADERS_FILES}")
+  list(APPEND VAR_TP_SOURCES "${SHADERS_FILES_AND_ETC}")
 
   #== QT ===========================================================================================
   if(TP_QT)
@@ -516,7 +528,7 @@ function(tp_parse_vars)
     add_library("${VAR_TP_TARGET}" SHARED ${VAR_TP_SOURCES} ${VAR_TP_HEADERS} ${VAR_TP_RESOURCES})
     set_target_properties( "${VAR_TP_TARGET}"
       PROPERTIES
-        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
         PREFIX ""
     )
@@ -524,6 +536,9 @@ function(tp_parse_vars)
     link_directories(${TP_LIBRARYPATHS})
     add_definitions(${TP_DEFINES})
     add_definitions("${TP_CFLAGS} ${TP_CXXFLAGS} ${TP_LFLAGS}")
+    if (UNIX)
+      target_compile_options(${VAR_TP_TARGET} PRIVATE -fvisibility=hidden )
+    endif()
 
     target_link_libraries("${VAR_TP_TARGET}" PUBLIC ${TP_LIBRARIES} ${TP_DEPENDENCIES} ${TP_QT_MODULES})
 
